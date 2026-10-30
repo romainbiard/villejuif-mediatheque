@@ -18,6 +18,7 @@ let package = Package(
         .library(name: "AgendaFeature", targets: ["AgendaFeature"]),
         .library(name: "InfoFeature", targets: ["InfoFeature"]),
         .library(name: "AccountFeature", targets: ["AccountFeature"]),
+        .library(name: "DigitalFeature", targets: ["DigitalFeature"]),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.17.0"),
@@ -44,6 +45,7 @@ let package = Package(
         .target(name: "AgendaFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies]),
         .target(name: "InfoFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies]),
         .target(name: "AccountFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies]),
+        .target(name: "DigitalFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies]),
         .testTarget(
             name: "BokehAPITests",
             dependencies: ["BokehAPI"],
@@ -64,6 +66,7 @@ let package = Package(
                 "AgendaFeature",
                 "InfoFeature",
                 "AccountFeature",
+                "DigitalFeature",
                 .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
                 .product(name: "Clocks", package: "swift-clocks"),
             ]

@@ -21,7 +21,7 @@ public final class AccountHomeViewModel {
             session.update(try await account.patron())
             error = nil
             // Snapshot pour le widget et le hors-ligne, rappels reprogrammés.
-            _ = try? await AccountSync.run(settings: .current())
+            _ = try? await withDependencies(from: self) { try await AccountSync.run(settings: .current()) }
         } catch {
             let loadError = LoadError(error)
             if loadError == .notLoggedIn { await session.logout() }
@@ -123,7 +123,7 @@ public final class LoansViewModel {
             }
             await load()
             // Les dates de retour ont changé : on reprogramme les rappels.
-            _ = try? await AccountSync.run(settings: .current())
+            _ = try? await withDependencies(from: self) { try await AccountSync.run(settings: .current()) }
         } catch {
             message = LoadError(error) == .offline ? "Prolongation impossible hors ligne" : "La prolongation n'a pas abouti"
             feedback = .error

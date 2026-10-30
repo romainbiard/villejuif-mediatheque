@@ -64,6 +64,8 @@ targets:
         product: InfoFeature
       - package: Mediatheque
         product: AccountFeature
+      - package: Mediatheque
+        product: DigitalFeature
 
   VillejuifWidget:
     type: app-extension

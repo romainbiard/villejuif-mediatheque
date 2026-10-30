@@ -1,6 +1,7 @@
 import AccountFeature
 import AgendaFeature
 import DesignSystem
+import DigitalFeature
 import InfoFeature
 import MediathequeCore
 import SearchFeature
@@ -24,11 +25,7 @@ struct RootTabView: View {
                 AgendaView()
             }
             Tab("Numérique", systemImage: "play.rectangle.on.rectangle", value: .digital) {
-                ComingSoonView(
-                    title: "Numérique",
-                    systemImage: "play.rectangle.on.rectangle",
-                    message: "Arte VOD, Cafeyn, Mozaik, musicMe et les e-books, inclus dans votre abonnement."
-                )
+                DigitalView()
             }
             Tab("Infos", systemImage: "mappin.and.ellipse", value: .info) {
                 InfoView()
@@ -39,24 +36,6 @@ struct RootTabView: View {
         }
         .tabViewStyle(.sidebarAdaptable)
         .tint(.brandViolet)
-    }
-}
-
-/// Onglet prévu en P4 (numérique).
-struct ComingSoonView: View {
-    let title: String
-    let systemImage: String
-    let message: String
-
-    var body: some View {
-        NavigationStack {
-            ScrollView {
-                EmptyStateView(systemImage: systemImage, title: "Bientôt disponible", message: message)
-                    .padding(16)
-            }
-            .background(Color.surfaceGrouped)
-            .navigationTitle(title)
-        }
     }
 }
 
