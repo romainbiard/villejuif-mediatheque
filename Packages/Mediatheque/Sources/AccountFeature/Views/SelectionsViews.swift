@@ -171,17 +171,21 @@ struct SelectionDetailView: View {
             case let .loaded(notices):
                 List {
                     ForEach(notices) { notice in
-                        SelectionNoticeRow(notice: notice, isRemoving: viewModel.removing.contains(notice.id))
-                            .swipeActions {
-                                Button("Retirer", systemImage: "trash", role: .destructive) {
-                                    Task { await viewModel.remove(notice) }
-                                }
+                        NavigationLink(value: AccountRoute.notice(notice)) {
+                            SelectionNoticeRow(notice: notice, isRemoving: viewModel.removing.contains(notice.id))
+                        }
+                        .listRowBackground(Color.surfaceCard)
+                        .disabled(viewModel.removing.contains(notice.id))
+                        .swipeActions {
+                            Button("Retirer", systemImage: "trash", role: .destructive) {
+                                Task { await viewModel.remove(notice) }
                             }
-                            .contextMenu {
-                                Button("Retirer de la sélection", systemImage: "trash", role: .destructive) {
-                                    Task { await viewModel.remove(notice) }
-                                }
+                        }
+                        .contextMenu {
+                            Button("Retirer de la sélection", systemImage: "trash", role: .destructive) {
+                                Task { await viewModel.remove(notice) }
                             }
+                        }
                     }
                 }
                 .scrollContentBackground(.hidden)
@@ -215,7 +219,6 @@ struct SelectionNoticeRow: View {
             if isRemoving { ProgressView() }
         }
         .opacity(isRemoving ? 0.5 : 1)
-        .listRowBackground(Color.surfaceCard)
     }
 }
 

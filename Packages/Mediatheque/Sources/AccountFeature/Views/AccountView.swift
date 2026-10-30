@@ -1,6 +1,7 @@
 import CoreImage.CIFilterBuiltins
 import DesignSystem
 import MediathequeCore
+import SearchFeature
 import SwiftUI
 
 /// Onglet Compte : connexion, ou accueil du compte une fois la session ouverte.
@@ -25,7 +26,7 @@ public struct AccountView: View {
 
 enum AccountRoute: Hashable {
     case loans, holds
-    case selections, selection(Selection)
+    case selections, selection(Selection), notice(Notice)
     case reviews, suggestions
     case information, settings
 }
@@ -67,6 +68,7 @@ struct AccountHomeView: View {
                 case .holds: HoldsView()
                 case .selections: SelectionsView()
                 case let .selection(selection): SelectionDetailView(selection: selection)
+                case let .notice(notice): DocumentDetailView(document: notice)
                 case .reviews: ReviewsView()
                 case .suggestions: SuggestionsView()
                 case .information: InformationView(patron: patron)

@@ -44,7 +44,7 @@ let package = Package(
         .target(name: "SearchFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies]),
         .target(name: "AgendaFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies]),
         .target(name: "InfoFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies]),
-        .target(name: "AccountFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies]),
+        .target(name: "AccountFeature", dependencies: ["MediathequeCore", "DesignSystem", "SearchFeature", dependencies]),
         .target(name: "DigitalFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies]),
         .testTarget(
             name: "BokehAPITests",
