@@ -48,6 +48,8 @@ extension DependencyValues {
 public final class SessionStore {
     public enum State: Equatable, Sendable {
         case restoring
+        /// Face ID est activé et n'a pas encore été validé.
+        case locked
         case loggedOut
         case loggedIn(Patron)
     }
@@ -55,8 +57,18 @@ public final class SessionStore {
     public private(set) var state: State = .restoring
 
     @ObservationIgnored @Dependency(\.authClient) private var auth
+    @ObservationIgnored @Dependency(\.biometricClient) private var biometrics
+    @ObservationIgnored @Dependency(\.keychainClient) private var keychain
+    @ObservationIgnored private let defaults: UserDefaults
 
-    public init() {}
+    public init(defaults: UserDefaults = .shared) {
+        self.defaults = defaults
+    }
+
+    public var isFaceIDEnabled: Bool {
+        get { defaults.bool(forKey: ReminderSettings.Key.faceID) }
+        set { defaults.set(newValue, forKey: ReminderSettings.Key.faceID) }
+    }
 
     public var patron: Patron? {
         if case let .loggedIn(patron) = state { return patron }
@@ -65,6 +77,11 @@ public final class SessionStore {
 
     /// Au lancement : rouvre la session si des identifiants sont dans le trousseau.
     public func restore() async {
+        let hasCredentials = (try? keychain.load()) != nil
+        if hasCredentials, isFaceIDEnabled {
+            state = .locked
+            guard await biometrics.authenticate("Ouvrir votre compte lecteur") else { return }
+        }
         do {
             state = (try await auth.restore()).map(State.loggedIn) ?? .loggedOut
         } catch {
@@ -82,8 +99,20 @@ public final class SessionStore {
         if case .loggedIn = state { state = .loggedIn(patron) }
     }
 
+    /// Nouvel essai après un Face ID refusé ou annulé.
+    public func unlock() async {
+        guard state == .locked else { return }
+        state = .restoring
+        await restore()
+        if state == .restoring { state = .locked }
+    }
+
     public func logout() async {
         await auth.logout()
+        await AccountSync.reset()
+        isFaceIDEnabled = false
+        // Le prochain abonné qui se connecte sur cet appareil reverra les réglages de départ.
+        defaults.removeObject(forKey: ReminderSettings.Key.onboardingDone)
         state = .loggedOut
     }
 }

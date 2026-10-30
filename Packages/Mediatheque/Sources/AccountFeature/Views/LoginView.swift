@@ -6,6 +6,7 @@ struct LoginView: View {
     @Environment(SessionStore.self) private var session
     @State private var viewModel = LoginViewModel()
     @State private var showsLostPassword = false
+    @State private var showsScanner = false
     @FocusState private var focus: Field?
 
     enum Field { case card, password }
@@ -31,6 +32,9 @@ struct LoginView: View {
                 form
             }
         }
+        .fullScreenCover(isPresented: $showsScanner) {
+            CardScannerView { viewModel.cardNumber = $0; focus = .password }
+        }
         .sheet(isPresented: $showsLostPassword) {
             LostPasswordView(cardNumber: viewModel.cardNumber)
         }
@@ -55,11 +59,21 @@ struct LoginView: View {
 
             VStack(alignment: .leading, spacing: 6) {
                 Text("Numéro de carte").font(.footnote.weight(.semibold)).foregroundStyle(Color.inkSecondary)
-                TextField("Au dos de votre carte", text: $viewModel.cardNumber)
-                    .textContentType(.username)
-                    .keyboardType(.numberPad)
-                    .focused($focus, equals: .card)
-                    .fieldStyle(isFocused: focus == .card)
+                HStack(spacing: 8) {
+                    TextField("Au dos de votre carte", text: $viewModel.cardNumber)
+                        .textContentType(.username)
+                        .keyboardType(.numberPad)
+                        .focused($focus, equals: .card)
+                    if CardScannerView.isAvailable {
+                        Button("Scanner ma carte", systemImage: "barcode.viewfinder") { showsScanner = true }
+                            .labelStyle(.iconOnly)
+                            .font(.title3)
+                            .foregroundStyle(Color.brandVioletDeep)
+                            .frame(width: 42, height: 42)
+                            .background(Color.soft(.brandViolet), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    }
+                }
+                .fieldStyle(isFocused: focus == .card)
             }
             VStack(alignment: .leading, spacing: 6) {
                 Text("Mot de passe").font(.footnote.weight(.semibold)).foregroundStyle(Color.inkSecondary)
@@ -112,7 +126,8 @@ struct LoginView: View {
 extension View {
     func fieldStyle(isFocused: Bool) -> some View {
         self.font(.body.weight(.medium))
-            .padding(.horizontal, 16)
+            .padding(.leading, 16)
+            .padding(.trailing, 6)
             .frame(height: 54)
             .background(Color.surfaceCard, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
             .overlay {

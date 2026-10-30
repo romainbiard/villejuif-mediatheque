@@ -11,6 +11,8 @@ settings:
     SWIFT_VERSION: "6.0"
     SWIFT_STRICT_CONCURRENCY: complete
     DEVELOPMENT_LANGUAGE: fr
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
 
 packages:
   Mediatheque:
@@ -23,21 +25,33 @@ targets:
     supportedDestinations: [iOS]
     sources:
       - path: App
+        excludes: [Info.plist, App.entitlements]
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Médiathèques
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: true
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UISupportedInterfaceOrientations~ipad:
+          [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        NSCameraUsageDescription: Scanner le code-barres d'un livre ou de votre carte d'abonné.
+        NSFaceIDUsageDescription: Ouvrir votre compte lecteur sans saisir votre mot de passe.
+        UIBackgroundModes: [fetch]
+        BGTaskSchedulerPermittedIdentifiers: [com.rbiard.mediatheques-villejuif.refresh]
+    entitlements:
+      path: App/App.entitlements
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.rbiard.mediatheques-villejuif
         PRODUCT_NAME: Médiathèques
-        MARKETING_VERSION: "0.1.0"
-        CURRENT_PROJECT_VERSION: "1"
         TARGETED_DEVICE_FAMILY: "1,2"
-        GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CFBundleDisplayName: Médiathèques
-        INFOPLIST_KEY_UILaunchScreen_Generation: YES
-        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: UIInterfaceOrientationPortrait
-        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
-        INFOPLIST_KEY_NSCameraUsageDescription: "Scanner le code-barres d'un livre ou de votre carte d'abonné."
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
     dependencies:
+      - target: VillejuifWidget
       - package: Mediatheque
         product: MediathequeCore
       - package: Mediatheque
@@ -50,3 +64,30 @@ targets:
         product: InfoFeature
       - package: Mediatheque
         product: AccountFeature
+
+  VillejuifWidget:
+    type: app-extension
+    platform: iOS
+    supportedDestinations: [iOS]
+    sources:
+      - path: Widget
+        excludes: [Info.plist, Widget.entitlements]
+    info:
+      path: Widget/Info.plist
+      properties:
+        CFBundleDisplayName: Médiathèques
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: Widget/Widget.entitlements
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.rbiard.mediatheques-villejuif.widget
+        PRODUCT_NAME: VillejuifWidget
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SKIP_INSTALL: YES
+    dependencies:
+      - package: Mediatheque
+        product: MediathequeCore

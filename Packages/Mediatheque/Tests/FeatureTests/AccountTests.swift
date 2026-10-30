@@ -7,6 +7,11 @@ import Testing
 @testable import AccountFeature
 @testable import SearchFeature
 
+func freshDefaults() -> UserDefaults {
+    let name = "tests.\(UUID().uuidString)"
+    return UserDefaults(suiteName: name)!
+}
+
 private func paris(_ year: Int, _ month: Int, _ day: Int, _ hour: Int = 12) -> Date {
     Calendar.paris.date(from: DateComponents(year: year, month: month, day: day, hour: hour))!
 }
@@ -14,7 +19,10 @@ private func paris(_ year: Int, _ month: Int, _ day: Int, _ hour: Int = 12) -> D
 @MainActor
 struct SessionAndLoginTests {
     @Test func restoreWithoutCredentialsIsLoggedOut() async {
-        let session = withDependencies { $0.authClient.restore = { nil } } operation: { SessionStore() }
+        let session = withDependencies {
+            $0.keychainClient.load = { nil }
+            $0.authClient.restore = { nil }
+        } operation: { SessionStore(defaults: freshDefaults()) }
         await session.restore()
         #expect(session.state == .loggedOut)
     }
@@ -25,7 +33,7 @@ struct SessionAndLoginTests {
                 #expect(credentials == Credentials(cardNumber: "0012345", password: "secret"))
                 return SampleData.patron
             }
-        } operation: { (SessionStore(), LoginViewModel()) }
+        } operation: { (SessionStore(defaults: freshDefaults()), LoginViewModel()) }
 
         viewModel.cardNumber = " 0012345 "
         viewModel.password = "secret"
@@ -39,7 +47,7 @@ struct SessionAndLoginTests {
     @Test func invalidCredentialsShowsMessage() async {
         let (session, viewModel) = withDependencies {
             $0.authClient.login = { _ in throw AuthError.invalidCredentials }
-        } operation: { (SessionStore(), LoginViewModel()) }
+        } operation: { (SessionStore(defaults: freshDefaults()), LoginViewModel()) }
 
         viewModel.cardNumber = "1"
         viewModel.password = "x"

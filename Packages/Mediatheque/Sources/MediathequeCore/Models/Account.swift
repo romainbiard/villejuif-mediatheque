@@ -37,7 +37,7 @@ public struct Patron: Hashable, Sendable {
     public var displayName: String { "\(firstName) \(lastName.capitalized)" }
 }
 
-public struct Loan: Identifiable, Hashable, Sendable {
+public struct Loan: Identifiable, Hashable, Sendable, Codable {
     /// `{idAbonné}_{idPrêt}`.
     public let id: String
     public let title: String
@@ -47,6 +47,20 @@ public struct Loan: Identifiable, Hashable, Sendable {
     public let libraryName: String
     public let recordID: Int?
     public let coverURL: URL?
+
+    public init(
+        id: String, title: String, author: String, dueDate: Date, library: Library?,
+        libraryName: String, recordID: Int?, coverURL: URL?
+    ) {
+        self.id = id
+        self.title = title
+        self.author = author
+        self.dueDate = dueDate
+        self.library = library
+        self.libraryName = libraryName
+        self.recordID = recordID
+        self.coverURL = coverURL
+    }
 
     /// Identifiant de l'abonné, préfixe de l'identifiant du prêt (utile pour les routes HTML).
     public var patronID: String { String(id.split(separator: "_").first ?? "") }
@@ -68,7 +82,7 @@ public struct Loan: Identifiable, Hashable, Sendable {
     }
 }
 
-public struct Hold: Identifiable, Hashable, Sendable {
+public struct Hold: Identifiable, Hashable, Sendable, Codable {
     public let id: String
     public let title: String
     public let author: String

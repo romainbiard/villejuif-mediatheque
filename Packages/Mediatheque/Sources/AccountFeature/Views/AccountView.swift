@@ -13,6 +13,8 @@ public struct AccountView: View {
         switch session.state {
         case .restoring:
             ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity).background(Color.surfaceGrouped)
+        case .locked:
+            LockedView()
         case .loggedOut:
             LoginView()
         case let .loggedIn(patron):
@@ -31,6 +33,7 @@ struct AccountHomeView: View {
     @State private var viewModel = AccountHomeViewModel()
     @State private var showsCard = false
     @State private var confirmsLogout = false
+    @AppStorage(ReminderSettings.Key.onboardingDone, store: .shared) private var onboardingDone = false
 
     var body: some View {
         NavigationStack {
@@ -62,6 +65,9 @@ struct AccountHomeView: View {
             .refreshable { await viewModel.refresh(session) }
             .task { await viewModel.refresh(session) }
             .fullScreenCover(isPresented: $showsCard) { FullScreenCardView(patron: patron) }
+            .sheet(isPresented: Binding(get: { !onboardingDone }, set: { if !$0 { onboardingDone = true } })) {
+                WelcomeSetupView(patron: patron) { onboardingDone = true }
+            }
             .confirmationDialog("Se déconnecter de votre compte ?", isPresented: $confirmsLogout, titleVisibility: .visible) {
                 Button("Se déconnecter", role: .destructive) { Task { await session.logout() } }
             }
