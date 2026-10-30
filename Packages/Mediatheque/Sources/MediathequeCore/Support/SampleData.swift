@@ -64,6 +64,18 @@ public enum SampleData {
              recordID: 909376, coverURL: nil, rank: 1),
     ]
 
+    public static let selections: [Selection] = [
+        Selection(id: 1, basketID: 11, name: "Mes préférés", count: 3, updatedAt: day(2026, 10, 30), coverURLs: []),
+        Selection(id: 2, basketID: nil, name: "Déjà lu", count: 0, updatedAt: day(2026, 10, 30), coverURLs: []),
+        Selection(id: 3, basketID: 13, name: "À lire", count: 1, updatedAt: day(2026, 10, 12), coverURLs: []),
+        Selection(id: 4, basketID: 14, name: "Idées cadeaux", count: 2, updatedAt: day(2026, 9, 2), coverURLs: []),
+    ]
+
+    public static let recordsToRate: [RecordToRate] = [
+        RecordToRate(recordID: 474169, recordKey: "SWAY--TOTOG-", title: "Sway", author: "Gérald Toto", coverURL: nil),
+        RecordToRate(recordID: 909376, recordKey: "ASTERIXETLEGRIFFON--FERRIJ-39", title: "Astérix et le griffon", author: "Jean-Yves Ferri", coverURL: nil),
+    ]
+
     public static let events: [Event] = [
         Event(id: 990, title: "Ronde des histoires", imageURL: nil, place: "Pulp Nord", library: .pulpNord,
               start: day(2026, 10, 31, 10, 30), end: day(2026, 10, 31, 11), isAllDay: false, type: "Lectures",

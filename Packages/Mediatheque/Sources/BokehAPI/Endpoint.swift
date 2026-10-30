@@ -215,3 +215,48 @@ extension Endpoint {
         Endpoint(pathSegments: ["modules", "sso", "id", String(noticeID)])
     }
 }
+
+// MARK: - Espace abonné (pages HTML et formulaires, relevés le 31/10/2026)
+
+extension Endpoint {
+    /// Page d'une section du compte : `/abonne/{page}/id_profil/1/id/{idAbonné}`.
+    public static func patronPage(_ page: String, patronID: String) -> Endpoint {
+        Endpoint(pathSegments: ["abonne", page, "id_profil", "1", "id", patronID])
+    }
+
+    /// Formulaire d'une section du compte, sans jeton CSRF.
+    public static func patronForm(_ page: String, patronID: String, fields: [FormField]) -> Endpoint {
+        Endpoint(method: .post, pathSegments: ["abonne", page, "id_profil", "1", "id", patronID], form: fields)
+    }
+
+    /// Contenu d'une sélection : c'est une recherche JSON sur le panier.
+    public static func selectionRecords(basketID: Int, page: Int = 1) -> Endpoint {
+        var segments = ["recherche", "simple", "id_panier", String(basketID), "format", "json"]
+        if page > 1 { segments += ["page", String(page)] }
+        return Endpoint(pathSegments: segments)
+    }
+
+    public static func removeFromSelection(patronID: String, selectionID: Int, recordID: Int) -> Endpoint {
+        Endpoint(pathSegments: [
+            "abonne", "supprimer-de-la-selection", "id_profil", "1", "id", patronID,
+            "selection_id", String(selectionID), "record_id", String(recordID), "delete", "1",
+        ])
+    }
+
+    /// Avis sur un document emprunté : note de 1 à 5, titre et texte.
+    public static func submitReview(recordID: Int, recordKey: String, rating: Int, title: String, text: String) -> Endpoint {
+        Endpoint(
+            method: .post,
+            pathSegments: ["abonne", "ajax-review", "record_id", String(recordID), "record_key", recordKey],
+            form: [FormField("note", String(rating)), FormField("entete", title), FormField("avis", text)]
+        )
+    }
+
+    public static func removeLibraryBookmark(libraryID: Int) -> Endpoint {
+        Endpoint(pathSegments: ["abonne", "remove-library-from-bookmarks", "library_id", String(libraryID)])
+    }
+
+    public static func subscribeNewsletter(id: Int) -> Endpoint {
+        Endpoint(pathSegments: ["abonne", "subscribe-newsletter", "id", String(id)])
+    }
+}

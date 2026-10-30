@@ -114,7 +114,15 @@ extension Patron {
                 waitingToBePulled: dto.counters.waitingToBePulled
             ),
             message: dto.message.content.nilIfEmpty,
-            hasUnreadMessage: dto.message.unread
+            hasUnreadMessage: dto.message.unread,
+            patronID: dto.cards?.first.map { String($0.id) },
+            nickname: dto.identity.nickname?.nilIfEmpty,
+            postalAddress: [dto.contact.address, "\(dto.contact.zipCode) \(dto.contact.city.capitalized)"]
+                .map { $0.trimmingCharacters(in: .whitespaces) }
+                .filter { !$0.isEmpty }
+                .joined(separator: ", ")
+                .nilIfEmpty,
+            newsletterSubscribed: !(dto.preferences?.newsletters.isEmpty ?? true)
         )
     }
 }

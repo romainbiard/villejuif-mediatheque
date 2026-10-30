@@ -72,6 +72,10 @@ struct LoansViewModelTests {
             $0.date.now = paris(2026, 10, 30)
             $0.accountClient.loans = { SampleData.loans }
             $0.accountClient.renew = renew
+            // La prolongation relance la synchronisation (snapshot, rappels) avec ces dépendances.
+            $0.accountClient.holds = { [] }
+            $0.snapshotClient.save = { _ in }
+            $0.notificationClient.replaceLoanReminders = { _ in }
         } operation: { LoansViewModel() }
         await viewModel.load()
         return viewModel

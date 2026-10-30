@@ -9,7 +9,9 @@ public struct AccountDTO: Decodable, Sendable {
     public struct Identity: Decodable, Sendable {
         public let firstName: String
         public let lastName: String
+        public let nickname: String?
         enum CodingKeys: String, CodingKey {
+            case nickname
             case firstName = "first_name"
             case lastName = "last_name"
         }
@@ -81,6 +83,28 @@ public struct AccountDTO: Decodable, Sendable {
         public let unread: Bool
     }
 
+    public struct Preferences: Decodable, Sendable {
+        /// Lettres d'information souscrites. Le format d'un élément n'a jamais été vu (liste vide) :
+        /// on ne lit que leur nombre.
+        public let newsletters: [Opaque]
+        public let sendingChannel: String?
+        enum CodingKeys: String, CodingKey {
+            case newsletters
+            case sendingChannel = "sending_channel"
+        }
+    }
+
+    /// Carte rattachée au compte. Son `id` est l'identifiant abonné des routes `/abonne/...`.
+    public struct LinkedCard: Decodable, Sendable {
+        public let id: Int
+        public let label: String?
+    }
+
+    /// Valeur JSON quelconque, ignorée.
+    public struct Opaque: Decodable, Sendable {
+        public init(from decoder: any Decoder) throws {}
+    }
+
     public let label: String
     public let login: String
     public let identity: Identity
@@ -90,9 +114,11 @@ public struct AccountDTO: Decodable, Sendable {
     public let permissions: Permissions
     public let counters: Counters
     public let message: Message
+    public let preferences: Preferences?
+    public let cards: [LinkedCard]?
 
     enum CodingKeys: String, CodingKey {
-        case label, login, identity, contact, card, permissions, counters, message
+        case label, login, identity, contact, card, permissions, counters, message, preferences, cards
         case libraryDetails = "library_details"
     }
 }

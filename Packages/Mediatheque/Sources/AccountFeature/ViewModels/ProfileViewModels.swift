@@ -1,0 +1,364 @@
+import Dependencies
+import Foundation
+import MediathequeCore
+import Observation
+
+// MARK: - Mes sélections
+
+@MainActor
+@Observable
+public final class SelectionsViewModel {
+    public private(set) var state: LoadState<[Selection]> = .idle
+    public private(set) var isCreating = false
+    public private(set) var message: String?
+    public private(set) var feedback: FeedbackEvent?
+
+    @ObservationIgnored @Dependency(\.profileClient) private var profile
+
+    public init() {}
+
+    public func load() async {
+        if state.value == nil { state = .loading }
+        do {
+            state = .loaded(try await profile.selections())
+        } catch {
+            if state.value == nil { state = .failed(LoadError(error)) }
+        }
+    }
+
+    public func create(named name: String) async {
+        let name = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty else { return }
+        if state.value?.contains(where: { $0.name.localizedCaseInsensitiveCompare(name) == .orderedSame }) == true {
+            message = "Une sélection porte déjà ce nom"
+            feedback = .error
+            return
+        }
+        isCreating = true
+        defer { isCreating = false }
+        do {
+            try await profile.createSelection(name)
+            await load()
+            message = "Sélection « \(name) » créée"
+            feedback = .success
+        } catch {
+            message = ProfileMessages.failure(error, action: "La création")
+            feedback = .error
+        }
+    }
+
+    public func dismissMessage() { message = nil }
+}
+
+@MainActor
+@Observable
+public final class SelectionDetailViewModel {
+    public let selection: Selection
+    public private(set) var state: LoadState<[Notice]> = .idle
+    public private(set) var removing: Set<Notice.ID> = []
+    public private(set) var message: String?
+    public private(set) var feedback: FeedbackEvent?
+
+    @ObservationIgnored @Dependency(\.profileClient) private var profile
+
+    public init(selection: Selection) {
+        self.selection = selection
+    }
+
+    public func load() async {
+        if state.value == nil { state = .loading }
+        do {
+            // Les sélections restent courtes : on charge toutes les pages d'un coup.
+            var notices: [Notice] = []
+            var page = 1
+            while true {
+                let result = try await profile.selectionNotices(selection, page)
+                notices += result.documents
+                guard !result.documents.isEmpty, notices.count < result.total, page < 10 else { break }
+                page += 1
+            }
+            state = .loaded(notices)
+        } catch {
+            if state.value == nil { state = .failed(LoadError(error)) }
+        }
+    }
+
+    public func remove(_ notice: Notice) async {
+        removing.insert(notice.id)
+        defer { removing.remove(notice.id) }
+        do {
+            try await profile.removeFromSelection(selection, notice.id)
+            if case let .loaded(notices) = state { state = .loaded(notices.filter { $0.id != notice.id }) }
+            message = "Retiré de « \(selection.name) »"
+            feedback = .lightImpact
+        } catch {
+            message = ProfileMessages.failure(error, action: "Le retrait")
+            feedback = .error
+        }
+    }
+
+    public func dismissMessage() { message = nil }
+}
+
+// MARK: - Mes avis
+
+@MainActor
+@Observable
+public final class ReviewsViewModel {
+    public private(set) var toRate: LoadState<[RecordToRate]> = .idle
+    public private(set) var published: LoadState<[Review]> = .idle
+    public private(set) var isSubmitting = false
+    public private(set) var message: String?
+    public private(set) var feedback: FeedbackEvent?
+
+    @ObservationIgnored @Dependency(\.profileClient) private var profile
+
+    public init() {}
+
+    public func load() async {
+        if toRate.value == nil { toRate = .loading }
+        if published.value == nil { published = .loading }
+        do {
+            toRate = .loaded(try await profile.recordsToRate())
+        } catch {
+            if toRate.value == nil { toRate = .failed(LoadError(error)) }
+        }
+        do {
+            published = .loaded(try await profile.reviews())
+        } catch {
+            if published.value == nil { published = .failed(LoadError(error)) }
+        }
+    }
+
+    /// Envoie l'avis. Renvoie `true` si la feuille peut se fermer.
+    public func submit(_ record: RecordToRate, rating: Int, title: String, text: String) async -> Bool {
+        guard (1...5).contains(rating) else { return false }
+        isSubmitting = true
+        defer { isSubmitting = false }
+        do {
+            try await profile.submitReview(record, rating, title.trimmingCharacters(in: .whitespacesAndNewlines), text.trimmingCharacters(in: .whitespacesAndNewlines))
+            if case let .loaded(records) = toRate { toRate = .loaded(records.filter { $0.id != record.id }) }
+            message = "Merci ! Votre avis sera publié après validation."
+            feedback = .success
+            if let reviews = try? await profile.reviews() { published = .loaded(reviews) }
+            return true
+        } catch {
+            message = ProfileMessages.failure(error, action: "L'envoi")
+            feedback = .error
+            return false
+        }
+    }
+
+    public func dismissMessage() { message = nil }
+}
+
+// MARK: - Mes suggestions
+
+@MainActor
+@Observable
+public final class SuggestionsViewModel {
+    public var draft = SuggestionDraft()
+    public private(set) var sent: LoadState<[Suggestion]> = .idle
+    public private(set) var isSending = false
+    public private(set) var message: String?
+    public private(set) var feedback: FeedbackEvent?
+
+    @ObservationIgnored @Dependency(\.profileClient) private var profile
+
+    public init() {}
+
+    public func load() async {
+        if sent.value == nil { sent = .loading }
+        do {
+            sent = .loaded(try await profile.suggestions())
+        } catch {
+            if sent.value == nil { sent = .failed(LoadError(error)) }
+        }
+    }
+
+    public func send() async {
+        guard draft.isValid, !isSending else { return }
+        isSending = true
+        defer { isSending = false }
+        do {
+            try await profile.sendSuggestion(draft)
+            message = "Suggestion envoyée. Merci !"
+            feedback = .success
+            draft = SuggestionDraft()
+            await load()
+        } catch {
+            message = ProfileMessages.failure(error, action: "L'envoi")
+            feedback = .error
+        }
+    }
+
+    public func dismissMessage() { message = nil }
+}
+
+// MARK: - Mes informations
+
+@MainActor
+@Observable
+public final class InformationViewModel {
+    public private(set) var contact: LoadState<ContactDetails> = .idle
+    public private(set) var isSaving = false
+    public private(set) var message: String?
+    public private(set) var feedback: FeedbackEvent?
+
+    @ObservationIgnored @Dependency(\.profileClient) private var profile
+    @ObservationIgnored @Dependency(\.keychainClient) private var keychain
+
+    public init() {}
+
+    public func load() async {
+        if contact.value == nil { contact = .loading }
+        do {
+            contact = .loaded(try await profile.contactDetails())
+        } catch {
+            if contact.value == nil { contact = .failed(LoadError(error)) }
+        }
+    }
+
+    /// Renvoie `true` si la feuille peut se fermer.
+    public func save(_ details: ContactDetails) async -> Bool {
+        let email = details.email.trimmingCharacters(in: .whitespaces)
+        guard email.isEmpty || email.wholeMatch(of: #/[^@\s]+@[^@\s]+\.[^@\s]+/#) != nil else {
+            message = "Adresse e-mail invalide"
+            feedback = .error
+            return false
+        }
+        isSaving = true
+        defer { isSaving = false }
+        do {
+            try await profile.updateContactDetails(details)
+            contact = .loaded(details)
+            message = "Coordonnées enregistrées"
+            feedback = .success
+            return true
+        } catch {
+            message = ProfileMessages.failure(error, action: "L'enregistrement")
+            feedback = .error
+            return false
+        }
+    }
+
+    /// Validation locale avant l'envoi. `nil` quand le nouveau mot de passe est acceptable.
+    public static func passwordProblem(_ password: String, confirmation: String) -> String? {
+        if password.isEmpty { return "Saisissez un nouveau mot de passe" }
+        if password != confirmation { return "Les deux mots de passe ne correspondent pas" }
+        return nil
+    }
+
+    /// Renvoie `true` si la feuille peut se fermer.
+    public func changePassword(_ password: String, confirmation: String) async -> Bool {
+        if let problem = Self.passwordProblem(password, confirmation: confirmation) {
+            message = problem
+            feedback = .error
+            return false
+        }
+        isSaving = true
+        defer { isSaving = false }
+        do {
+            try await profile.changePassword(password)
+            // La reconnexion automatique utilise le trousseau : on y met le nouveau mot de passe.
+            if let credentials = try? keychain.load() {
+                try? keychain.save(Credentials(cardNumber: credentials.cardNumber, password: password))
+            }
+            message = "Mot de passe modifié"
+            feedback = .success
+            return true
+        } catch {
+            message = ProfileMessages.failure(error, action: "Le changement")
+            feedback = .error
+            return false
+        }
+    }
+
+    public func dismissMessage() { message = nil }
+}
+
+// MARK: - Mes configurations
+
+@MainActor
+@Observable
+public final class ProfileSettingsViewModel {
+    public private(set) var bookmarks: LoadState<Set<Library>> = .idle
+    public private(set) var newsletter: Bool
+    public private(set) var updating: Set<String> = []
+    public private(set) var message: String?
+    public private(set) var feedback: FeedbackEvent?
+
+    @ObservationIgnored @Dependency(\.profileClient) private var profile
+    @ObservationIgnored @Dependency(\.notificationClient) private var notifications
+    @ObservationIgnored @Dependency(\.biometricClient) private var biometrics
+
+    public init(newsletterSubscribed: Bool) {
+        newsletter = newsletterSubscribed
+    }
+
+    /// « Face ID » ou « Touch ID », `nil` si l'appareil n'en a pas.
+    public var biometricKind: String? { biometrics.availableKind() }
+
+    /// Après un changement des rappels : autorisation demandée à l'activation, rappels reprogrammés.
+    /// Renvoie `false` si iOS refuse les notifications.
+    public func remindersChanged(enabling: Bool) async -> Bool {
+        if enabling, !(await notifications.requestAuthorization()) {
+            message = "Autorisez les notifications dans Réglages pour recevoir les rappels"
+            feedback = .error
+            return false
+        }
+        feedback = .lightImpact
+        _ = try? await withDependencies(from: self) { try await AccountSync.run(settings: .current()) }
+        return true
+    }
+
+    public func load() async {
+        if bookmarks.value == nil { bookmarks = .loading }
+        do {
+            bookmarks = .loaded(try await profile.bookmarkedLibraries())
+        } catch {
+            if bookmarks.value == nil { bookmarks = .failed(LoadError(error)) }
+        }
+    }
+
+    public func setBookmarked(_ library: Library, _ isOn: Bool) async {
+        guard var current = bookmarks.value, current.contains(library) != isOn else { return }
+        updating.insert(library.rawValue)
+        defer { updating.remove(library.rawValue) }
+        do {
+            try await profile.setLibraryBookmarked(library, isOn)
+            if isOn { current.insert(library) } else { current.remove(library) }
+            bookmarks = .loaded(current)
+            feedback = .lightImpact
+        } catch {
+            message = ProfileMessages.failure(error, action: "La modification")
+            feedback = .error
+        }
+    }
+
+    public func setNewsletter(_ isOn: Bool) async {
+        guard newsletter != isOn else { return }
+        updating.insert("newsletter")
+        defer { updating.remove("newsletter") }
+        do {
+            try await profile.setNewsletterSubscribed(isOn)
+            newsletter = isOn
+            feedback = .lightImpact
+        } catch {
+            message = ProfileMessages.failure(error, action: "La modification")
+            feedback = .error
+        }
+    }
+
+    public func dismissMessage() { message = nil }
+}
+
+// MARK: - Messages
+
+enum ProfileMessages {
+    /// « L'envoi n'a pas abouti », ou le message du site quand il refuse le formulaire.
+    static func failure(_ error: any Error, action: String) -> String {
+        if case let ProfileError.rejected(reason) = error { return reason }
+        return LoadError(error) == .offline ? "\(action) est impossible hors ligne" : "\(action) n'a pas abouti"
+    }
+}

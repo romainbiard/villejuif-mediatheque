@@ -3,8 +3,10 @@ import DesignSystem
 import SwiftUI
 import VisionKit
 
-/// Scan du code-barres de la carte d'abonné, en plein écran caméra.
+/// Scan d'un code-barres en plein écran caméra : carte d'abonné, ou ISBN d'une suggestion.
 struct CardScannerView: View {
+    var prompt = "Visez le code-barres au dos de votre carte"
+    var detectedTitle = "Carte détectée"
     let onScan: (String) -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var detected: String?
@@ -23,7 +25,7 @@ struct CardScannerView: View {
 
             VStack(spacing: 14) {
                 if let detected {
-                    Label("Carte détectée", systemImage: "checkmark.circle.fill")
+                    Label(detectedTitle, systemImage: "checkmark.circle.fill")
                         .font(.headline)
                     Text(detected).font(.title3.weight(.semibold)).monospacedDigit().tracking(1)
                     Button("Utiliser ce numéro") {
@@ -35,7 +37,7 @@ struct CardScannerView: View {
                     .foregroundStyle(Color.ink)
                     .controlSize(.extraLarge)
                 } else {
-                    Text("Visez le code-barres au dos de votre carte").font(.headline)
+                    Text(prompt).font(.headline)
                 }
                 Button(detected == nil ? "Saisir à la main" : "Recommencer") {
                     if detected == nil { dismiss() } else { detected = nil }

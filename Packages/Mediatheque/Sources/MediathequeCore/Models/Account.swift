@@ -33,6 +33,12 @@ public struct Patron: Hashable, Sendable {
     /// Message de la médiathèque, s'il y en a un.
     public let message: String?
     public let hasUnreadMessage: Bool
+    /// Identifiant des routes `/abonne/...` (`cards[0].id` de l'API).
+    public var patronID: String?
+    public var nickname: String?
+    /// Adresse postale sur une ligne. Elle ne se modifie qu'à l'accueil.
+    public var postalAddress: String?
+    public var newsletterSubscribed = false
 
     public var displayName: String { "\(firstName) \(lastName.capitalized)" }
 }

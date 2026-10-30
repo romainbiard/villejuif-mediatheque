@@ -1,0 +1,349 @@
+import DesignSystem
+import MediathequeCore
+import SwiftUI
+
+// MARK: - Mes informations
+
+struct InformationView: View {
+    let patron: Patron
+    @State private var viewModel = InformationViewModel()
+    @State private var editsContact = false
+    @State private var changesPassword = false
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
+                VStack(alignment: .leading, spacing: 8) {
+                    SectionHeader("Abonnement")
+                    VStack(spacing: 0) {
+                        InfoRow(label: "Numéro de carte", value: patron.cardNumber, monospaced: true)
+                        Divider().padding(.leading, 14)
+                        InfoRow(label: "Valable jusqu'au", value: patron.cardExpiry?.formatted(.dateTime.day().month(.wide).year()) ?? "—")
+                        Divider().padding(.leading, 14)
+                        InfoRow(label: "Médiathèque d'inscription", value: patron.homeLibrary?.name ?? "—")
+                    }
+                    .cardStyle(padding: 0)
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    SectionHeader("Coordonnées") {
+                        if viewModel.contact.value != nil {
+                            Button("Modifier") { editsContact = true }.font(.subheadline.weight(.semibold))
+                        }
+                    }
+                    contact
+                    Text("Le nom et l'adresse se changent à l'accueil d'une médiathèque, avec un justificatif.")
+                        .font(.footnote)
+                        .foregroundStyle(Color.inkSecondary)
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    SectionHeader("Sécurité")
+                    Button { changesPassword = true } label: {
+                        MenuRow(title: "Changer le mot de passe", systemImage: "key.fill", tint: .brandVioletDeep) { EmptyView() }
+                    }
+                    .buttonStyle(.plain)
+                    .cardStyle(padding: 0)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 24)
+        }
+        .background(Color.surfaceGrouped)
+        .navigationTitle("Mes informations")
+        .task { await viewModel.load() }
+        .refreshable { await viewModel.load() }
+        .sheet(isPresented: $editsContact) {
+            if let details = viewModel.contact.value {
+                ContactEditSheet(details: details, isSaving: viewModel.isSaving) { await viewModel.save($0) }
+            }
+        }
+        .sheet(isPresented: $changesPassword) {
+            PasswordSheet(isSaving: viewModel.isSaving) { await viewModel.changePassword($0, confirmation: $1) }
+        }
+        .overlay(alignment: .bottom) { MessageToast(message: viewModel.message) { viewModel.dismissMessage() } }
+        .sensoryFeedback(trigger: viewModel.feedback) { _, event in event.map(\.sensoryFeedback) }
+    }
+
+    @ViewBuilder
+    private var contact: some View {
+        let details = viewModel.contact.value
+        VStack(spacing: 0) {
+            InfoRow(label: "Nom", value: patron.displayName)
+            Divider().padding(.leading, 14)
+            InfoRow(label: "Pseudo", value: (details?.nickname ?? patron.nickname ?? "").isEmpty ? "—" : (details?.nickname ?? patron.nickname ?? ""))
+            Divider().padding(.leading, 14)
+            InfoRow(label: "E-mail", value: details?.email ?? patron.email ?? "—")
+            Divider().padding(.leading, 14)
+            InfoRow(label: "Téléphone", value: details?.phone ?? patron.phone ?? "—")
+            Divider().padding(.leading, 14)
+            InfoRow(label: "Adresse", value: patron.postalAddress ?? "—")
+            if let details {
+                Divider().padding(.leading, 14)
+                InfoRow(label: "Me contacter par", value: details.channel.label)
+            }
+        }
+        .redacted(reason: viewModel.contact.isLoading ? .placeholder : [])
+        .cardStyle(padding: 0)
+    }
+}
+
+struct InfoRow: View {
+    let label: String
+    let value: String
+    var monospaced = false
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            Text(label).foregroundStyle(Color.inkSecondary)
+            Spacer(minLength: 8)
+            Text(value)
+                .fontWeight(.semibold)
+                .monospacedDigit()
+                .tracking(monospaced ? 1 : 0)
+                .multilineTextAlignment(.trailing)
+                .textSelection(.enabled)
+        }
+        .font(.subheadline)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .accessibilityElement(children: .combine)
+    }
+}
+
+struct ContactEditSheet: View {
+    let isSaving: Bool
+    let save: (ContactDetails) async -> Bool
+    @State private var details: ContactDetails
+    @Environment(\.dismiss) private var dismiss
+
+    init(details: ContactDetails, isSaving: Bool, save: @escaping (ContactDetails) async -> Bool) {
+        self.isSaving = isSaving
+        self.save = save
+        _details = State(initialValue: details)
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    TextField("Pseudo", text: $details.nickname)
+                        .textContentType(.nickname)
+                } footer: {
+                    Text("Affiché avec vos avis.")
+                }
+                Section("Coordonnées") {
+                    TextField("E-mail", text: $details.email)
+                        .textContentType(.emailAddress)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                    TextField("Téléphone", text: $details.phone)
+                        .textContentType(.telephoneNumber)
+                        .keyboardType(.phonePad)
+                }
+                Section {
+                    Picker("Me contacter par", selection: $details.channel) {
+                        ForEach(SendingChannel.allCases) { Text($0.label).tag($0) }
+                    }
+                } footer: {
+                    Text("Pour les avis de réservation disponible et les rappels de la médiathèque.")
+                }
+            }
+            .navigationTitle("Coordonnées")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Annuler") { dismiss() } }
+                ToolbarItem(placement: .confirmationAction) {
+                    if isSaving {
+                        ProgressView()
+                    } else {
+                        Button("Enregistrer") { Task { if await save(details) { dismiss() } } }
+                    }
+                }
+            }
+        }
+        .sensoryFeedback(.selection, trigger: details.channel)
+    }
+}
+
+struct PasswordSheet: View {
+    let isSaving: Bool
+    let change: (String, String) async -> Bool
+    @State private var password = ""
+    @State private var confirmation = ""
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    SecureField("Nouveau mot de passe", text: $password)
+                        .textContentType(.newPassword)
+                    SecureField("Confirmer", text: $confirmation)
+                        .textContentType(.newPassword)
+                } footer: {
+                    if !confirmation.isEmpty, password != confirmation {
+                        Text("Les deux mots de passe ne correspondent pas.").foregroundStyle(Color.statusDanger)
+                    } else {
+                        Text("L'app mettra à jour le mot de passe enregistré sur cet appareil.")
+                    }
+                }
+            }
+            .navigationTitle("Mot de passe")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Annuler") { dismiss() } }
+                ToolbarItem(placement: .confirmationAction) {
+                    if isSaving {
+                        ProgressView()
+                    } else {
+                        Button("Valider") { Task { if await change(password, confirmation) { dismiss() } } }
+                            .disabled(InformationViewModel.passwordProblem(password, confirmation: confirmation) != nil)
+                    }
+                }
+            }
+        }
+        .presentationDetents([.medium])
+    }
+}
+
+// MARK: - Mes configurations
+
+struct ProfileSettingsView: View {
+    let patron: Patron
+    @Environment(SessionStore.self) private var session
+    @State private var viewModel: ProfileSettingsViewModel
+    @State private var confirmsLogout = false
+    @AppStorage(ReminderSettings.Key.loanReminders, store: .shared) private var loanReminders = true
+    @AppStorage(ReminderSettings.Key.holdAlerts, store: .shared) private var holdAlerts = true
+    /// Même clé que `SessionStore.isFaceIDEnabled`, observée par SwiftUI.
+    @AppStorage(ReminderSettings.Key.faceID, store: .shared) private var faceID = false
+
+    init(patron: Patron) {
+        self.patron = patron
+        _viewModel = State(initialValue: ProfileSettingsViewModel(newsletterSubscribed: patron.newsletterSubscribed))
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
+                group("Médiathèques préférées", footer: "Mises en avant dans la recherche et l'agenda.") {
+                    libraries
+                }
+                group("Notifications", footer: nil) {
+                    SettingToggleRow(title: "Rappels de retour", detail: "3 jours avant, puis le jour même", systemImage: "bell.badge", tint: .statusDanger, isOn: reminderBinding($loanReminders))
+                    Divider().padding(.leading, 62)
+                    SettingToggleRow(title: "Réservations disponibles", detail: "Quand un document vous attend", systemImage: "shippingbox", tint: .statusSuccess, isOn: reminderBinding($holdAlerts))
+                }
+                group("Lettre d'information", footer: "L'actualité du réseau des médiathèques, par e-mail.") {
+                    SettingToggleRow(
+                        title: "Recevoir la lettre",
+                        detail: patron.email ?? "Adresse e-mail à renseigner",
+                        systemImage: "envelope.open",
+                        tint: .brandVioletDeep,
+                        isOn: Binding(get: { viewModel.newsletter }, set: { isOn in Task { await viewModel.setNewsletter(isOn) } }),
+                        isBusy: viewModel.updating.contains("newsletter")
+                    )
+                }
+                if let biometricKind = viewModel.biometricKind {
+                    group("Sécurité", footer: "Le compte s'ouvre après validation, même si l'app reste connectée.") {
+                        SettingToggleRow(
+                            title: "Verrouiller avec \(biometricKind)",
+                            detail: "Protège l'accès à votre compte",
+                            systemImage: "faceid",
+                            tint: .brandViolet,
+                            isOn: $faceID
+                        )
+                    }
+                }
+                Button("Se déconnecter", role: .destructive) { confirmsLogout = true }
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 4)
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 24)
+        }
+        .background(Color.surfaceGrouped)
+        .navigationTitle("Mes configurations")
+        .task { await viewModel.load() }
+        .confirmationDialog("Se déconnecter de votre compte ?", isPresented: $confirmsLogout, titleVisibility: .visible) {
+            Button("Se déconnecter", role: .destructive) { Task { await session.logout() } }
+        }
+        .overlay(alignment: .bottom) { MessageToast(message: viewModel.message) { viewModel.dismissMessage() } }
+        .sensoryFeedback(trigger: viewModel.feedback) { _, event in event.map(\.sensoryFeedback) }
+        .sensoryFeedback(.impact(weight: .light), trigger: faceID)
+    }
+
+    @ViewBuilder
+    private var libraries: some View {
+        let bookmarks = viewModel.bookmarks.value ?? []
+        ForEach(Library.allCases) { library in
+            SettingToggleRow(
+                title: library.name,
+                detail: library == patron.homeLibrary ? "Votre médiathèque d'inscription" : nil,
+                systemImage: "building.columns",
+                tint: .brandViolet,
+                isOn: Binding(get: { bookmarks.contains(library) }, set: { isOn in Task { await viewModel.setBookmarked(library, isOn) } }),
+                isBusy: viewModel.updating.contains(library.rawValue)
+            )
+            .disabled(viewModel.bookmarks.value == nil)
+            if library != Library.allCases.last { Divider().padding(.leading, 62) }
+        }
+        .redacted(reason: viewModel.bookmarks.isLoading ? .placeholder : [])
+    }
+
+    /// Réglage local des rappels : on reprogramme, et on revient en arrière si iOS refuse.
+    private func reminderBinding(_ storage: Binding<Bool>) -> Binding<Bool> {
+        Binding(
+            get: { storage.wrappedValue },
+            set: { isOn in
+                storage.wrappedValue = isOn
+                Task {
+                    if !(await viewModel.remindersChanged(enabling: isOn)) { storage.wrappedValue = false }
+                }
+            }
+        )
+    }
+
+    private func group<Content: View>(_ title: String, footer: String?, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            SectionHeader(title)
+            VStack(spacing: 0, content: content).cardStyle(padding: 0)
+            if let footer {
+                Text(footer).font(.footnote).foregroundStyle(Color.inkSecondary)
+            }
+        }
+    }
+}
+
+struct SettingToggleRow: View {
+    let title: String
+    let detail: String?
+    let systemImage: String
+    let tint: Color
+    @Binding var isOn: Bool
+    var isBusy = false
+
+    var body: some View {
+        Toggle(isOn: $isOn) {
+            HStack(spacing: 12) {
+                Image(systemName: systemImage)
+                    .foregroundStyle(tint)
+                    .frame(width: 36, height: 36)
+                    .background(Color.soft(tint), in: RoundedRectangle(cornerRadius: 11, style: .continuous))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title).font(.body.weight(.semibold))
+                    if let detail {
+                        Text(detail).font(.footnote).foregroundStyle(Color.inkSecondary).lineLimit(1)
+                    }
+                }
+                if isBusy { ProgressView().padding(.leading, 4) }
+            }
+        }
+        .tint(.brandViolet)
+        .disabled(isBusy)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+    }
+}

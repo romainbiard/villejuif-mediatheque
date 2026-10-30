@@ -25,6 +25,9 @@ public struct AccountView: View {
 
 enum AccountRoute: Hashable {
     case loans, holds
+    case selections, selection(Selection)
+    case reviews, suggestions
+    case information, settings
 }
 
 struct AccountHomeView: View {
@@ -60,6 +63,12 @@ struct AccountHomeView: View {
                 switch route {
                 case .loans: LoansView()
                 case .holds: HoldsView()
+                case .selections: SelectionsView()
+                case let .selection(selection): SelectionDetailView(selection: selection)
+                case .reviews: ReviewsView()
+                case .suggestions: SuggestionsView()
+                case .information: InformationView(patron: patron)
+                case .settings: ProfileSettingsView(patron: patron)
                 }
             }
             .refreshable { await viewModel.refresh(session) }
@@ -112,6 +121,32 @@ struct AccountHomeView: View {
             }
             .buttonStyle(.plain)
             .cardStyle(padding: 0)
+
+            SectionHeader("Mes listes").padding(.top, 10)
+            VStack(spacing: 0) {
+                menuLink(.selections, "Mes sélections", "heart.fill", .brandMagenta)
+                Divider().padding(.leading, 58)
+                menuLink(.reviews, "Mes avis", "star.fill", .statusWarning)
+                Divider().padding(.leading, 58)
+                menuLink(.suggestions, "Mes suggestions d'achat", "lightbulb.fill", .brandVioletDeep)
+            }
+            .buttonStyle(.plain)
+            .cardStyle(padding: 0)
+
+            SectionHeader("Mon profil").padding(.top, 10)
+            VStack(spacing: 0) {
+                menuLink(.information, "Mes informations", "person.text.rectangle.fill", .ink)
+                Divider().padding(.leading, 58)
+                menuLink(.settings, "Mes configurations", "gearshape.fill", .inkSecondary)
+            }
+            .buttonStyle(.plain)
+            .cardStyle(padding: 0)
+        }
+    }
+
+    private func menuLink(_ route: AccountRoute, _ title: String, _ systemImage: String, _ tint: Color) -> some View {
+        NavigationLink(value: route) {
+            MenuRow(title: title, systemImage: systemImage, tint: tint) { EmptyView() }
         }
     }
 }
