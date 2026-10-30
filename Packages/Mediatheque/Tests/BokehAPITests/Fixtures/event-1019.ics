@@ -1,0 +1,35 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:http://bokeh-library-portal.org
+BEGIN:VEVENT
+UID:1019
+DTSTART;TZID=Europe/Paris:20261104T160000
+SEQUENCE:0
+TRANSP:OPAQUE
+DTEND;TZID=Europe/Paris:20261104T170000
+URL:https://mediatheque.villejuif.fr/cms/articleview/id_profil/1/id/1019
+LOCATION:Médiathèque Elsa-Triolet
+GEO:48.792636;2.362783
+SUMMARY:Conférence : IA - Comprendre les outils d’aujourd’hui
+CLASS:PUBLIC
+DESCRIPTION:\n\nLes outils d’IA évoluent à grande vitesse ! Comprenez e
+ t maîtrisez les outils d’aujourd’hui avec Nasreddine Menacer\, profes
+ seur et responsable de la Clinique de l'IA à aivancity.\n\nAdultes et ado
+ s dès 13 ans\nAccès libre\n
+CATEGORIES:/Portail 2026 - Agenda/novembre-2026
+DTSTAMP:20261030T224317Z
+ATTACH;X-BKH-=IMAGE:https://mediatheque.villejuif.fr/userfiles/image/Progra
+ mmation-26-27/conference-novembre/323onfrence-ia.jpg
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Médiathèque Elsa-Triolet;
+ X-APPLE-RADIUS=49;X-TITLE=:geo:48.792636,2.362783
+X-ALT-DESC;FMTTYPE=text/html:<p><img alt=\"\" src=\"/userfiles/image/Progra
+ mmation-26-27/conference-novembre/323onfrence-ia.jpg\" style=\"width: 300p
+ x\; height: 300px\;\" /></p>\n\n<p>Les outils d&rsquo\;IA &eacute\;voluent
+  &agrave\; grande vitesse ! Comprenez et ma&icirc\;trisez les outils d&rsq
+ uo\;aujourd&rsquo\;hui avec Nasreddine Menacer\, professeur et responsable
+  de la Clinique de l&#39\;IA &agrave\; aivancity.</p>\n\n<p><strong>Adulte
+ s et ados d&egrave\;s 13 ans<br />\nAcc&egrave\;s libre</strong></p>\n
+X-BOKEH-CUSTOMFIELD;NAME=Type d'animation:Rencontre
+X-BOKEH-CUSTOMFIELD;NAME=Public:Dès 13 ans
+END:VEVENT
+END:VCALENDAR

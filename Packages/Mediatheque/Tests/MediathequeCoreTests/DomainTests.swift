@@ -1,0 +1,119 @@
+@testable import BokehAPI
+import Foundation
+import Testing
+@testable import MediathequeCore
+
+struct MapperTests {
+    @Test func creatorNamesAreReordered() {
+        #expect(Document.displayName(fromCreator: "Rowling|Joanne Kathleen") == "Joanne Kathleen Rowling")
+        #expect(Document.displayName(fromCreator: "Toto La Momposina") == "Toto La Momposina")
+    }
+
+    @Test func publisherPlaceIsStripped() {
+        #expect(Document.stripPlace("Gallimard jeunesse (Paris Cedex 07)") == "Gallimard jeunesse")
+    }
+
+    @Test func documentFromRecord() throws {
+        let json = #"""
+        {"identifier":"SWAY--TOTOG--IDOL-2018-3","titles":["Sway"],"serial":null,"creators":["Toto|Gérald"],"date":"2018",
+         "publishers":["Idol"],"type":{"code":"3","label":"CD"},"thumbnail":"","permalink":"https://mediatheque.villejuif.fr/recherche/viewnotice/clef/SWAY--TOTOG--IDOL-2018-3/id/474169",
+         "collections":[],"items":[{"id":1,"id_notice":474169,"annexe":"1","cote":"781.3 TOT","activite":"En rayon","id_bib":1,
+         "zone995":[{"code":"a","valeur":"Médiathèque Elsa-Triolet"}]}]}
+        """#
+        let dto = try JSONDecoder().decode(RecordDTO.self, from: Data(json.utf8))
+        let document = try #require(Document(dto: dto))
+        #expect(document.id == 474169)
+        #expect(document.authors == ["Gérald Toto"])
+        #expect(document.coverURL == nil)
+        #expect(document.kind.isDigital == false)
+        #expect(document.libraries == [.elsaTriolet])
+    }
+
+    @Test func liveCopyStatus() {
+        let copy = LiveCopy(dto: CopyDTO(
+            libraryName: "Médiathèque Elsa-Triolet", availability: "En prêt", section: "Jeunesse", location: nil,
+            shelfMark: "SF ROW", dueDateText: "17/11/2026", holdsText: "Déjà 2 réservations", medium: "Livre", pickupPath: nil
+        ))
+        #expect(copy.library == .elsaTriolet)
+        #expect(copy.holdCount == 2)
+        guard case let .onLoan(due) = copy.status else { Issue.record("statut inattendu"); return }
+        #expect(due == SampleData.day(2026, 11, 17))
+        #expect(LiveCopy.holdCount(from: "Déjà une réservation") == 1)
+    }
+
+    @Test func holdTitleAndExpectedDate() {
+        #expect(Hold.cleanTitle("Astérix n° 39Astérix et le griffon") == "Astérix n° 39 · Astérix et le griffon")
+        let hold = SampleData.holds[1]
+        #expect(hold.expectedDate == SampleData.day(2026, 11, 14))
+        #expect(hold.isReadyForPickup == false)
+        #expect(SampleData.holds[0].isReadyForPickup == true)
+    }
+
+    @Test func calendarEventWithAndWithoutTime() {
+        let timed = Event(dto: CalendarEventDTO(
+            articleID: 990, title: "Ronde des histoires", imageURL: nil, location: "Pulp Nord",
+            startText: "31/10/2026 à 10:30", endText: "31/10/2026 à 11:00", eventType: "Lectures", audience: "Dès 4 ans", dateSentence: nil
+        ))
+        #expect(timed.library == .pulpNord)
+        #expect(timed.isAllDay == false)
+        #expect(timed.start == SampleData.day(2026, 10, 31, 10, 30))
+
+        let allDay = Event(dto: CalendarEventDTO(
+            articleID: 983, title: "Prix", imageURL: nil, location: nil,
+            startText: "26/09/2026", endText: "27/03/2027", eventType: nil, audience: nil, dateSentence: nil
+        ))
+        #expect(allDay.isAllDay)
+        #expect(allDay.occurs(on: SampleData.day(2026, 12, 1, 12), calendar: BokehDates.parisCalendar))
+    }
+
+    @Test func libraryLabels() {
+        #expect(Library(label: "Pulp Nord") == .pulpNord)
+        #expect(Library(label: "PULP Sud") == .pulpSud)
+        #expect(Library(label: "Médiathèque Elsa-Triolet") == .elsaTriolet)
+        #expect(Library(label: "Théâtre Romain Rolland") == nil)
+    }
+}
+
+struct OpeningHoursTests {
+    let calendar = BokehDates.parisCalendar
+    let elsa = OpeningHours(lines: ["Mardi : 13h - 19h", "Mercredi : 10h - 19h", "Samedi : 10h - 12h30 / 14h - 18h"])
+
+    @Test func openDuringSlot() {
+        // Mercredi 4 novembre 2026, 11:00.
+        let status = elsa.status(at: SampleData.day(2026, 11, 4, 11), calendar: calendar)
+        #expect(status == .open(closesAt: SampleData.day(2026, 11, 4, 19)))
+    }
+
+    @Test func closedBeforeOpeningSameDay() {
+        let status = elsa.status(at: SampleData.day(2026, 11, 3, 9), calendar: calendar)
+        #expect(status == .closed(reopensAt: SampleData.day(2026, 11, 3, 13)))
+    }
+
+    @Test func closedOverWeekendReopensTuesday() {
+        // Dimanche 1er novembre 2026.
+        let status = elsa.status(at: SampleData.day(2026, 11, 1, 15), calendar: calendar)
+        #expect(status == .closed(reopensAt: SampleData.day(2026, 11, 3, 13)))
+        #expect(elsa.isClosedAllDay(SampleData.day(2026, 11, 2), calendar: calendar))
+    }
+
+    @Test func lunchBreakIsHandled() {
+        // Samedi 31 octobre 2026, 13:00 : entre les deux créneaux.
+        let status = elsa.status(at: SampleData.day(2026, 10, 31, 13), calendar: calendar)
+        #expect(status == .closed(reopensAt: SampleData.day(2026, 10, 31, 14)))
+    }
+}
+
+struct LoanTests {
+    let calendar = BokehDates.parisCalendar
+    let now = SampleData.day(2026, 10, 30, 21)
+
+    @Test func dueStates() {
+        #expect(SampleData.loans[0].dueState(now: now, calendar: calendar) == .late(days: 2))
+        #expect(SampleData.loans[1].dueState(now: now, calendar: calendar) == .dueSoon(days: 6))
+        #expect(SampleData.loans[2].dueState(now: now, calendar: calendar) == .onTime(days: 20))
+    }
+
+    @Test func patronIDComesFromLoanID() {
+        #expect(SampleData.loans[0].patronID == "100001")
+    }
+}
