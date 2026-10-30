@@ -87,6 +87,7 @@ struct NotificationsViewModelTests {
             $0.accountClient.renew = { ids in ids.map { .renewed(loanID: $0, newDueDate: paris(2026, 11, 20)) } }
             $0.accountClient.loans = { SampleData.loans }
             $0.accountClient.holds = { [] }
+            $0.snapshotClient.load = { nil }
             $0.snapshotClient.save = { _ in }
             $0.notificationClient.replaceLoanReminders = { _ in }
         } operation: { NotificationsViewModel() }

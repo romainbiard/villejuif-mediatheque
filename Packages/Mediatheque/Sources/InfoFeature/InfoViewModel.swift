@@ -36,7 +36,8 @@ public final class InfoViewModel {
             return "Ouvert · ferme à \(closesAt.formatted(Self.time))"
         case let .closed(reopensAt?):
             let sameDay = calendar.isDate(reopensAt, inSameDayAs: now)
-            let tomorrow = calendar.isDateInTomorrow(reopensAt)
+            // Par rapport à `now` (injecté), pas à l'horloge du système.
+            let tomorrow = calendar.date(byAdding: .day, value: 1, to: now).map { calendar.isDate(reopensAt, inSameDayAs: $0) } ?? false
             let day = sameDay ? "" : tomorrow ? "demain " : "\(reopensAt.formatted(.dateTime.weekday(.wide))) "
             return "Fermé · ouvre \(day)à \(reopensAt.formatted(Self.time))"
         case .closed(nil):

@@ -58,6 +58,7 @@ struct AccountSyncTests {
             $0.snapshotClient.save = { saved.setValue($0) }
             $0.notificationClient.replaceLoanReminders = { scheduled.setValue($0) }
             $0.notificationClient.deliver = { reminder in delivered.withValue { $0.append(reminder) } }
+            $0.inboxClient.load = { Inbox() }
             $0.inboxClient.save = { inbox.setValue($0) }
         } operation: {
             try await AccountSync.run(settings: ReminderSettings())
@@ -79,6 +80,7 @@ struct AccountSyncTests {
             $0.snapshotClient.load = { nil }
             $0.snapshotClient.save = { _ in }
             $0.notificationClient.replaceLoanReminders = { scheduled.setValue($0) }
+            $0.inboxClient.load = { Inbox() }
             $0.inboxClient.save = { _ in }
         } operation: {
             try await AccountSync.run(settings: ReminderSettings(loanReminders: false))
