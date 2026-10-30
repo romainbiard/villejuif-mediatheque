@@ -3,15 +3,64 @@ import Foundation
 import MediathequeCore
 import Observation
 
+/// « Quand » : calculé dans l'app, le site n'a pas ce filtre.
+public enum AgendaPeriod: String, CaseIterable, Hashable, Sendable, Identifiable {
+    case all, weekend, wednesdays, schoolHolidays
+
+    public var id: String { rawValue }
+
+    public var label: String {
+        switch self {
+        case .all: "Tout"
+        case .weekend: "Ce week-end"
+        case .wednesdays: "Mercredis"
+        case .schoolHolidays: "Vacances scolaires"
+        }
+    }
+
+    /// Mercredis gardés : les 8 prochaines semaines.
+    static let wednesdayWeeks = 8
+
+    /// Jours couverts, à partir d'aujourd'hui. Vide pour `.all`.
+    public func days(from now: Date, calendar: Calendar) -> [Date] {
+        let today = calendar.startOfDay(for: now)
+        func adding(_ days: Int, to date: Date) -> Date? { calendar.date(byAdding: .day, value: days, to: date) }
+        switch self {
+        case .all:
+            return []
+        case .weekend:
+            // Samedi et dimanche qui viennent, ou le week-end en cours.
+            let weekday = calendar.component(.weekday, from: today)
+            if weekday == 1 { return [today] }
+            guard let saturday = adding((7 - weekday) % 7, to: today) else { return [] }
+            return [saturday, adding(1, to: saturday)].compactMap { $0 }
+        case .wednesdays:
+            let weekday = calendar.component(.weekday, from: today)
+            guard let first = adding((4 - weekday + 7) % 7, to: today) else { return [] }
+            return (0..<Self.wednesdayWeeks).compactMap { adding($0 * 7, to: first) }
+        case .schoolHolidays:
+            guard let holiday = SchoolHolidays.currentOrNext(after: today) else { return [] }
+            var days: [Date] = []
+            var day = max(holiday.start, today)
+            while day < holiday.end, let next = adding(1, to: day) {
+                days.append(day)
+                day = next
+            }
+            return days
+        }
+    }
+}
+
 /// Filtres de l'agenda, appliqués localement : une seule requête ramène tous les événements.
 public struct AgendaFilters: Hashable, Sendable {
     public var places: Set<String> = []
     public var types: Set<String> = []
     public var audiences: Set<String> = []
+    public var period: AgendaPeriod = .all
 
     public init() {}
 
-    public var count: Int { places.count + types.count + audiences.count }
+    public var count: Int { places.count + types.count + audiences.count + (period == .all ? 0 : 1) }
     public var isEmpty: Bool { count == 0 }
 
     func matches(_ event: Event) -> Bool {
@@ -102,9 +151,59 @@ public final class AgendaViewModel {
     /// Nombre d'événements à venir avec les filtres en cours (bouton « Voir N événements »).
     public func upcomingCount(with filters: AgendaFilters) -> Int {
         let today = calendar.startOfDay(for: now)
+        let periodDays = filters.period.days(from: now, calendar: calendar)
         return (state.value ?? []).filter { event in
-            filters.matches(event) && (event.end ?? event.start).map { $0 >= today } == true
+            guard filters.matches(event), (event.end ?? event.start).map({ $0 >= today }) == true else { return false }
+            return filters.period == .all || periodDays.contains { event.occurs(on: $0, calendar: calendar) }
         }.count
+    }
+
+    // MARK: Période (« Quand »)
+
+    /// Une journée de la période choisie, avec ses événements horaires.
+    public struct PeriodDay: Identifiable, Equatable {
+        public let day: Date
+        public let events: [Event]
+        public var id: Date { day }
+    }
+
+    /// Jours de la période qui ont au moins un événement horaire.
+    public var periodDays: [PeriodDay] {
+        filters.period.days(from: now, calendar: calendar).compactMap { day in
+            let events = filteredEvents.filter { !$0.isAllDay && $0.occurs(on: day, calendar: calendar) }
+            return events.isEmpty ? nil : PeriodDay(day: day, events: events)
+        }
+    }
+
+    /// Expositions et événements longs qui couvrent au moins un jour de la période.
+    public var periodOngoingEvents: [Event] {
+        let days = filters.period.days(from: now, calendar: calendar)
+        return filteredEvents.filter { event in event.isAllDay && days.contains { event.occurs(on: $0, calendar: calendar) } }
+    }
+
+    /// Libellé sous le titre : « Samedi 31 octobre et dimanche 1er novembre », « Vacances de Noël »…
+    public var periodSummary: String? {
+        let french = Locale(identifier: "fr_FR")
+        let days = filters.period.days(from: now, calendar: calendar)
+        switch filters.period {
+        case .all:
+            return nil
+        case .weekend:
+            return days.map { $0.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(french)) }
+                .joined(separator: " et ")
+        case .wednesdays:
+            return "Les \(AgendaPeriod.wednesdayWeeks) prochains mercredis"
+        case .schoolHolidays:
+            guard let holiday = SchoolHolidays.currentOrNext(after: calendar.startOfDay(for: now)),
+                  let last = calendar.date(byAdding: .day, value: -1, to: holiday.end)
+            else { return nil }
+            let range = "du \(holiday.start.formatted(.dateTime.day().month(.wide).locale(french))) au \(last.formatted(.dateTime.day().month(.wide).locale(french)))"
+            return "\(holiday.name), \(range)"
+        }
+    }
+
+    public func clearPeriod() {
+        filters.period = .all
     }
 
     public var availablePlaces: [String] { distinct(\.place, prioritizing: Library.allCases.map(\.shortName)) }

@@ -12,8 +12,13 @@ public struct AgendaView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    DayStrip(viewModel: viewModel)
-                    content
+                    if viewModel.filters.period == .all {
+                        DayStrip(viewModel: viewModel)
+                        content
+                    } else {
+                        PeriodHeader(viewModel: viewModel)
+                        periodContent
+                    }
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 24)
@@ -74,6 +79,36 @@ public struct AgendaView: View {
         }
     }
 
+    @ViewBuilder
+    private var periodContent: some View {
+        switch viewModel.state {
+        case .idle, .loading:
+            VStack(spacing: 14) { ForEach(0..<3, id: \.self) { _ in SkeletonRow() } }.cardStyle()
+        case .failed:
+            content
+        case .loaded:
+            let days = viewModel.periodDays
+            if days.isEmpty && viewModel.periodOngoingEvents.isEmpty {
+                EmptyStateView(
+                    systemImage: "calendar.badge.exclamationmark",
+                    title: "Rien de prévu sur cette période",
+                    message: "Aucune animation ne correspond. Essayez une autre période ou retirez des filtres.",
+                    tint: .brandMagenta,
+                    primary: ("Voir tout l'agenda", { viewModel.clearPeriod() }),
+                    secondary: viewModel.filters.count > 1 ? ("Retirer tous les filtres", { viewModel.clearFilters() }) : nil
+                )
+            }
+            ForEach(days) { periodDay in
+                SectionHeader(periodDay.day.formatted(.dateTime.weekday(.wide).day().month(.wide)).capitalized(with: Locale(identifier: "fr_FR")))
+                EventList(events: periodDay.events)
+            }
+            if !viewModel.periodOngoingEvents.isEmpty {
+                SectionHeader("Pendant cette période")
+                EventList(events: viewModel.periodOngoingEvents)
+            }
+        }
+    }
+
     private var emptyDay: some View {
         EmptyStateView(
             systemImage: "calendar",
@@ -87,6 +122,44 @@ public struct AgendaView: View {
             },
             secondary: viewModel.filters.isEmpty ? nil : ("Retirer les filtres", { viewModel.clearFilters() })
         )
+    }
+}
+
+// MARK: - Période
+
+/// Remplace le sélecteur de jours quand un filtre « Quand » est actif.
+struct PeriodHeader: View {
+    let viewModel: AgendaViewModel
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(Color.brandViolet)
+                .frame(width: 44, height: 44)
+                .background(Color.soft(.brandViolet), in: Circle())
+            VStack(alignment: .leading, spacing: 2) {
+                Text(viewModel.filters.period.label).font(.headline)
+                if let summary = viewModel.periodSummary {
+                    Text(summary).font(.subheadline).foregroundStyle(Color.inkSecondary).lineLimit(2)
+                }
+            }
+            Spacer(minLength: 0)
+            Button("Revenir aux jours", systemImage: "xmark") { viewModel.clearPeriod() }
+                .labelStyle(.iconOnly)
+                .buttonStyle(.glass)
+        }
+        .padding(12)
+        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+    }
+
+    private var icon: String {
+        switch viewModel.filters.period {
+        case .all: "calendar"
+        case .weekend: "sun.max.fill"
+        case .wednesdays: "figure.and.child.holdinghands"
+        case .schoolHolidays: "backpack.fill"
+        }
     }
 }
 

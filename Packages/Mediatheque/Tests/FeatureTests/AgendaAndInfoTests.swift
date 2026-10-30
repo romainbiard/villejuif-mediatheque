@@ -83,3 +83,68 @@ struct InfoViewModelTests {
         #expect(viewModel.isToday("Mercredi : 10h - 19h"))
     }
 }
+
+@MainActor
+struct AgendaPeriodTests {
+    // Jeudi 29 octobre 2026, pendant les vacances de la Toussaint.
+    let thursday = paris(2026, 10, 29, 9)
+
+    func makeViewModel(period: AgendaPeriod) async -> AgendaViewModel {
+        let viewModel = withDependencies {
+            $0.date.now = thursday
+            $0.agendaClient.events = { SampleData.events }
+        } operation: { AgendaViewModel() }
+        await viewModel.load()
+        viewModel.filters.period = period
+        return viewModel
+    }
+
+    @Test func weekendDays() {
+        #expect(AgendaPeriod.weekend.days(from: thursday, calendar: .paris) == [paris(2026, 10, 31), paris(2026, 11, 1)])
+        #expect(AgendaPeriod.weekend.days(from: paris(2026, 10, 31, 15), calendar: .paris) == [paris(2026, 10, 31), paris(2026, 11, 1)])
+        #expect(AgendaPeriod.weekend.days(from: paris(2026, 11, 1, 15), calendar: .paris) == [paris(2026, 11, 1)])
+        #expect(AgendaPeriod.all.days(from: thursday, calendar: .paris).isEmpty)
+    }
+
+    @Test func wednesdaysStartAtTheNextOne() {
+        let days = AgendaPeriod.wednesdays.days(from: thursday, calendar: .paris)
+        #expect(days.count == AgendaPeriod.wednesdayWeeks)
+        #expect(days.first == paris(2026, 11, 4))
+        #expect(AgendaPeriod.wednesdays.days(from: paris(2026, 11, 4, 8), calendar: .paris).first == paris(2026, 11, 4))
+    }
+
+    @Test func schoolHolidaysAreTheCurrentOrNextOnes() {
+        let toussaint = AgendaPeriod.schoolHolidays.days(from: thursday, calendar: .paris)
+        #expect(toussaint == [paris(2026, 10, 29), paris(2026, 10, 30), paris(2026, 10, 31), paris(2026, 11, 1)])
+
+        let christmas = AgendaPeriod.schoolHolidays.days(from: paris(2026, 11, 3), calendar: .paris)
+        #expect(christmas.first == paris(2026, 12, 19))
+        #expect(christmas.last == paris(2027, 1, 3))
+    }
+
+    @Test func weekendGroupsEventsByDay() async {
+        let viewModel = await makeViewModel(period: .weekend)
+        #expect(viewModel.periodDays.map(\.day) == [paris(2026, 10, 31)])
+        #expect(viewModel.periodDays.first?.events.map(\.id) == [990])
+        #expect(viewModel.periodOngoingEvents.map(\.id) == [983])
+        #expect(viewModel.filters.count == 1)
+    }
+
+    @Test func countIncludesThePeriod() async {
+        let viewModel = await makeViewModel(period: .all)
+        var filters = AgendaFilters()
+        filters.period = .wednesdays
+        // La conférence du mercredi 4 et le prix, qui couvre tous les mercredis.
+        #expect(viewModel.upcomingCount(with: filters) == 2)
+        filters.types = ["Lectures"]
+        #expect(viewModel.upcomingCount(with: filters) == 0)
+    }
+
+    @Test func holidaySummaryNamesTheHolidays() async {
+        let viewModel = await makeViewModel(period: .schoolHolidays)
+        #expect(viewModel.periodSummary?.hasPrefix("Vacances de la Toussaint, du 17 octobre au ") == true)
+        viewModel.clearPeriod()
+        #expect(viewModel.filters.period == .all)
+        #expect(viewModel.periodSummary == nil)
+    }
+}

@@ -5,7 +5,11 @@ import SwiftUI
 struct AgendaFiltersView: View {
     let viewModel: AgendaViewModel
     @State private var draft: AgendaFilters
+    @State private var showsAllPlaces = false
     @Environment(\.dismiss) private var dismiss
+
+    /// Les médiathèques d'abord ; les autres lieux (écoles, parcs…) sont repliés au-delà.
+    static let visiblePlaces = 4
 
     init(viewModel: AgendaViewModel) {
         self.viewModel = viewModel
@@ -16,7 +20,16 @@ struct AgendaFiltersView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
-                    group("Lieu", values: viewModel.availablePlaces, selection: $draft.places)
+                    periodGroup
+                    group("Lieu", values: visiblePlaces, selection: $draft.places)
+                    if hiddenPlaceCount > 0 {
+                        Button(showsAllPlaces ? "Moins de lieux" : "+ \(hiddenPlaceCount) autre\(hiddenPlaceCount > 1 ? "s" : "") lieu\(hiddenPlaceCount > 1 ? "x" : "")") {
+                            withAnimation { showsAllPlaces.toggle() }
+                        }
+                        .font(.subheadline.weight(.semibold))
+                        .tint(.brandViolet)
+                        .padding(.top, -12)
+                    }
                     group("Type d'animation", values: viewModel.availableTypes, selection: $draft.types)
                     group("Public", values: viewModel.availableAudiences, selection: $draft.audiences)
                 }
@@ -47,6 +60,33 @@ struct AgendaFiltersView: View {
             }
         }
         .sensoryFeedback(.selection, trigger: draft)
+    }
+
+    /// Les lieux repliés restent visibles s'ils sont cochés.
+    private var visiblePlaces: [String] {
+        let all = viewModel.availablePlaces
+        guard !showsAllPlaces, all.count > Self.visiblePlaces + 1 else { return all }
+        return all.enumerated().filter { $0.offset < Self.visiblePlaces || draft.places.contains($0.element) }.map(\.element)
+    }
+
+    private var hiddenPlaceCount: Int {
+        showsAllPlaces ? 0 : viewModel.availablePlaces.count - visiblePlaces.count
+    }
+
+    private var periodGroup: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Quand").font(.footnote.weight(.bold)).foregroundStyle(Color.inkSecondary).textCase(.uppercase)
+            FlowLayout(spacing: 8) {
+                ForEach(AgendaPeriod.allCases) { period in
+                    let isOn = draft.period == period
+                    Button { draft.period = period } label: {
+                        Label(period.label, systemImage: "checkmark").labelStyle(FilterChipLabelStyle(isOn: isOn))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityAddTraits(isOn ? .isSelected : [])
+                }
+            }
+        }
     }
 
     private func group(_ title: String, values: [String], selection: Binding<Set<String>>) -> some View {
