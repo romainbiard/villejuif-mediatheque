@@ -47,6 +47,7 @@ struct AccountSyncTests {
         let saved = LockIsolated<AccountSnapshot?>(nil)
         let scheduled = LockIsolated<[Reminder]>([])
         let delivered = LockIsolated<[Reminder]>([])
+        let inbox = LockIsolated<Inbox?>(nil)
         let previous = AccountSnapshot(loans: [], holds: [SampleData.holds[1]], updatedAt: .distantPast)
 
         try await withDependencies {
@@ -57,6 +58,7 @@ struct AccountSyncTests {
             $0.snapshotClient.save = { saved.setValue($0) }
             $0.notificationClient.replaceLoanReminders = { scheduled.setValue($0) }
             $0.notificationClient.deliver = { reminder in delivered.withValue { $0.append(reminder) } }
+            $0.inboxClient.save = { inbox.setValue($0) }
         } operation: {
             try await AccountSync.run(settings: ReminderSettings())
         }
@@ -64,6 +66,8 @@ struct AccountSyncTests {
         #expect(saved.value?.loans.count == 3)
         #expect(scheduled.value.count == 4)
         #expect(delivered.value.map(\.title) == ["Murmuration vous attend"])
+        // Le 30/10 : Le Petit Prince en retard, Sway à rendre le 5/11 (J-6, hors fenêtre), Murmuration arrivé.
+        #expect(inbox.value?.items.map(\.kind).sorted { $0.rawValue < $1.rawValue } == [.holdReady, .loanLate])
     }
 
     @Test func firstSyncDoesNotNotifyAndDisabledRemindersAreCleared() async throws {
@@ -75,6 +79,7 @@ struct AccountSyncTests {
             $0.snapshotClient.load = { nil }
             $0.snapshotClient.save = { _ in }
             $0.notificationClient.replaceLoanReminders = { scheduled.setValue($0) }
+            $0.inboxClient.save = { _ in }
         } operation: {
             try await AccountSync.run(settings: ReminderSettings(loanReminders: false))
         }

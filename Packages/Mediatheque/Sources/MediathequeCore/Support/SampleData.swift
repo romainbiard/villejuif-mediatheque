@@ -76,6 +76,16 @@ public enum SampleData {
         RecordToRate(recordID: 909376, recordKey: "ASTERIXETLEGRIFFON--FERRIJ-39", title: "Astérix et le griffon", author: "Jean-Yves Ferri", coverURL: nil),
     ]
 
+    public static let inbox = Inbox(items: [
+        InboxItem(id: "hold-100001_10", kind: .holdReady, title: "« Murmuration » vous attend",
+                  body: "À retirer à Elsa-Triolet. Disponible jusqu'au 06/11/2026", date: day(2026, 10, 30, 9)),
+        InboxItem(id: "late-100001_1", kind: .loanLate, title: "« Le Petit Prince » est en retard",
+                  body: "À rendre depuis le mercredi 28 octobre. Rapportez-le ou essayez de le prolonger.",
+                  date: day(2026, 10, 29), loanID: "100001_1"),
+        InboxItem(id: "message-1", kind: .libraryMessage, title: "Message de la médiathèque",
+                  body: "Fermeture exceptionnelle de PULP Sud le 11 novembre.", date: day(2026, 10, 26), isRead: true),
+    ])
+
     public static let events: [Event] = [
         Event(id: 990, title: "Ronde des histoires", imageURL: nil, place: "Pulp Nord", library: .pulpNord,
               start: day(2026, 10, 31, 10, 30), end: day(2026, 10, 31, 11), isAllDay: false, type: "Lectures",

@@ -35,11 +35,13 @@ struct AccountHomeView: View {
     @Environment(SessionStore.self) private var session
     @State private var viewModel = AccountHomeViewModel()
     @State private var showsCard = false
+    @State private var showsNotifications = false
+    @State private var path = NavigationPath()
     @State private var confirmsLogout = false
     @AppStorage(ReminderSettings.Key.onboardingDone, store: .shared) private var onboardingDone = false
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
                     if patron.cardExpired || patron.cardAboutToExpire {
@@ -69,6 +71,28 @@ struct AccountHomeView: View {
                 case .suggestions: SuggestionsView()
                 case .information: InformationView(patron: patron)
                 case .settings: ProfileSettingsView(patron: patron)
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { showsNotifications = true } label: {
+                        if viewModel.unreadNotifications > 0 {
+                            Image(systemName: "bell.badge")
+                                .symbolRenderingMode(.palette)
+                                .foregroundStyle(Color.brandMagenta, Color.ink)
+                        } else {
+                            Image(systemName: "bell")
+                        }
+                    }
+                    .accessibilityLabel(viewModel.unreadNotifications > 0
+                        ? "Notifications, \(viewModel.unreadNotifications) non lue\(viewModel.unreadNotifications > 1 ? "s" : "")"
+                        : "Notifications")
+                }
+            }
+            .sheet(isPresented: $showsNotifications, onDismiss: viewModel.refreshUnreadCount) {
+                NotificationsView {
+                    showsNotifications = false
+                    path.append(AccountRoute.settings)
                 }
             }
             .refreshable { await viewModel.refresh(session) }

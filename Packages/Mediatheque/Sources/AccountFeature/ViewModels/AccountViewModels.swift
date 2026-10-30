@@ -9,24 +9,36 @@ import Observation
 public final class AccountHomeViewModel {
     public private(set) var isRefreshing = false
     public private(set) var error: LoadError?
+    /// Pastille de la cloche.
+    public private(set) var unreadNotifications = 0
 
     @ObservationIgnored @Dependency(\.accountClient) private var account
+    @ObservationIgnored @Dependency(\.inboxClient) private var inbox
 
     public init() {}
 
     public func refresh(_ session: SessionStore) async {
         isRefreshing = true
-        defer { isRefreshing = false }
+        defer {
+            isRefreshing = false
+            refreshUnreadCount()
+        }
         do {
-            session.update(try await account.patron())
+            let patron = try await account.patron()
+            session.update(patron)
             error = nil
-            // Snapshot pour le widget et le hors-ligne, rappels reprogrammés.
+            // Snapshot pour le widget et le hors-ligne, rappels reprogrammés, centre de notifications à jour.
+            withDependencies(from: self) { AccountSync.record(libraryMessage: patron.message) }
             _ = try? await withDependencies(from: self) { try await AccountSync.run(settings: .current()) }
         } catch {
             let loadError = LoadError(error)
             if loadError == .notLoggedIn { await session.logout() }
             self.error = loadError
         }
+    }
+
+    public func refreshUnreadCount() {
+        unreadNotifications = inbox.load().unreadCount
     }
 }
 

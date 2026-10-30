@@ -114,6 +114,7 @@ public enum AccountSync {
         @Dependency(\.accountClient) var account
         @Dependency(\.snapshotClient) var snapshots
         @Dependency(\.notificationClient) var notifications
+        @Dependency(\.inboxClient) var inboxClient
         @Dependency(\.date.now) var now
 
         let snapshot = AccountSnapshot(loans: try await account.loans(), holds: try await account.holds(), updatedAt: now)
@@ -128,6 +129,15 @@ public enum AccountSync {
             : []
         await notifications.replaceLoanReminders(reminders)
 
+        // Centre de notifications : on garde la trace de ce que les rappels ont annoncé.
+        var inbox = inboxClient.load()
+        inbox.merge(
+            InboxPlanner.items(for: snapshot, daysBefore: settings.daysBefore, now: now, calendar: .paris),
+            now: now,
+            calendar: .paris
+        )
+        inboxClient.save(inbox)
+
         // Au tout premier snapshot, on ne notifie pas ce que l'abonné voit déjà à l'écran.
         if settings.holdAlerts, previous != nil {
             for hold in snapshot.newlyReadyHolds(since: previous) {
@@ -137,11 +147,23 @@ public enum AccountSync {
         return snapshot
     }
 
-    /// À la déconnexion : plus de snapshot ni de rappels sur l'appareil.
+    /// Message de la médiathèque lu sur la fiche du compte, ajouté au centre de notifications.
+    public static func record(libraryMessage: String?) {
+        @Dependency(\.inboxClient) var inboxClient
+        @Dependency(\.date.now) var now
+        guard let libraryMessage, !libraryMessage.isEmpty else { return }
+        var inbox = inboxClient.load()
+        inbox.merge([InboxPlanner.libraryMessage(libraryMessage, now: now)], now: now, calendar: .paris)
+        inboxClient.save(inbox)
+    }
+
+    /// À la déconnexion : plus de snapshot, de rappels ni d'historique sur l'appareil.
     public static func reset() async {
         @Dependency(\.snapshotClient) var snapshots
         @Dependency(\.notificationClient) var notifications
+        @Dependency(\.inboxClient) var inboxClient
         snapshots.clear()
+        inboxClient.clear()
         await notifications.removeAll()
         #if canImport(WidgetKit)
         WidgetCenter.shared.reloadAllTimelines()
