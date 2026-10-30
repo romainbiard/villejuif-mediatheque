@@ -1,0 +1,280 @@
+import DesignSystem
+import MediathequeCore
+import SwiftUI
+
+/// Onglet Recherche. Placé dans un `Tab(role: .search)`, son champ s'affiche en bas
+/// sur iPhone, comme dans iOS 26.
+public struct SearchView: View {
+    @State private var viewModel = SearchViewModel()
+    @State private var path: [Notice] = []
+
+    public init() {}
+
+    public var body: some View {
+        NavigationStack(path: $path) {
+            content
+                .background(Color.surfaceGrouped)
+                .navigationTitle(viewModel.browsingTitle ?? "Recherche")
+                .toolbar {
+                    if viewModel.browsingTitle != nil {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button("Retour", systemImage: "chevron.left") { viewModel.cancelBrowsing() }
+                        }
+                    }
+                }
+                .navigationDestination(for: Notice.self) { document in
+                    DocumentDetailView(document: document)
+                }
+                .searchable(
+                    text: $viewModel.text,
+                    placement: .navigationBarDrawer(displayMode: .always),
+                    prompt: "Titre, auteur, sujet, ISBN"
+                )
+                .onChange(of: viewModel.text) { viewModel.textDidChange() }
+                .onSubmit(of: .search) { viewModel.submit() }
+        }
+        .sensoryFeedback(trigger: viewModel.feedback) { _, event in event.map(\.sensoryFeedback) }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        if viewModel.showsLanding {
+            SearchLandingView(viewModel: viewModel)
+        } else {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 12) {
+                    ScopeBar(viewModel: viewModel)
+                    results
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 24)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var results: some View {
+        switch viewModel.state {
+        case .idle, .loading:
+            VStack(spacing: 18) { ForEach(0..<5, id: \.self) { _ in SkeletonRow() } }
+                .cardStyle()
+        case let .failed(error):
+            EmptyStateView(
+                systemImage: error == .offline ? "wifi.slash" : "exclamationmark.triangle",
+                title: error == .offline ? "Pas de connexion" : "Le site de la médiathèque ne répond pas",
+                message: "Vérifiez votre connexion, puis réessayez.",
+                primary: ("Réessayer", { viewModel.submit() })
+            )
+        case let .loaded(documents) where documents.isEmpty:
+            EmptyStateView(
+                systemImage: "text.magnifyingglass",
+                title: "Aucun résultat",
+                message: "Vérifiez l'orthographe, essayez moins de mots ou cherchez dans les 3 médiathèques.",
+                primary: viewModel.hasActiveFilters ? ("Retirer les filtres", { viewModel.clearFilters() }) : nil
+            )
+        case let .loaded(documents):
+            Text("\(viewModel.total) résultat\(viewModel.total > 1 ? "s" : "")")
+                .font(.footnote)
+                .foregroundStyle(Color.inkSecondary)
+            LazyVStack(spacing: 0) {
+                ForEach(documents) { document in
+                    NavigationLink(value: document) {
+                        SearchResultRow(document: document, availability: viewModel.availability[document.id])
+                    }
+                    .buttonStyle(.plain)
+                    .onAppear { viewModel.rowAppeared(document) }
+                    if document.id != documents.last?.id { Divider().padding(.leading, 76) }
+                }
+                if viewModel.isLoadingMore {
+                    ProgressView().padding()
+                }
+            }
+            .cardStyle(padding: 0)
+        }
+    }
+}
+
+// MARK: - Filtres
+
+struct ScopeBar: View {
+    let viewModel: SearchViewModel
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(SearchScope.allCases) { scope in
+                    Chip(scope.title, isSelected: viewModel.scope == scope) { viewModel.select(scope: scope) }
+                }
+                Menu {
+                    Button("Toutes les médiathèques") { viewModel.select(library: nil) }
+                    ForEach(Library.allCases) { library in
+                        Button(library.name) { viewModel.select(library: library) }
+                    }
+                } label: {
+                    Label(viewModel.library?.shortName ?? "Médiathèque", systemImage: "mappin.and.ellipse")
+                        .font(.subheadline.weight(viewModel.library == nil ? .medium : .bold))
+                        .padding(.horizontal, 14)
+                        .frame(height: 36)
+                        .background(viewModel.library == nil ? Color.surfaceCard : Color.brandViolet, in: Capsule())
+                        .foregroundStyle(viewModel.library == nil ? Color.ink : .white)
+                }
+            }
+        }
+        .scrollClipDisabled()
+    }
+}
+
+struct Chip: View {
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+
+    init(_ title: String, isSelected: Bool, action: @escaping () -> Void) {
+        self.title = title
+        self.isSelected = isSelected
+        self.action = action
+    }
+
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.subheadline.weight(isSelected ? .bold : .medium))
+                .padding(.horizontal, 14)
+                .frame(height: 36)
+                .background(isSelected ? Color.brandViolet : Color.surfaceCard, in: Capsule())
+                .foregroundStyle(isSelected ? .white : Color.ink)
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+}
+
+// MARK: - Ligne de résultat
+
+struct SearchResultRow: View {
+    let document: Notice
+    let availability: Availability?
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 14) {
+            CoverImage(url: document.coverURL, title: document.title, seed: document.id)
+                .frame(width: 52, height: 76)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(document.title).font(.headline).foregroundStyle(Color.ink).lineLimit(2)
+                Text(subtitle).font(.subheadline).foregroundStyle(Color.inkSecondary).lineLimit(1)
+                availabilityView
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(14)
+        .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
+    }
+
+    private var subtitle: String {
+        ([document.authors.first, document.kind.label, document.year].compactMap { $0 }).joined(separator: " · ")
+    }
+
+    @ViewBuilder
+    private var availabilityView: some View {
+        if document.kind.isDigital {
+            StatusPill("En ligne · inclus dans l'abonnement", style: .accent)
+        } else if let availability {
+            HStack(spacing: 6) {
+                StatusPill(availability.label, style: availability.isAvailable ? .success : .neutral)
+                if !document.libraries.isEmpty {
+                    Text(document.libraries.map(\.shortName).joined(separator: ", "))
+                        .font(.caption)
+                        .foregroundStyle(Color.inkSecondary)
+                        .lineLimit(1)
+                }
+            }
+        } else {
+            Text(document.libraries.map(\.shortName).joined(separator: ", "))
+                .font(.caption)
+                .foregroundStyle(Color.inkSecondary)
+        }
+    }
+}
+
+// MARK: - Avant de chercher
+
+struct SearchLandingView: View {
+    let viewModel: SearchViewModel
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                if !viewModel.recentSearches.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        SectionHeader("Récentes") {
+                            Button("Effacer") { viewModel.clearRecentSearches() }.font(.subheadline.weight(.semibold))
+                        }
+                        VStack(spacing: 0) {
+                            ForEach(viewModel.recentSearches, id: \.self) { search in
+                                Button { viewModel.search(recent: search) } label: {
+                                    Label(search, systemImage: "clock.arrow.circlepath")
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding(.horizontal, 14)
+                                        .frame(height: 48)
+                                        .contentShape(Rectangle())
+                                }
+                                .buttonStyle(.plain)
+                                if search != viewModel.recentSearches.last { Divider().padding(.leading, 44) }
+                            }
+                        }
+                        .cardStyle(padding: 0)
+                    }
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    SectionHeader("Explorer")
+                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible())], spacing: 10) {
+                        ForEach(Array(ExploreShortcut.all.enumerated()), id: \.element.id) { index, shortcut in
+                            ExploreTile(shortcut: shortcut, index: index) { viewModel.open(shortcut) }
+                        }
+                    }
+                }
+            }
+            .padding(16)
+        }
+    }
+}
+
+struct ExploreTile: View {
+    let shortcut: ExploreShortcut
+    let index: Int
+    let action: () -> Void
+
+    var body: some View {
+        let colors = BrandArtwork.colors(for: index)
+        Button(action: action) {
+            VStack(alignment: .leading) {
+                Image(systemName: shortcut.systemImage).font(.title2)
+                Spacer()
+                Text(shortcut.title).font(.headline)
+            }
+            .foregroundStyle(BrandArtwork.foreground(for: index))
+            .padding(14)
+            .frame(maxWidth: .infinity, minHeight: 88, alignment: .leading)
+            .background(colors.background, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+extension FeedbackEvent {
+    var sensoryFeedback: SensoryFeedback {
+        switch self {
+        case .success: .success
+        case .error: .error
+        case .selection: .selection
+        case .lightImpact: .impact(weight: .light)
+        }
+    }
+}
+
+#Preview {
+    TabView {
+        Tab(role: .search) { SearchView() }
+    }
+}

@@ -1,0 +1,50 @@
+name: Villejuif
+options:
+  bundleIdPrefix: com.rbiard
+  deploymentTarget:
+    iOS: "26.0"
+  developmentLanguage: fr
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    DEVELOPMENT_LANGUAGE: fr
+
+packages:
+  Mediatheque:
+    path: Packages/Mediatheque
+
+targets:
+  Villejuif:
+    type: application
+    platform: iOS
+    supportedDestinations: [iOS]
+    sources:
+      - path: App
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.rbiard.mediatheques-villejuif
+        PRODUCT_NAME: Médiathèques
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Médiathèques
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: UIInterfaceOrientationPortrait
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        INFOPLIST_KEY_NSCameraUsageDescription: "Scanner le code-barres d'un livre ou de votre carte d'abonné."
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+    dependencies:
+      - package: Mediatheque
+        product: MediathequeCore
+      - package: Mediatheque
+        product: DesignSystem
+      - package: Mediatheque
+        product: SearchFeature
+      - package: Mediatheque
+        product: AgendaFeature
+      - package: Mediatheque
+        product: InfoFeature

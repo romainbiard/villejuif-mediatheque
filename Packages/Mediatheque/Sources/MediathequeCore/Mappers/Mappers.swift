@@ -4,16 +4,16 @@ import Foundation
 // Seul endroit qui connaît les bizarreries de Bokeh : auteurs « Nom|Prénom »,
 // dates « 0000-00-00 », jaquettes vides, statuts en texte libre.
 
-extension Document {
+extension Notice {
     init?(dto: RecordDTO) {
         guard let id = dto.noticeID else { return nil }
         self.init(
             id: id,
             key: dto.identifier,
             title: dto.titles.last ?? dto.titles.first ?? "",
-            authors: dto.creators.map(Document.displayName(fromCreator:)),
+            authors: dto.creators.map(Notice.displayName(fromCreator:)),
             year: dto.date.isEmpty ? nil : dto.date,
-            publisher: dto.publishers.first { !$0.isEmpty }.map(Document.stripPlace),
+            publisher: dto.publishers.first { !$0.isEmpty }.map(Notice.stripPlace),
             kind: DocumentKind(code: dto.type.code, label: dto.type.label),
             coverURL: dto.thumbnail.flatMap(nonEmptyURL),
             series: dto.serial,
@@ -44,7 +44,7 @@ extension Document {
 
 extension SearchPage {
     init(dto: SearchResponseDTO) {
-        self.init(total: dto.total, page: dto.page, pageSize: dto.pageSize, documents: dto.records.compactMap(Document.init(dto:)))
+        self.init(total: dto.total, page: dto.page, pageSize: dto.pageSize, documents: dto.records.compactMap(Notice.init(dto:)))
     }
 }
 
@@ -53,7 +53,10 @@ extension LiveCopy {
         let label = dto.availability
         let normalized = label.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
         let status: CopyStatus
-        if normalized.contains("pret") {
+        if normalized.contains("bientot") {
+            // « Bientôt disponible » : rendu mais pas encore remis en rayon.
+            status = .other(label)
+        } else if normalized.contains("pret") {
             status = .onLoan(dueDate: dto.dueDateText.flatMap(BokehDates.firstDate))
         } else if normalized.contains("disponible") || normalized.contains("en rayon") {
             status = .available

@@ -18,7 +18,7 @@ extension CatalogClient: DependencyKey {
         @Dependency(\.httpClient) var http
         return CatalogClient(
             search: { query in
-                let endpoint = Endpoint.search(query.text, facets: query.facets, page: query.page)
+                let endpoint = Endpoint.search(query.text, facets: query.facets, sort: query.sort.rawValue, page: query.page)
                 return SearchPage(dto: try await http.decode(SearchResponseDTO.self, from: endpoint))
             },
             availability: { recordID in

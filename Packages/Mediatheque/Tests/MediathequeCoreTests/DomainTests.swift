@@ -5,12 +5,12 @@ import Testing
 
 struct MapperTests {
     @Test func creatorNamesAreReordered() {
-        #expect(Document.displayName(fromCreator: "Rowling|Joanne Kathleen") == "Joanne Kathleen Rowling")
-        #expect(Document.displayName(fromCreator: "Toto La Momposina") == "Toto La Momposina")
+        #expect(Notice.displayName(fromCreator: "Rowling|Joanne Kathleen") == "Joanne Kathleen Rowling")
+        #expect(Notice.displayName(fromCreator: "Toto La Momposina") == "Toto La Momposina")
     }
 
     @Test func publisherPlaceIsStripped() {
-        #expect(Document.stripPlace("Gallimard jeunesse (Paris Cedex 07)") == "Gallimard jeunesse")
+        #expect(Notice.stripPlace("Gallimard jeunesse (Paris Cedex 07)") == "Gallimard jeunesse")
     }
 
     @Test func documentFromRecord() throws {
@@ -21,7 +21,7 @@ struct MapperTests {
          "zone995":[{"code":"a","valeur":"Médiathèque Elsa-Triolet"}]}]}
         """#
         let dto = try JSONDecoder().decode(RecordDTO.self, from: Data(json.utf8))
-        let document = try #require(Document(dto: dto))
+        let document = try #require(Notice(dto: dto))
         #expect(document.id == 474169)
         #expect(document.authors == ["Gérald Toto"])
         #expect(document.coverURL == nil)
@@ -39,6 +39,11 @@ struct MapperTests {
         guard case let .onLoan(due) = copy.status else { Issue.record("statut inattendu"); return }
         #expect(due == SampleData.day(2026, 11, 17))
         #expect(LiveCopy.holdCount(from: "Déjà une réservation") == 1)
+        let soon = LiveCopy(dto: CopyDTO(
+            libraryName: "PULP Nord", availability: "Bientôt disponible", section: nil, location: nil,
+            shelfMark: nil, dueDateText: nil, holdsText: nil, medium: nil, pickupPath: nil
+        ))
+        #expect(soon.status.isAvailable == false)
     }
 
     @Test func holdTitleAndExpectedDate() {

@@ -65,6 +65,7 @@ struct ParserTests {
         #expect(elsa.openingHours.first == "Mardi : 13h - 19h")
         #expect(elsa.openingHours.count == 5)
         #expect(elsa.bookmarkLibraryID == 1)
+        #expect(elsa.contactURL?.absoluteString == "https://demarches.villejuif.fr/villejuif-et-moi/contact-services/?service_id=7")
     }
 
     @Test func csrfToken() throws {

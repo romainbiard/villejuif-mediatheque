@@ -65,8 +65,9 @@ extension CharacterSet {
 
 extension Endpoint {
     /// Recherche simple au format JSON. Les facettes sont combinées (ET) par `facettes/T1-Y2`.
-    public static func search(_ query: String, facets: [String] = [], page: Int = 1) -> Endpoint {
-        var segments = ["recherche", "simple", "expressionRecherche", query, "tri", "*"]
+    /// `*` parcourt tout le catalogue ; `sort: "date_creation desc"` donne les nouveautés.
+    public static func search(_ query: String, facets: [String] = [], sort: String = "*", page: Int = 1) -> Endpoint {
+        var segments = ["recherche", "simple", "expressionRecherche", query.isEmpty ? "*" : query, "tri", sort]
         if !facets.isEmpty {
             segments += ["facettes", facets.joined(separator: "-")]
         }

@@ -36,3 +36,8 @@ enum BokehDates {
         frenchDate(text)?.date
     }
 }
+
+extension Calendar {
+    /// Calendrier grégorien en heure de Paris et en français, celui des horaires et de l'agenda.
+    public static var paris: Calendar { BokehDates.parisCalendar }
+}

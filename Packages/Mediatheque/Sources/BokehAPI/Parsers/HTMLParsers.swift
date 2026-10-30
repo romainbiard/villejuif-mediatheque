@@ -144,7 +144,7 @@ public enum HTMLParsers {
                 name: link.ownText(),
                 addressLines: addressLines,
                 phone: try badgeText(card, ".badge_phone"),
-                contactURL: URL(string: try card.select(".badge_mail a[href^=http]").first()?.attr("href") ?? ""),
+                contactURL: try contactURL(in: card),
                 openingHours: try card.select(".default_opening_hours ul li").map { try $0.text() },
                 bookmarkLibraryID: try card.select("a[href*=add-library-to-bookmarks]").first()
                     .flatMap { Int(try $0.attr("href").split(separator: "/").last ?? "") }
@@ -194,6 +194,15 @@ public enum HTMLParsers {
     }
 
     // MARK: Utilitaires
+
+    /// Le site imbrique un lien dans le `mailto:` du badge (`mailto:<a href="https://…">`) :
+    /// on extrait l'URL du formulaire de contact directement de l'attribut.
+    private static func contactURL(in card: Element) throws -> URL? {
+        guard let href = try card.select("a.badge_mail").first()?.attr("href"),
+              let match = href.firstMatch(of: /https?:\/\/[^"'<>\s]+/)
+        else { return nil }
+        return URL(string: String(match.0))
+    }
 
     private static func badgeText(_ element: Element, _ selector: String) throws -> String? {
         guard let badge = try element.select("\(selector) .badge_text").first() else { return nil }

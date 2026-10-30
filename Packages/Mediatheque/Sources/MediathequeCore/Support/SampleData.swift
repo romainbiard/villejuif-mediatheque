@@ -8,8 +8,8 @@ public enum SampleData {
         calendar.date(from: DateComponents(year: year, month: month, day: day, hour: hour, minute: minute))!
     }
 
-    public static let documents: [Document] = [
-        Document(
+    public static let documents: [Notice] = [
+        Notice(
             id: 745828, key: "HARRYPOTTERALECOLEDESSORCIERS--ROWLINGJ-1-GALLIMARDJEUNESSE-2023-1",
             title: "Harry Potter à l'école des sorciers", authors: ["Joanne Kathleen Rowling"], year: "2023",
             publisher: "Gallimard jeunesse", kind: .book, coverURL: nil, series: "Harry Potter", volume: "1",
@@ -19,12 +19,12 @@ public enum SampleData {
                 HarvestedCopy(library: .pulpSud, shelfMark: "SF ROW", barcode: nil),
             ]
         ),
-        Document(
+        Notice(
             id: 474169, key: "SWAY--TOTOG--IDOL-2018-3", title: "Sway", authors: ["Gérald Toto"], year: "2018",
             publisher: "Idol", kind: .cd, coverURL: nil, series: nil, volume: nil, permalink: nil,
             harvestedCopies: [HarvestedCopy(library: .elsaTriolet, shelfMark: "781.3 TOT", barcode: "69288593")]
         ),
-        Document(
+        Notice(
             id: 871798, key: "TERRESDECINEMASURLESTRACESDEHARRYPOTTER--FROMENTJEAN---2017-ArteVod",
             title: "Terres de cinéma – Sur les traces de Harry Potter", authors: ["Jean Froment"], year: "2017",
             publisher: nil, kind: DocumentKind(code: "ArteVod", label: "Cinéma en ligne"), coverURL: nil,

@@ -24,7 +24,7 @@ public struct DocumentKind: Hashable, Sendable, Codable {
     public static let boardGame = DocumentKind(code: "15", label: "Jeu de société")
 }
 
-public struct Document: Identifiable, Hashable, Sendable {
+public struct Notice: Identifiable, Hashable, Sendable {
     public let id: Int
     /// Clé Bokeh (`identifier`), nécessaire pour la page notice.
     public let key: String
@@ -77,9 +77,9 @@ public struct SearchPage: Sendable, Equatable {
     public let total: Int
     public let page: Int
     public let pageSize: Int
-    public let documents: [Document]
+    public let documents: [Notice]
 
-    public init(total: Int, page: Int, pageSize: Int, documents: [Document]) {
+    public init(total: Int, page: Int, pageSize: Int, documents: [Notice]) {
         self.total = total
         self.page = page
         self.pageSize = pageSize
@@ -90,15 +90,22 @@ public struct SearchPage: Sendable, Equatable {
 }
 
 public struct SearchQuery: Hashable, Sendable {
+    public enum Sort: String, Hashable, Sendable {
+        case relevance = "*"
+        case newest = "date_creation desc"
+    }
+
     public var text: String
     public var kinds: [DocumentKind]
     public var libraries: [Library]
+    public var sort: Sort
     public var page: Int
 
-    public init(text: String, kinds: [DocumentKind] = [], libraries: [Library] = [], page: Int = 1) {
+    public init(text: String, kinds: [DocumentKind] = [], libraries: [Library] = [], sort: Sort = .relevance, page: Int = 1) {
         self.text = text
         self.kinds = kinds
         self.libraries = libraries
+        self.sort = sort
         self.page = page
     }
 
