@@ -277,4 +277,5 @@ extension FeedbackEvent {
     TabView {
         Tab(role: .search) { SearchView() }
     }
+    .environment(SessionStore())
 }

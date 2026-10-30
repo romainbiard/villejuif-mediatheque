@@ -23,7 +23,7 @@ public extension Color {
     static func soft(_ color: Color) -> Color { color.opacity(0.14) }
 }
 
-extension Color {
+public extension Color {
     init(hex: UInt32) {
         self.init(
             red: Double((hex >> 16) & 0xFF) / 255,
@@ -66,4 +66,10 @@ public enum BrandArtwork {
     public static func foreground(for seed: Int) -> Color {
         [1, 2].contains(abs(seed) % palette.count) ? Color(hex: 0x1C1B22) : .white
     }
+}
+
+/// Logo de la ville (fichiers du site de la médiathèque). Son usage dans l'app reste soumis à l'accord de la ville.
+public enum VillejuifLogo {
+    public static let white = Image("villejuif-logo-white", bundle: .module)
+    public static let magenta = Image("villejuif-logo-magenta", bundle: .module)
 }

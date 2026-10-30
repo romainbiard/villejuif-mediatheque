@@ -17,6 +17,7 @@ let package = Package(
         .library(name: "SearchFeature", targets: ["SearchFeature"]),
         .library(name: "AgendaFeature", targets: ["AgendaFeature"]),
         .library(name: "InfoFeature", targets: ["InfoFeature"]),
+        .library(name: "AccountFeature", targets: ["AccountFeature"]),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.17.0"),
@@ -38,10 +39,11 @@ let package = Package(
                 .product(name: "DependenciesMacros", package: "swift-dependencies"),
             ]
         ),
-        .target(name: "DesignSystem"),
+        .target(name: "DesignSystem", resources: [.process("Resources")]),
         .target(name: "SearchFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies]),
         .target(name: "AgendaFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies]),
         .target(name: "InfoFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies]),
+        .target(name: "AccountFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies]),
         .testTarget(
             name: "BokehAPITests",
             dependencies: ["BokehAPI"],
@@ -61,6 +63,7 @@ let package = Package(
                 "SearchFeature",
                 "AgendaFeature",
                 "InfoFeature",
+                "AccountFeature",
                 .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
                 .product(name: "Clocks", package: "swift-clocks"),
             ]

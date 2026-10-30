@@ -33,6 +33,15 @@ public actor SessionManager {
         return try await reopen(with: credentials)
     }
 
+    /// Demande d'e-mail de réinitialisation. Le formulaire refuse un envoi
+    /// moins de 2 s après son affichage (`minimum_time`), d'où l'attente.
+    public func requestPasswordReset(cardNumber: String) async throws {
+        let page = try await http.string(for: .lostPasswordPage)
+        let token = try HTMLParsers.csrfToken(in: page)
+        try await Task.sleep(for: .seconds(2.2))
+        _ = try await http.data(for: .lostPassword(cardNumber: cardNumber, csrfToken: token))
+    }
+
     public func logout() async {
         _ = try? await http.data(for: .logout)
         await http.clearSession()

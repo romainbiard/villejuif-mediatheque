@@ -1,0 +1,281 @@
+import CoreImage.CIFilterBuiltins
+import DesignSystem
+import MediathequeCore
+import SwiftUI
+
+/// Onglet Compte : connexion, ou accueil du compte une fois la session ouverte.
+public struct AccountView: View {
+    @Environment(SessionStore.self) private var session
+
+    public init() {}
+
+    public var body: some View {
+        switch session.state {
+        case .restoring:
+            ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity).background(Color.surfaceGrouped)
+        case .loggedOut:
+            LoginView()
+        case let .loggedIn(patron):
+            AccountHomeView(patron: patron)
+        }
+    }
+}
+
+enum AccountRoute: Hashable {
+    case loans, holds
+}
+
+struct AccountHomeView: View {
+    let patron: Patron
+    @Environment(SessionStore.self) private var session
+    @State private var viewModel = AccountHomeViewModel()
+    @State private var showsCard = false
+    @State private var confirmsLogout = false
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 14) {
+                    if patron.cardExpired || patron.cardAboutToExpire {
+                        CardExpiryBanner(patron: patron)
+                    }
+                    Button { showsCard = true } label: { LibraryCardView(patron: patron) }
+                        .buttonStyle(.plain)
+                        .accessibilityHint("Affiche la carte en grand pour le comptoir")
+                    counters
+                    menu
+                    Button("Se déconnecter", role: .destructive) { confirmsLogout = true }
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 8)
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 24)
+            }
+            .background(Color.surfaceGrouped)
+            .navigationTitle("Mon compte")
+            .navigationDestination(for: AccountRoute.self) { route in
+                switch route {
+                case .loans: LoansView()
+                case .holds: HoldsView()
+                }
+            }
+            .refreshable { await viewModel.refresh(session) }
+            .task { await viewModel.refresh(session) }
+            .fullScreenCover(isPresented: $showsCard) { FullScreenCardView(patron: patron) }
+            .confirmationDialog("Se déconnecter de votre compte ?", isPresented: $confirmsLogout, titleVisibility: .visible) {
+                Button("Se déconnecter", role: .destructive) { Task { await session.logout() } }
+            }
+        }
+        .sensoryFeedback(.impact(weight: .medium), trigger: session.state == .loggedOut)
+    }
+
+    private var counters: some View {
+        HStack(spacing: 10) {
+            NavigationLink(value: AccountRoute.loans) {
+                CounterTile(value: patron.counters.loans, label: "Prêts", color: .ink)
+            }
+            NavigationLink(value: AccountRoute.loans) {
+                CounterTile(value: patron.counters.lateLoans, label: "En retard", color: .statusDanger)
+            }
+            NavigationLink(value: AccountRoute.holds) {
+                CounterTile(value: patron.counters.waitingToBePulled, label: "À retirer", color: .statusSuccess)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var menu: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            SectionHeader("Mes emprunts")
+            VStack(spacing: 0) {
+                NavigationLink(value: AccountRoute.loans) {
+                    MenuRow(title: "Mes prêts", systemImage: "books.vertical.fill", tint: .brandViolet) {
+                        if patron.counters.lateLoans > 0 {
+                            StatusPill("\(patron.counters.lateLoans) en retard", style: .danger)
+                        }
+                    }
+                }
+                Divider().padding(.leading, 58)
+                NavigationLink(value: AccountRoute.holds) {
+                    MenuRow(title: "Mes réservations", systemImage: "bookmark.fill", tint: .statusSuccess) {
+                        if patron.counters.waitingToBePulled > 0 {
+                            StatusPill("\(patron.counters.waitingToBePulled) à retirer", style: .success)
+                        }
+                    }
+                }
+            }
+            .buttonStyle(.plain)
+            .cardStyle(padding: 0)
+        }
+    }
+}
+
+// MARK: - Carte d'abonné
+
+struct LibraryCardView: View {
+    let patron: Patron
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 8) {
+                    VillejuifLogo.white.resizable().scaledToFit().frame(height: 26).accessibilityLabel("Ville de Villejuif")
+                    Text(patron.displayName).font(.title2.weight(.bold))
+                    if let expiry = patron.cardExpiry {
+                        Text("Carte valable jusqu'au \(expiry.formatted(.dateTime.day().month(.wide).year()))")
+                            .font(.footnote)
+                            .opacity(0.85)
+                    }
+                }
+                Spacer()
+                Text("Gratuit")
+                    .font(.caption.weight(.semibold))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            }
+            VStack(spacing: 6) {
+                BarcodeView(value: patron.cardNumber).frame(height: 44)
+                HStack {
+                    Text(patron.cardNumber).font(.footnote.weight(.semibold)).monospacedDigit().tracking(2)
+                    Spacer()
+                    Text("Toucher pour agrandir").font(.footnote).foregroundStyle(Color(hex: 0x5E5B66))
+                }
+            }
+            .foregroundStyle(Color(hex: 0x1C1B22))
+            .padding(12)
+            .background(.white, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        }
+        .foregroundStyle(.white)
+        .padding(20)
+        .background {
+            ZStack {
+                Color.brandViolet
+                Circle().fill(Color.brandMagenta.opacity(0.55)).frame(width: 220).offset(x: 140, y: -110)
+                Circle().fill(Color.brandVioletDeep.opacity(0.7)).frame(width: 120).offset(x: 170, y: 10)
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Carte d'abonné de \(patron.displayName), numéro \(patron.cardNumber)")
+    }
+}
+
+/// Carte plein écran pour le comptoir, luminosité au maximum le temps de l'affichage.
+struct FullScreenCardView: View {
+    let patron: Patron
+    @Environment(\.dismiss) private var dismiss
+    @State private var previousBrightness: CGFloat?
+
+    var body: some View {
+        VStack(spacing: 24) {
+            Spacer()
+            Text(patron.displayName).font(.title.weight(.bold))
+            BarcodeView(value: patron.cardNumber).frame(height: 140).padding(.horizontal, 24)
+            Text(patron.cardNumber).font(.title2.weight(.semibold)).monospacedDigit().tracking(4)
+            Spacer()
+            Button("Fermer") { dismiss() }.buttonStyle(.glass).controlSize(.large)
+        }
+        .foregroundStyle(Color(hex: 0x1C1B22))
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(.white)
+        .onAppear(perform: brighten)
+        .onDisappear(perform: restore)
+    }
+
+    private func brighten() {
+        #if canImport(UIKit)
+        guard let screen = UIApplication.shared.connectedScenes.compactMap({ ($0 as? UIWindowScene)?.screen }).first else { return }
+        previousBrightness = screen.brightness
+        screen.brightness = 1
+        #endif
+    }
+
+    private func restore() {
+        #if canImport(UIKit)
+        guard let previousBrightness,
+              let screen = UIApplication.shared.connectedScenes.compactMap({ ($0 as? UIWindowScene)?.screen }).first
+        else { return }
+        screen.brightness = previousBrightness
+        #endif
+    }
+}
+
+/// Code-barres Code 128 du numéro de carte.
+/// ⚠️ La symbologie lue par les douchettes des médiathèques reste à confirmer.
+struct BarcodeView: View {
+    let value: String
+
+    var body: some View {
+        if let image = Self.render(value) {
+            Image(decorative: image, scale: 1).resizable().interpolation(.none)
+        } else {
+            Color.clear
+        }
+    }
+
+    static func render(_ value: String) -> CGImage? {
+        let filter = CIFilter.code128BarcodeGenerator()
+        filter.message = Data(value.utf8)
+        filter.quietSpace = 0
+        guard let output = filter.outputImage else { return nil }
+        return CIContext().createCGImage(output, from: output.extent)
+    }
+}
+
+struct CardExpiryBanner: View {
+    let patron: Patron
+
+    var body: some View {
+        Label(
+            patron.cardExpired
+                ? "Votre carte a expiré. Renouvelez-la à l'accueil d'une médiathèque."
+                : "Votre carte expire dans \(patron.cardExpiresInDays) jours. Renouvelez-la à l'accueil.",
+            systemImage: "exclamationmark.triangle.fill"
+        )
+        .font(.subheadline.weight(.semibold))
+        .foregroundStyle(patron.cardExpired ? Color.statusDanger : Color.statusWarning)
+        .cardStyle()
+    }
+}
+
+// MARK: - Éléments
+
+struct CounterTile: View {
+    let value: Int
+    let label: String
+    let color: Color
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("\(value)").font(.title.weight(.heavy)).foregroundStyle(color)
+            Text(label).font(.subheadline).foregroundStyle(Color.inkSecondary)
+        }
+        .cardStyle(padding: 12)
+        .accessibilityElement(children: .combine)
+    }
+}
+
+struct MenuRow<Accessory: View>: View {
+    let title: String
+    let systemImage: String
+    let tint: Color
+    @ViewBuilder let accessory: Accessory
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: systemImage)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.white)
+                .frame(width: 32, height: 32)
+                .background(tint, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            Text(title).font(.body.weight(.semibold)).foregroundStyle(Color.ink)
+            Spacer()
+            accessory
+            Image(systemName: "chevron.right").font(.footnote.weight(.semibold)).foregroundStyle(Color.inkSecondary)
+        }
+        .padding(.horizontal, 14)
+        .frame(height: 56)
+        .contentShape(Rectangle())
+    }
+}

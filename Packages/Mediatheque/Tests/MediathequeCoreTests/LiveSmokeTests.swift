@@ -2,6 +2,7 @@ import Dependencies
 import DependenciesTestSupport
 import Foundation
 import Testing
+import BokehAPI
 @testable import MediathequeCore
 
 /// Appels réels au portail, sur les routes publiques uniquement.
@@ -27,6 +28,13 @@ struct LiveSmokeTests {
         #expect(events.contains { $0.start != nil })
         let detail = try await AgendaClient.liveValue.detail(try #require(events.first { !$0.isAllDay }))
         #expect(detail.descriptionText != nil)
+    }
+
+    /// Sans cookie de session, la connexion ne peut pas aboutir (bug corrigé en P3).
+    @Test func sessionCookieIsKept() async throws {
+        let http = HTTPClient()
+        _ = try await http.string(for: .loginPage)
+        #expect(await http.hasSessionCookie)
     }
 
     @Test func libraries() async throws {

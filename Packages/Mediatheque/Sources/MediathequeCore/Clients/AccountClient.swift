@@ -9,6 +9,13 @@ public struct HoldRequest: Hashable, Sendable {
     public let pickupPath: String
     public let pickupLibraries: [Library]
     public let defaultPickup: Library?
+
+    public init(recordID: Int, pickupPath: String, pickupLibraries: [Library], defaultPickup: Library?) {
+        self.recordID = recordID
+        self.pickupPath = pickupPath
+        self.pickupLibraries = pickupLibraries
+        self.defaultPickup = defaultPickup
+    }
 }
 
 public enum HoldError: Error, Equatable, Sendable {

@@ -84,14 +84,18 @@ public struct CoverImage: View {
     }
 
     public var body: some View {
-        AsyncImage(url: url) { phase in
-            if let image = phase.image {
-                image.resizable().scaledToFill()
-            } else {
-                GeneratedCover(title: title, seed: seed)
+        // Le cadre est fixé par l'appelant : l'image remplit ce cadre sans en déborder.
+        Color.clear
+            .overlay {
+                AsyncImage(url: url) { phase in
+                    if let image = phase.image {
+                        image.resizable().scaledToFill()
+                    } else {
+                        GeneratedCover(title: title, seed: seed)
+                    }
+                }
             }
-        }
-        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         .accessibilityHidden(true)
     }
 }

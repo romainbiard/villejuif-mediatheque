@@ -4,6 +4,9 @@ import SwiftUI
 
 public struct DocumentDetailView: View {
     @State private var viewModel: DocumentDetailViewModel
+    @State private var showsHold = false
+    @State private var showsLoginHint = false
+    @Environment(SessionStore.self) private var session
 
     public init(document: Notice) {
         _viewModel = State(initialValue: DocumentDetailViewModel(document: document))
@@ -17,6 +20,7 @@ public struct DocumentDetailView: View {
                 header
                 VStack(alignment: .leading, spacing: 24) {
                     identity
+                    if !document.kind.isDigital { reserveButton }
                     if document.kind.isDigital {
                         onlineCard
                     } else {
@@ -41,6 +45,14 @@ public struct DocumentDetailView: View {
                 }
             }
         }
+        .sheet(isPresented: $showsHold) {
+            HoldSheet(notice: document, defaultPickup: session.patron?.homeLibrary)
+        }
+        .alert("Connectez-vous pour réserver", isPresented: $showsLoginHint) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Ouvrez l'onglet Compte et connectez-vous avec votre carte d'abonné.")
+        }
         .task { await viewModel.load() }
         .refreshable { await viewModel.load() }
     }
@@ -57,6 +69,24 @@ public struct DocumentDetailView: View {
         }
         .frame(height: 400)
         .clipped()
+    }
+
+    @ViewBuilder
+    private var reserveButton: some View {
+        if session.patron?.permissions.holdForbidden == true {
+            Label("Les réservations sont suspendues sur votre compte. Renseignez-vous à l'accueil.", systemImage: "info.circle")
+                .font(.subheadline)
+                .foregroundStyle(Color.inkSecondary)
+        } else {
+            Button {
+                if session.patron == nil { showsLoginHint = true } else { showsHold = true }
+            } label: {
+                Label("Réserver", systemImage: "bookmark").frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.glassProminent)
+            .tint(.brandViolet)
+            .controlSize(.extraLarge)
+        }
     }
 
     private var identity: some View {
@@ -171,4 +201,5 @@ struct InfoLine: View {
 
 #Preview {
     NavigationStack { DocumentDetailView(document: SampleData.documents[0]) }
+        .environment(SessionStore())
 }

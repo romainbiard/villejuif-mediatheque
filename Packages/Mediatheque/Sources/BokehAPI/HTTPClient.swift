@@ -11,9 +11,10 @@ public actor HTTPClient {
 
     public init(baseURL: URL = HTTPClient.villejuifBaseURL, userAgent: String = HTTPClient.defaultUserAgent) {
         self.baseURL = baseURL
-        let cookieStorage = HTTPCookieStorage()
+        // On garde le stockage en mémoire de la configuration éphémère :
+        // une instance `HTTPCookieStorage()` créée à la main ne retient aucun cookie.
         let configuration = URLSessionConfiguration.ephemeral
-        configuration.httpCookieStorage = cookieStorage
+        let cookieStorage = configuration.httpCookieStorage!
         configuration.httpCookieAcceptPolicy = .always
         configuration.timeoutIntervalForRequest = 20
         configuration.httpAdditionalHeaders = [

@@ -1,6 +1,8 @@
+import AccountFeature
 import AgendaFeature
 import DesignSystem
 import InfoFeature
+import MediathequeCore
 import SearchFeature
 import SwiftUI
 
@@ -16,11 +18,7 @@ struct RootTabView: View {
     var body: some View {
         TabView(selection: $selection) {
             Tab("Compte", systemImage: "person.crop.circle", value: .account) {
-                ComingSoonView(
-                    title: "Mon compte",
-                    systemImage: "person.crop.circle",
-                    message: "Prêts, réservations et carte d'abonné arrivent dans la prochaine version."
-                )
+                AccountView()
             }
             Tab("Agenda", systemImage: "calendar", value: .agenda) {
                 AgendaView()
@@ -44,7 +42,7 @@ struct RootTabView: View {
     }
 }
 
-/// Onglets prévus en P3 (compte) et P4 (numérique).
+/// Onglet prévu en P4 (numérique).
 struct ComingSoonView: View {
     let title: String
     let systemImage: String
@@ -64,4 +62,5 @@ struct ComingSoonView: View {
 
 #Preview {
     RootTabView()
+        .environment(SessionStore())
 }
