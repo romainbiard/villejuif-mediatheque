@@ -55,7 +55,9 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.rbiard.mediatheques-villejuif
-        PRODUCT_NAME: Médiathèques
+        # Sans accents : avec « é », usernotificationsd ne relie pas le bundle à son exécutable
+        # (normalisation Unicode) et refuse toute demande de notifications.
+        PRODUCT_NAME: MaMediatheque
         TARGETED_DEVICE_FAMILY: "1,2"
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
     dependencies:

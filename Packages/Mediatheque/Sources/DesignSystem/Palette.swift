@@ -72,4 +72,6 @@ public enum BrandArtwork {
 public enum VillejuifLogo {
     public static let white = Image("villejuif-logo-white", bundle: .module)
     public static let magenta = Image("villejuif-logo-magenta", bundle: .module)
+    /// Blason seul, sans le mot « VILLEJUIF » (icône de l'app, aperçus de notifications). Image modèle : se teinte.
+    public static let crest = Image("villejuif-crest", bundle: .module)
 }

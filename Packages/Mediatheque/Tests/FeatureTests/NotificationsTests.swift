@@ -90,6 +90,7 @@ struct NotificationsViewModelTests {
             $0.snapshotClient.load = { nil }
             $0.snapshotClient.save = { _ in }
             $0.notificationClient.replaceLoanReminders = { _ in }
+            $0.notificationClient.setAgendaDigest = { _ in }
         } operation: { NotificationsViewModel() }
 
         viewModel.load()

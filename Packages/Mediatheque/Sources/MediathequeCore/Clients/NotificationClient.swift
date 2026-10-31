@@ -1,15 +1,27 @@
 import Dependencies
 import DependenciesMacros
 import Foundation
+import OSLog
 import UserNotifications
 #if canImport(WidgetKit)
 import WidgetKit
 #endif
 
-/// Notifications locales : rappels de retour et réservations arrivées.
+/// État de l'autorisation des notifications, tel qu'iOS le rapporte.
+public enum NotificationAuthorization: Sendable, Equatable {
+    /// iOS n'a encore rien demandé : l'alerte système reste disponible (une seule fois).
+    case notDetermined
+    case denied
+    case authorized
+}
+
+/// Notifications locales : rappels de retour, réservations arrivées, agenda de la semaine.
 @DependencyClient
 public struct NotificationClient: Sendable {
+    public var authorizationStatus: @Sendable () async -> NotificationAuthorization = { .notDetermined }
     public var requestAuthorization: @Sendable () async -> Bool = { false }
+    /// Rappel hebdomadaire de l'agenda, le lundi à 9 h ; `false` le retire.
+    public var setAgendaDigest: @Sendable (_ enabled: Bool) async -> Void
     /// Remplace tous les rappels de retour programmés par `reminders`.
     public var replaceLoanReminders: @Sendable (_ reminders: [Reminder]) async -> Void
     public var deliver: @Sendable (_ reminder: Reminder) async -> Void
@@ -18,10 +30,36 @@ public struct NotificationClient: Sendable {
 
 extension NotificationClient: DependencyKey {
     static let loanPrefix = "loan-"
+    static let agendaDigestID = "agenda-weekly"
+    static let logger = Logger(subsystem: "com.rbiard.mediatheques-villejuif", category: "notifications")
 
     public static let liveValue = NotificationClient(
+        authorizationStatus: {
+            switch await UNUserNotificationCenter.current().notificationSettings().authorizationStatus {
+            case .notDetermined: .notDetermined
+            case .denied: .denied
+            default: .authorized
+            }
+        },
         requestAuthorization: {
-            (try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])) ?? false
+            do {
+                return try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
+            } catch {
+                // Sans ce journal, un refus d'iOS (et non de l'utilisateur) passerait inaperçu.
+                logger.error("Autorisation des notifications impossible : \(error.localizedDescription, privacy: .public)")
+                return false
+            }
+        },
+        setAgendaDigest: { enabled in
+            let center = UNUserNotificationCenter.current()
+            center.removePendingNotificationRequests(withIdentifiers: [agendaDigestID])
+            guard enabled else { return }
+            let content = UNMutableNotificationContent()
+            content.title = "Cette semaine dans vos médiathèques"
+            content.body = "Lectures, ateliers, projections : découvrez les animations à venir dans l'agenda."
+            content.threadIdentifier = "agenda"
+            let trigger = UNCalendarNotificationTrigger(dateMatching: DateComponents(hour: 9, minute: 0, weekday: 2), repeats: true)
+            try? await center.add(UNNotificationRequest(identifier: agendaDigestID, content: content, trigger: trigger))
         },
         replaceLoanReminders: { reminders in
             let center = UNUserNotificationCenter.current()
@@ -56,7 +94,12 @@ extension NotificationClient: DependencyKey {
     }
 
     public static let previewValue = NotificationClient(
-        requestAuthorization: { true }, replaceLoanReminders: { _ in }, deliver: { _ in }, removeAll: {}
+        authorizationStatus: { .notDetermined },
+        requestAuthorization: { true },
+        setAgendaDigest: { _ in },
+        replaceLoanReminders: { _ in },
+        deliver: { _ in },
+        removeAll: {}
     )
 
     public static let testValue = NotificationClient()
@@ -74,17 +117,21 @@ public struct ReminderSettings: Hashable, Sendable {
     public var loanReminders: Bool
     public var daysBefore: Int
     public var holdAlerts: Bool
+    /// Désactivé par défaut : seuls les retours et les réservations sont utiles à tous.
+    public var agendaDigest: Bool
 
-    public init(loanReminders: Bool = true, daysBefore: Int = 3, holdAlerts: Bool = true) {
+    public init(loanReminders: Bool = true, daysBefore: Int = 3, holdAlerts: Bool = true, agendaDigest: Bool = false) {
         self.loanReminders = loanReminders
         self.daysBefore = daysBefore
         self.holdAlerts = holdAlerts
+        self.agendaDigest = agendaDigest
     }
 
     public enum Key {
         public static let loanReminders = "reminders.loans"
         public static let daysBefore = "reminders.daysBefore"
         public static let holdAlerts = "reminders.holds"
+        public static let agendaDigest = "reminders.agendaDigest"
         public static let faceID = "security.faceID"
         public static let onboardingDone = "account.onboardingDone"
     }
@@ -94,7 +141,8 @@ public struct ReminderSettings: Hashable, Sendable {
         ReminderSettings(
             loanReminders: defaults.object(forKey: Key.loanReminders) as? Bool ?? true,
             daysBefore: defaults.object(forKey: Key.daysBefore) as? Int ?? 3,
-            holdAlerts: defaults.object(forKey: Key.holdAlerts) as? Bool ?? true
+            holdAlerts: defaults.object(forKey: Key.holdAlerts) as? Bool ?? true,
+            agendaDigest: defaults.object(forKey: Key.agendaDigest) as? Bool ?? false
         )
     }
 }
@@ -128,6 +176,7 @@ public enum AccountSync {
             ? ReminderPlanner.loanReminders(for: snapshot.loans, daysBefore: settings.daysBefore, now: now, calendar: .paris)
             : []
         await notifications.replaceLoanReminders(reminders)
+        await notifications.setAgendaDigest(settings.agendaDigest)
 
         // Centre de notifications : on garde la trace de ce que les rappels ont annoncé.
         var inbox = inboxClient.load()

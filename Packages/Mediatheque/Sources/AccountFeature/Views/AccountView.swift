@@ -191,7 +191,8 @@ struct AccountHomeView: View {
                 showsCard = true
                 cardRequest = false
             }
-            .sheet(isPresented: Binding(get: { !onboardingDone }, set: { if !$0 { onboardingDone = true } })) {
+            // Plein écran : l'explication des notifications reprend la composition de la connexion.
+            .fullScreenCover(isPresented: Binding(get: { !onboardingDone }, set: { if !$0 { onboardingDone = true } })) {
                 WelcomeSetupView(patron: patron) { onboardingDone = true }
             }
         }

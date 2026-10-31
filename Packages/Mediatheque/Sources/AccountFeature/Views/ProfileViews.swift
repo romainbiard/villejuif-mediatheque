@@ -219,6 +219,7 @@ struct ProfileSettingsView: View {
     @State private var confirmsLogout = false
     @AppStorage(ReminderSettings.Key.loanReminders, store: .shared) private var loanReminders = true
     @AppStorage(ReminderSettings.Key.holdAlerts, store: .shared) private var holdAlerts = true
+    @AppStorage(ReminderSettings.Key.agendaDigest, store: .shared) private var agendaDigest = false
     /// Même clé que `SessionStore.isFaceIDEnabled`, observée par SwiftUI.
     @AppStorage(ReminderSettings.Key.faceID, store: .shared) private var faceID = false
 
@@ -237,6 +238,8 @@ struct ProfileSettingsView: View {
                     SettingToggleRow(title: "Rappels de retour", detail: "3 jours avant, puis le jour même", systemImage: "bell.badge", tint: .statusDanger, isOn: reminderBinding($loanReminders))
                     Divider().padding(.leading, 62)
                     SettingToggleRow(title: "Réservations disponibles", detail: "Quand un document vous attend", systemImage: "shippingbox", tint: .statusSuccess, isOn: reminderBinding($holdAlerts))
+                    Divider().padding(.leading, 62)
+                    SettingToggleRow(title: "Agenda de la semaine", detail: "Les animations, le lundi matin", systemImage: "calendar", tint: .brandVioletDeep, isOn: reminderBinding($agendaDigest))
                 }
                 group("Lettre d'information", footer: "L'actualité du réseau des médiathèques, par e-mail.") {
                     SettingToggleRow(
