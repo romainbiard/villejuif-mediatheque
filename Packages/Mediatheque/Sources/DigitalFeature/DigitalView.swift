@@ -9,9 +9,11 @@ public struct DigitalView: View {
     @Environment(SessionStore.self) private var session
     @State private var viewModel = DigitalViewModel()
     @State private var helpOffer: DigitalOffer?
-    @State private var appToInstall: ProviderApp?
+    @Environment(\.scenePhase) private var scenePhase
 
     public init() {}
+
+    @Environment(\.openURL) private var openURL
 
     public var body: some View {
         NavigationStack {
@@ -24,18 +26,24 @@ public struct DigitalView: View {
                     if let featured = viewModel.offers.first {
                         FeaturedOfferCard(
                             offer: featured,
+                            access: viewModel.access(for: featured),
+                            primaryLabel: primaryLabel(for: featured, compact: false),
+                            needsInstall: viewModel.needsInstall(featured),
                             isResolving: viewModel.resolving == featured.id,
-                            open: { Task { await viewModel.open(featured) } },
-                            help: { helpOffer = featured }
+                            open: { Task { await viewModel.primaryAction(featured) } },
+                            menu: menuActions(for: featured)
                         )
                     }
                     LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible())], spacing: 12) {
                         ForEach(viewModel.offers.dropFirst()) { offer in
                             OfferTile(
                                 offer: offer,
+                                access: viewModel.access(for: offer),
+                                primaryLabel: primaryLabel(for: offer, compact: true),
+                                needsInstall: viewModel.needsInstall(offer),
                                 isResolving: viewModel.resolving == offer.id,
-                                open: { Task { await viewModel.open(offer) } },
-                                help: { helpOffer = offer }
+                                open: { Task { await viewModel.primaryAction(offer) } },
+                                menu: menuActions(for: offer)
                             )
                         }
                     }
@@ -45,17 +53,39 @@ public struct DigitalView: View {
             }
             .background(Color.surfaceGrouped)
             .navigationTitle("Numérique")
-            .sheet(item: $helpOffer) { offer in
-                FirstUseSheet(offer: offer) { app in
-                    helpOffer = nil
-                    appToInstall = app
+            // La fiche App Store part une fois la feuille refermée : on ne présente pas par-dessus une feuille qui s'en va.
+            .sheet(item: $helpOffer, onDismiss: presentStoreIfNeeded) { offer in
+                HowItWorksSheet(
+                    offer: offer,
+                    availability: offer.app.map { viewModel.availability(of: $0) } ?? .unknown,
+                    primaryLabel: primaryLabel(for: offer, compact: false),
+                    primary: {
+                        helpOffer = nil
+                        Task { await viewModel.primaryAction(offer) }
+                    },
+                    install: {
+                        helpOffer = nil
+                        viewModel.getApp(for: offer)
+                    }
+                )
+            }
+            .sheet(item: $viewModel.installOffer, onDismiss: presentStoreIfNeeded) { offer in
+                if let app = offer.app {
+                    InstallAppSheet(
+                        offer: offer,
+                        app: app,
+                        get: { viewModel.getApp(for: offer) },
+                        continueOnWeb: { Task { await viewModel.continueOnWeb(offer) } }
+                    )
                 }
             }
             .fullScreenCover(item: $viewModel.session) { session in
                 PortalSheet(session: session)
             }
-            .appStoreOverlay(isPresented: Binding(get: { appToInstall != nil }, set: { if !$0 { appToInstall = nil } })) {
-                SKOverlay.AppConfiguration(appIdentifier: appToInstall?.appStoreID ?? "", position: .bottom)
+            .overlay(alignment: .bottom) { installedBanner }
+            .task { await viewModel.refreshInstalledApps() }
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active { Task { await viewModel.refreshInstalledApps() } }
             }
             .alert(
                 "Ouverture impossible",
@@ -68,9 +98,62 @@ public struct DigitalView: View {
         }
         .sensoryFeedback(trigger: viewModel.feedback) { _, event in
             switch event {
+            case .success: .success
             case .error: .error
             case .lightImpact: .impact(weight: .light)
             default: nil
+            }
+        }
+    }
+
+    private func primaryLabel(for offer: DigitalOffer, compact: Bool) -> String {
+        if viewModel.needsInstall(offer) { return compact ? "Installer" : "Installer l'app" }
+        if !compact, viewModel.access(for: offer) == .appInstalled, let app = offer.app { return "Ouvrir \(app.name)" }
+        return offer.webActionLabel
+    }
+
+    private func menuActions(for offer: DigitalOffer) -> ServiceMenu.Actions {
+        ServiceMenu.Actions(
+            connect: viewModel.canConnectApp(offer) ? { Task { await viewModel.connectThroughPortal(offer) } } : nil,
+            // Pour une app nécessaire, le web est l'autre voie ; ailleurs, c'est déjà le bouton principal.
+            web: offer.app?.role == .required ? { Task { await viewModel.continueOnWeb(offer) } } : nil,
+            howItWorks: { helpOffer = offer },
+            tutorial: { openURL(offer.tutorialURL) }
+        )
+    }
+
+    private func presentStoreIfNeeded() {
+        guard let product = viewModel.storeProduct else { return }
+        AppStorePresenter.present(appStoreID: product.id) {
+            Task { await viewModel.storeDismissed() }
+        }
+    }
+
+    /// « L'app est installée » : la connexion part toute seule au retour de l'App Store.
+    @ViewBuilder
+    private var installedBanner: some View {
+        if let id = viewModel.justInstalled, let offer = viewModel.offers.first(where: { $0.id == id }), let app = offer.app {
+            HStack(spacing: 12) {
+                Image(systemName: offer.systemImage)
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .frame(width: 44, height: 44)
+                    .background(Color(hex: 0x17161C), in: RoundedRectangle(cornerRadius: 11, style: .continuous))
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("\(app.name) est installée").font(.subheadline.weight(.bold))
+                    Text("Connexion avec votre carte…").font(.footnote).foregroundStyle(Color.inkSecondary)
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(12)
+            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+            .padding(.horizontal, 16)
+            .padding(.bottom, 12)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+            .accessibilityElement(children: .combine)
+            .task(id: id) {
+                try? await Task.sleep(for: .seconds(4))
+                withAnimation { viewModel.dismissInstalledBanner() }
             }
         }
     }
@@ -93,11 +176,75 @@ public struct DigitalView: View {
 
 // MARK: - Cartes
 
+/// Ligne « où ça se consulte », sous le nom du service.
+struct AccessLine: View {
+    let access: ServiceAccess
+    var onDark = false
+
+    var body: some View {
+        switch access {
+        case .appInstalled:
+            Label("App installée", systemImage: "checkmark")
+                .font(.caption.weight(.bold))
+                .foregroundStyle(onDark ? Color.brandCyan : Color(light: 0x0B6B70, dark: 0x84DADE))
+                .lineLimit(1)
+        case .inApp: plain("Se consulte dans l'app")
+        case .reader(let app): plain("À lire dans \(app)")
+        case .web: plain("Sur le web")
+        }
+    }
+
+    private func plain(_ text: String) -> some View {
+        Text(text).font(.caption.weight(.semibold)).foregroundStyle(Color.inkSecondary).lineLimit(1)
+    }
+}
+
+/// Bouton « … » d'un service : les actions secondaires, à la place de l'ancienne aide « ? ».
+struct ServiceMenu: View {
+    struct Actions {
+        /// Seulement quand l'app est installée : (re)connexion par le portail.
+        var connect: (() -> Void)?
+        var web: (() -> Void)?
+        var howItWorks: () -> Void
+        var tutorial: () -> Void
+    }
+
+    let title: String
+    let actions: Actions
+    var large = false
+
+    var body: some View {
+        Menu {
+            if let connect = actions.connect {
+                Button("Connecter l'app avec ma carte", systemImage: "person.badge.key", action: connect)
+            }
+            if let web = actions.web {
+                Button("Ouvrir sur le web", systemImage: "safari", action: web)
+            }
+            Section {
+                Button("Comment ça marche", systemImage: "questionmark.circle", action: actions.howItWorks)
+                Button("Tutoriel complet (PDF)", systemImage: "doc.text", action: actions.tutorial)
+            }
+        } label: {
+            Image(systemName: "ellipsis")
+                .font((large ? Font.body : .subheadline).weight(.bold))
+                .foregroundStyle(large ? Color.white : Color.brandVioletDeep)
+                .frame(width: large ? 50 : 32, height: large ? 50 : 32)
+                .background(large ? Color(hex: 0x5714A4) : Color.brandViolet.opacity(0.12), in: Circle())
+                .contentShape(Circle())
+        }
+        .accessibilityLabel("Plus d'options pour \(title)")
+    }
+}
+
 struct FeaturedOfferCard: View {
     let offer: DigitalOffer
+    let access: ServiceAccess
+    let primaryLabel: String
+    let needsInstall: Bool
     let isResolving: Bool
     let open: () -> Void
-    let help: () -> Void
+    let menu: ServiceMenu.Actions
 
     /// Place réservée à droite du texte pour le cercle « lecture » (104 pt + marges).
     static let artworkWidth: CGFloat = 116
@@ -108,6 +255,13 @@ struct FeaturedOfferCard: View {
                 Text(offer.category).font(.caption.weight(.bold)).textCase(.uppercase).opacity(0.8)
                 Text(offer.provider).font(.title.weight(.heavy))
                 Text(offer.quota).font(.subheadline).opacity(0.85)
+                if access == .appInstalled {
+                    AccessLine(access: access, onDark: true)
+                        .padding(.horizontal, 9)
+                        .padding(.vertical, 4)
+                        .background(Color.brandCyan.opacity(0.18), in: Capsule())
+                        .padding(.top, 2)
+                }
             }
             // Le texte s'arrête avant le cercle « lecture », quelle que soit la largeur de la carte.
             .padding(.trailing, Self.artworkWidth)
@@ -115,14 +269,18 @@ struct FeaturedOfferCard: View {
             Spacer(minLength: 24)
             HStack(spacing: 10) {
                 Button(action: open) {
-                    Text(offer.app.map { "Ouvrir \($0.name)" } ?? "Ouvrir").frame(maxWidth: .infinity)
+                    Group {
+                        if needsInstall {
+                            Label(primaryLabel, systemImage: "arrow.down")
+                        } else {
+                            Text(primaryLabel)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.prominent(tint: .white, foreground: Color(hex: 0x1C1B22), size: .large, isLoading: isResolving))
                 .disabled(isResolving)
-                Button("Première utilisation", systemImage: "questionmark", action: help)
-                    .labelStyle(.iconOnly)
-                    .buttonStyle(.glass)
-                    .controlSize(.large)
+                ServiceMenu(title: offer.provider, actions: menu, large: true)
             }
         }
         .foregroundStyle(.white)
@@ -149,24 +307,24 @@ struct FeaturedOfferCard: View {
 
 struct OfferTile: View {
     let offer: DigitalOffer
+    let access: ServiceAccess
+    let primaryLabel: String
+    let needsInstall: Bool
     let isResolving: Bool
     let open: () -> Void
-    let help: () -> Void
+    let menu: ServiceMenu.Actions
 
     var body: some View {
         let colors = BrandArtwork.colors(for: offer.colorSeed)
         VStack(alignment: .leading, spacing: 10) {
-            HStack {
+            HStack(alignment: .top) {
                 Image(systemName: offer.systemImage)
                     .font(.title3)
                     .foregroundStyle(BrandArtwork.foreground(for: offer.colorSeed))
                     .frame(width: 48, height: 48)
                     .background(colors.background, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                 Spacer()
-                Button("Première utilisation", systemImage: "questionmark.circle", action: help)
-                    .labelStyle(.iconOnly)
-                    .font(.title3)
-                    .foregroundStyle(Color.inkSecondary)
+                ServiceMenu(title: offer.category, actions: menu)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(offer.category).font(.headline).foregroundStyle(Color.ink)
@@ -174,29 +332,55 @@ struct OfferTile: View {
                     .font(.footnote)
                     .foregroundStyle(Color.inkSecondary)
                     .lineLimit(2)
+                AccessLine(access: access).padding(.top, 2)
             }
             Spacer(minLength: 0)
             Button(action: open) {
                 Group {
-                    if isResolving { ProgressView() } else { Text("Ouvrir") }
+                    if isResolving {
+                        ProgressView()
+                    } else if needsInstall {
+                        Label(primaryLabel, systemImage: "arrow.down")
+                    } else {
+                        Text(primaryLabel)
+                    }
                 }
-                .frame(maxWidth: .infinity)
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(buttonForeground)
+                .frame(maxWidth: .infinity, minHeight: 36)
+                .background(buttonBackground, in: Capsule())
+                .contentShape(Capsule())
             }
-            .buttonStyle(.glass)
-            .tint(.brandVioletDeep)
-            .font(.subheadline.weight(.bold))
+            .buttonStyle(.plain)
+            .disabled(isResolving)
         }
         .padding(14)
         .frame(maxWidth: .infinity, minHeight: 200, alignment: .leading)
         .background(Color.surfaceCard, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
     }
+
+    /// Plein quand l'app est là, violet clair pour installer, neutre pour le web.
+    private var buttonBackground: Color {
+        if access == .appInstalled { return .brandVioletDeep }
+        if needsInstall { return .brandViolet.opacity(0.14) }
+        return Color.surfaceGrouped
+    }
+
+    private var buttonForeground: Color {
+        if access == .appInstalled { return Color(light: 0xFFFFFF, dark: 0x1C1B22) }
+        if needsInstall { return .brandVioletDeep }
+        return .ink
+    }
 }
 
-// MARK: - Première utilisation
+// MARK: - Comment ça marche
 
-struct FirstUseSheet: View {
+struct HowItWorksSheet: View {
     let offer: DigitalOffer
-    let install: (ProviderApp) -> Void
+    let availability: AppAvailability
+    let primaryLabel: String
+    let primary: () -> Void
+    let install: () -> Void
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
     @State private var copied = false
@@ -205,6 +389,7 @@ struct FirstUseSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
+                    header
                     Text(offer.summary).foregroundStyle(Color.inkSecondary)
 
                     VStack(alignment: .leading, spacing: 14) {
@@ -219,7 +404,6 @@ struct FirstUseSheet: View {
                             }
                         }
                     }
-                    .cardStyle()
 
                     if let hint = offer.copyableHint {
                         HStack {
@@ -232,34 +416,81 @@ struct FirstUseSheet: View {
                                 UIPasteboard.general.string = hint.value
                                 copied = true
                             }
-                            .buttonStyle(.glass)
+                            .buttonStyle(.prominent(tint: .brandViolet.opacity(0.14), foreground: .brandVioletDeep))
+                            .fixedSize()
                         }
                         .cardStyle()
                     }
 
-                    if let app = offer.app {
-                        Button {
-                            install(app)
-                        } label: {
-                            Label("Installer \(app.name)", systemImage: "arrow.down.app").frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.prominent(size: .large))
+                    // App complémentaire (lecteur, musique, BD) : installée ou à installer, ici.
+                    if let app = offer.app, app.role != .required {
+                        companionRow(app)
                     }
 
-                    Button("Voir le tutoriel complet (PDF)") { openURL(offer.tutorialURL) }
+                    Button(action: primary) {
+                        Text(primaryLabel).frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.prominent(size: .large))
+
+                    Button("Tutoriel complet (PDF)") { openURL(offer.tutorialURL) }
+                        .font(.body.weight(.semibold))
                         .frame(maxWidth: .infinity)
                 }
                 .padding(20)
             }
             .background(Color.surfaceGrouped)
-            .navigationTitle(offer.category)
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Fermer") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Fermer", systemImage: "xmark") { dismiss() }
+                }
             }
         }
-        .presentationDetents([.medium, .large])
+        .presentationDetents([.large])
         .sensoryFeedback(.success, trigger: copied)
+    }
+
+    private var header: some View {
+        HStack(spacing: 12) {
+            let colors = BrandArtwork.colors(for: offer.colorSeed)
+            Image(systemName: offer.systemImage)
+                .font(.title3)
+                .foregroundStyle(BrandArtwork.foreground(for: offer.colorSeed))
+                .frame(width: 48, height: 48)
+                .background(colors.background, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(offer.category).font(.footnote.weight(.bold)).textCase(.uppercase).foregroundStyle(Color.inkSecondary)
+                Text("Comment ça marche").font(.title2.weight(.heavy))
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isHeader)
+        }
+    }
+
+    private func companionRow(_ app: ProviderApp) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: "app.badge")
+                .font(.headline)
+                .foregroundStyle(.white)
+                .frame(width: 44, height: 44)
+                .background(Color(hex: 0x1C1B22), in: RoundedRectangle(cornerRadius: 11, style: .continuous))
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(app.name).font(.subheadline.weight(.bold))
+                Text("\(app.publisher) · Gratuite").font(.footnote).foregroundStyle(Color.inkSecondary)
+            }
+            Spacer(minLength: 8)
+            if availability == .installed, let url = app.launchURL {
+                Button("Ouvrir") { openURL(url) }
+                    .buttonStyle(.prominent(size: .compact))
+                    .fixedSize()
+            } else {
+                Button("Installer", action: install)
+                    .buttonStyle(.prominent(size: .compact))
+                    .fixedSize()
+            }
+        }
+        .cardStyle()
     }
 }
 

@@ -24,6 +24,14 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>arte-mednum</string>
+		<string>cafeyn</string>
+		<string>com.toutapprendre.toutapprendre</string>
+		<string>baobabapp</string>
+		<string>izneo</string>
+	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Scanner le code-barres d'un livre ou de votre carte d'abonné.</string>
 	<key>NSFaceIDUsageDescription</key>

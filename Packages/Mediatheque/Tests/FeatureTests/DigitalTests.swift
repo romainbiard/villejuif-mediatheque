@@ -39,3 +39,144 @@ struct DigitalTests {
         #expect(viewModel.feedback == .error)
     }
 }
+
+@MainActor
+struct PartnerAppsTests {
+    private var films: DigitalOffer { DigitalCatalog.offers.first { $0.id == "films" }! }
+    private var eureka: DigitalOffer { DigitalCatalog.offers.first { $0.id == "eureka" }! }
+
+    @Test func schemesTellWhichAppsAreInstalled() async {
+        let viewModel = withDependencies {
+            $0.installedApps.isInstalled = { $0 == "cafeyn" }
+        } operation: { DigitalViewModel() }
+
+        await viewModel.refreshInstalledApps()
+        let cafeyn = DigitalCatalog.offers.first { $0.id == "presse" }!
+        #expect(viewModel.availability(of: cafeyn.app!) == .installed)
+        #expect(viewModel.availability(of: films.app!) == .notInstalled)
+        // musicMe n'a pas de scheme : on ne peut pas savoir.
+        #expect(viewModel.availability(of: eureka.app!) == .unknown)
+        #expect(viewModel.needsInstall(films))
+        #expect(!viewModel.needsInstall(cafeyn))
+        #expect(!viewModel.needsInstall(eureka))
+    }
+
+    @Test func eachServiceSaysWhereItIsUsed() async {
+        let viewModel = withDependencies {
+            $0.installedApps.isInstalled = { $0 == "arte-mednum" }
+        } operation: { DigitalViewModel() }
+
+        await viewModel.refreshInstalledApps()
+        let byID = Dictionary(uniqueKeysWithValues: DigitalCatalog.offers.map { ($0.id, viewModel.access(for: $0)) })
+        #expect(byID["films"] == .appInstalled)
+        #expect(byID["presse"] == .inApp)
+        #expect(byID["ebooks"] == .reader("Louise Reader"))
+        #expect(byID["bd"] == .web)
+        #expect(byID["eureka"] == .web)
+        // « Connecter l'app » seulement pour une app nécessaire déjà installée.
+        #expect(viewModel.canConnectApp(films))
+        #expect(!viewModel.canConnectApp(DigitalCatalog.offers.first { $0.id == "presse" }!))
+    }
+
+    @Test func missingRequiredAppOffersInstallInsteadOfOpening() async {
+        let viewModel = withDependencies {
+            $0.installedApps.isInstalled = { _ in false }
+            $0.digitalClient.target = { _ in
+                Issue.record("Pas de SSO tant que l'app n'est pas installée")
+                return URL(string: "https://example.org")!
+            }
+        } operation: { DigitalViewModel() }
+
+        await viewModel.refreshInstalledApps()
+        await viewModel.primaryAction(films)
+        #expect(viewModel.installOffer == films)
+        #expect(viewModel.session == nil)
+
+        viewModel.getApp(for: films)
+        #expect(viewModel.installOffer == nil)
+        #expect(viewModel.storeProduct == StoreProduct(id: "1562009751"))
+    }
+
+    @Test func installedAppOpensDirectly() async {
+        let opened = LockIsolated<[URL]>([])
+        let viewModel = withDependencies {
+            $0.installedApps.isInstalled = { $0 == "arte-mednum" }
+            $0.installedApps.open = { url in
+                opened.withValue { $0.append(url) }
+                return true
+            }
+        } operation: { DigitalViewModel() }
+
+        await viewModel.refreshInstalledApps()
+        await viewModel.primaryAction(films)
+        #expect(opened.value == [URL(string: "arte-mednum://")!])
+        #expect(viewModel.installOffer == nil)
+        // Pas de vue web du portail : c'est l'app qui s'ouvre.
+        #expect(viewModel.session == nil)
+    }
+
+    @Test func appThatRefusesToOpenFallsBackToTheWeb() async {
+        let viewModel = withDependencies {
+            $0.installedApps.isInstalled = { $0 == "arte-mednum" }
+            $0.installedApps.open = { _ in false }
+            $0.digitalClient.target = { _ in URL(string: "https://portal.mediatheque-numerique.com/sso_login")! }
+            $0.digitalClient.sessionCookies = { [] }
+        } operation: { DigitalViewModel() }
+
+        await viewModel.refreshInstalledApps()
+        await viewModel.primaryAction(films)
+        #expect(viewModel.session?.offer == films)
+    }
+
+    @Test func portalConnectionStaysAvailableForAnInstalledApp() async {
+        let viewModel = withDependencies {
+            $0.installedApps.isInstalled = { $0 == "arte-mednum" }
+            $0.digitalClient.target = { _ in URL(string: "https://portal.mediatheque-numerique.com/sso_login")! }
+            $0.digitalClient.sessionCookies = { [] }
+        } operation: { DigitalViewModel() }
+
+        await viewModel.refreshInstalledApps()
+        await viewModel.connectThroughPortal(films)
+        #expect(viewModel.session?.offer == films)
+    }
+
+    @Test func returningFromTheStoreWithTheAppConnectsIt() async {
+        let installed = LockIsolated(false)
+        let viewModel = withDependencies {
+            $0.installedApps.isInstalled = { $0 == "arte-mednum" && installed.value }
+            $0.digitalClient.target = { _ in URL(string: "https://portal.mediatheque-numerique.com/sso_login")! }
+            $0.digitalClient.sessionCookies = { [] }
+        } operation: { DigitalViewModel() }
+
+        await viewModel.refreshInstalledApps()
+        viewModel.getApp(for: films)
+
+        // Revenu sans avoir installé : rien ne s'ouvre.
+        await viewModel.storeDismissed()
+        #expect(viewModel.session == nil)
+        #expect(viewModel.justInstalled == nil)
+
+        // Installée pendant que l'abonné était dans l'App Store.
+        viewModel.getApp(for: films)
+        installed.setValue(true)
+        await viewModel.storeDismissed()
+        #expect(viewModel.storeProduct == nil)
+        #expect(viewModel.justInstalled == "films")
+        #expect(viewModel.session?.offer == films)
+        #expect(viewModel.feedback == .success)
+    }
+
+    @Test func webRemainsAvailableWithoutTheApp() async {
+        let viewModel = withDependencies {
+            $0.installedApps.isInstalled = { _ in false }
+            $0.digitalClient.target = { _ in URL(string: "https://portal.mediatheque-numerique.com/sso_login")! }
+            $0.digitalClient.sessionCookies = { [] }
+        } operation: { DigitalViewModel() }
+
+        await viewModel.refreshInstalledApps()
+        await viewModel.primaryAction(films)
+        await viewModel.continueOnWeb(films)
+        #expect(viewModel.installOffer == nil)
+        #expect(viewModel.session?.offer == films)
+    }
+}

@@ -45,6 +45,9 @@ targets:
           [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         NSCameraUsageDescription: Scanner le code-barres d'un livre ou de votre carte d'abonné.
         NSFaceIDUsageDescription: Ouvrir votre compte lecteur sans saisir votre mot de passe.
+        # Apps des partenaires du numérique : savoir si elles sont installées (« Ouvrir » ou « Installer »).
+        # musicMe n'a pas de scheme.
+        LSApplicationQueriesSchemes: [arte-mednum, cafeyn, com.toutapprendre.toutapprendre, baobabapp, izneo]
         UIBackgroundModes: [fetch]
         BGTaskSchedulerPermittedIdentifiers: [com.rbiard.mediatheques-villejuif.refresh]
     entitlements:

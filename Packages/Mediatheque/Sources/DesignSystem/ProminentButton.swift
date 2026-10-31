@@ -7,10 +7,26 @@ import SwiftUI
 /// - en cours, le texte reste en place mais invisible sous le spinner, pour que le bouton ne change pas de taille.
 public struct ProminentButtonStyle: ButtonStyle {
     public enum Size: Sendable {
-        case large, extraLarge
+        /// `compact` : dans une ligne de liste ou une carte (« Installer », « Ouvrir »).
+        case compact, large, extraLarge
 
-        var minHeight: CGFloat { self == .large ? 50 : 56 }
-        var font: Font { self == .large ? .body.weight(.semibold) : .headline }
+        var minHeight: CGFloat {
+            switch self {
+            case .compact: 34
+            case .large: 50
+            case .extraLarge: 56
+            }
+        }
+
+        var font: Font {
+            switch self {
+            case .compact: .subheadline.weight(.bold)
+            case .large: .body.weight(.semibold)
+            case .extraLarge: .headline
+            }
+        }
+
+        var horizontalPadding: CGFloat { self == .compact ? 14 : 20 }
     }
 
     let tint: Color
@@ -42,7 +58,7 @@ public struct ProminentButtonStyle: ButtonStyle {
             .overlay {
                 if isLoading { ProgressView().tint(foreground) }
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, size.horizontalPadding)
             .frame(minHeight: size.minHeight)
             .contentShape(Capsule())
             .glassEffect(

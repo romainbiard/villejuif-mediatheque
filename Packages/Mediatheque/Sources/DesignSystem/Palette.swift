@@ -32,7 +32,7 @@ public extension Color {
         )
     }
 
-    init(light: UInt32, dark: UInt32) {
+    public init(light: UInt32, dark: UInt32) {
         #if canImport(UIKit)
         self.init(uiColor: UIColor { traits in
             UIColor(Color(hex: traits.userInterfaceStyle == .dark ? dark : light))
