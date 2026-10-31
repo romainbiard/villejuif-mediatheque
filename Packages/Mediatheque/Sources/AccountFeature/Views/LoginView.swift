@@ -31,6 +31,9 @@ struct LoginView: View {
                 Spacer()
                 form
             }
+            // iPad : colonne de lecture centrée plutôt qu'un formulaire pleine largeur.
+            .frame(maxWidth: 560)
+            .frame(maxWidth: .infinity)
         }
         .fullScreenCover(isPresented: $showsScanner) {
             CardScannerView { viewModel.cardNumber = $0; focus = .password }

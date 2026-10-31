@@ -12,58 +12,49 @@ enum AppTab: Hashable {
     /// Une section de Mon compte, présente seulement dans la barre latérale de l'iPad.
     case accountSection(AccountSection)
 
-    /// Ordre des raccourcis ⌘1…⌘5.
+    /// Ordre de la barre d'onglets et des raccourcis ⌘1…⌘5.
     static let main: [AppTab] = [.account, .agenda, .digital, .info, .search]
+
+    var title: String {
+        switch self {
+        case .account: "Compte"
+        case .agenda: "Agenda"
+        case .digital: "Numérique"
+        case .info: "Infos"
+        case .search: "Recherche"
+        case let .accountSection(section): section.title
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .account: "person.crop.circle"
+        case .agenda: "calendar"
+        case .digital: "play.rectangle.on.rectangle"
+        case .info: "mappin.and.ellipse"
+        case .search: "magnifyingglass"
+        case let .accountSection(section): section.systemImage
+        }
+    }
 }
 
-/// Barre d'onglets iOS 26 : Liquid Glass flottante, Recherche en onglet de rôle `.search`
-/// (champ en bas sur iPhone), et barre latérale adaptable sur iPad, où les sections
-/// de Mon compte ont leurs propres entrées.
+/// iPhone (et fenêtre étroite sur iPad) : barre d'onglets iOS 26 en Liquid Glass, Recherche en onglet
+/// de rôle `.search`. iPad : barre latérale toujours ouverte, où les sections de Mon compte
+/// ont leurs propres entrées.
 struct RootTabView: View {
     @State private var selection: AppTab = .account
     @State private var searchFocusRequest = 0
-    @AppStorage("sidebarCustomization") private var customization: TabViewCustomization
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @Environment(SessionStore.self) private var session
 
     var body: some View {
-        TabView(selection: $selection) {
-            Tab("Compte", systemImage: "person.crop.circle", value: .account) {
-                AccountView()
-            }
-            .customizationID("tab.account")
-            Tab("Agenda", systemImage: "calendar", value: .agenda) {
-                AgendaView()
-            }
-            .customizationID("tab.agenda")
-            Tab("Numérique", systemImage: "play.rectangle.on.rectangle", value: .digital) {
-                DigitalView()
-            }
-            .customizationID("tab.digital")
-            Tab("Infos", systemImage: "mappin.and.ellipse", value: .info) {
-                InfoView()
-            }
-            .customizationID("tab.info")
-            Tab(value: .search, role: .search) {
-                SearchView(focusRequest: searchFocusRequest)
-            }
-            .customizationID("tab.search")
-
-            if let patron = session.patron {
-                TabSection("Mon compte") {
-                    ForEach(AccountSection.allCases) { section in
-                        Tab(section.title, systemImage: section.systemImage, value: AppTab.accountSection(section)) {
-                            AccountSectionView(section)
-                        }
-                        .badge(badge(for: section, patron: patron))
-                        .customizationID("account.\(section.rawValue)")
-                        .defaultVisibility(.hidden, for: .tabBar)
-                    }
-                }
-                .customizationID("section.account")
+        Group {
+            if sizeClass == .regular {
+                SidebarRootView(selection: $selection, searchFocusRequest: searchFocusRequest)
+            } else {
+                tabs
             }
         }
-        .tabViewStyle(.sidebarAdaptable)
-        .tabViewCustomization($customization)
         .tint(.brandViolet)
         .focusedSceneValue(\.appNavigation, AppNavigation(
             select: { selection = $0 },
@@ -74,6 +65,81 @@ struct RootTabView: View {
         ))
         .onChange(of: session.patron == nil) { _, loggedOut in
             if loggedOut, case .accountSection = selection { selection = .account }
+        }
+        .onChange(of: sizeClass) {
+            // Les sections de Mon compte n'existent pas dans la barre d'onglets.
+            if sizeClass == .compact, case .accountSection = selection { selection = .account }
+        }
+    }
+
+    private var tabs: some View {
+        TabView(selection: $selection) {
+            Tab(AppTab.account.title, systemImage: AppTab.account.systemImage, value: .account) {
+                AccountView()
+            }
+            Tab(AppTab.agenda.title, systemImage: AppTab.agenda.systemImage, value: .agenda) {
+                AgendaView()
+            }
+            Tab(AppTab.digital.title, systemImage: AppTab.digital.systemImage, value: .digital) {
+                DigitalView()
+            }
+            Tab(AppTab.info.title, systemImage: AppTab.info.systemImage, value: .info) {
+                InfoView()
+            }
+            Tab(value: .search, role: .search) {
+                SearchView(focusRequest: searchFocusRequest)
+            }
+        }
+    }
+}
+
+// MARK: - iPad
+
+/// Barre latérale permanente : `TabView(.sidebarAdaptable)` laisse toujours la replier
+/// en barre d'onglets en haut, peu pratique ; un `NavigationSplitView` la garde ouverte.
+struct SidebarRootView: View {
+    @Binding var selection: AppTab
+    let searchFocusRequest: Int
+    @Environment(SessionStore.self) private var session
+    /// Détenu ici pour garder la requête et les résultats quand on change d'écran.
+    @State private var searchModel = SearchViewModel()
+
+    var body: some View {
+        NavigationSplitView(columnVisibility: .constant(.all)) {
+            List(selection: Binding<AppTab?>(get: { selection }, set: { if let tab = $0 { selection = tab } })) {
+                ForEach(AppTab.main, id: \.self) { tab in
+                    Label(tab.title, systemImage: tab.systemImage).tag(tab)
+                }
+                if let patron = session.patron {
+                    Section("Mon compte") {
+                        ForEach(AccountSection.allCases) { section in
+                            Label(section.title, systemImage: section.systemImage)
+                                .badge(badge(for: section, patron: patron))
+                                .tag(AppTab.accountSection(section))
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Médiathèques")
+            .navigationSplitViewColumnWidth(280)
+            .toolbar(removing: .sidebarToggle)
+        } detail: {
+            // Un seul écran à la fois : des écrans superposés se partageraient la barre de
+            // navigation de la colonne. La recherche garde son état grâce à `searchModel`.
+            screen(for: selection).id(selection)
+        }
+        .navigationSplitViewStyle(.balanced)
+    }
+
+    @ViewBuilder
+    private func screen(for tab: AppTab) -> some View {
+        switch tab {
+        case .account: AccountView()
+        case .agenda: AgendaView()
+        case .digital: DigitalView()
+        case .info: InfoView()
+        case .search: SearchView(viewModel: searchModel, focusRequest: searchFocusRequest)
+        case let .accountSection(section): AccountSectionView(section)
         }
     }
 
@@ -110,21 +176,10 @@ struct AppCommands: Commands {
         }
         CommandMenu("Aller à") {
             ForEach(Array(AppTab.main.enumerated()), id: \.offset) { index, tab in
-                Button(Self.title(of: tab)) { navigation?.select(tab) }
+                Button(tab.title) { navigation?.select(tab) }
                     .keyboardShortcut(KeyEquivalent(Character(String(index + 1))))
                     .disabled(navigation == nil)
             }
-        }
-    }
-
-    private static func title(of tab: AppTab) -> String {
-        switch tab {
-        case .account: "Mon compte"
-        case .agenda: "Agenda"
-        case .digital: "Médiathèque numérique"
-        case .info: "Infos pratiques"
-        case .search: "Recherche"
-        case let .accountSection(section): section.title
         }
     }
 }

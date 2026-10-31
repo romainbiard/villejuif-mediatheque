@@ -393,7 +393,8 @@ struct FeaturedEventCard: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            EventArtwork(event: event)
+            // L'affiche remplit la carte sans en imposer la largeur (grille de l'iPad).
+            Color.clear.overlay { EventArtwork(event: event) }
             VStack(alignment: .leading, spacing: 6) {
                 HStack(spacing: 6) {
                     if let type = event.type { StatusPill(type, style: .accent) }

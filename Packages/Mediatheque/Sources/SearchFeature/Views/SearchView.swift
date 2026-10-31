@@ -18,27 +18,27 @@ public struct SearchView: View {
         self.focusRequest = focusRequest
     }
 
+    /// Avec un view model détenu par l'appelant, qui survit à la disparition de la vue (iPad).
+    public init(viewModel: SearchViewModel, focusRequest: Int = 0) {
+        _viewModel = State(initialValue: viewModel)
+        self.focusRequest = focusRequest
+    }
+
     public var body: some View {
         Group {
             if sizeClass == .regular {
-                NavigationSplitView {
-                    searchColumn
-                        .navigationSplitViewColumnWidth(420)
-                } detail: {
-                    NavigationStack {
-                        if let selected {
-                            DocumentDetailView(document: selected).id(selected.id)
-                        } else {
-                            ContentUnavailableView(
-                                "Choisissez un document",
-                                systemImage: "books.vertical",
-                                description: Text("Sa fiche s'affiche ici, avec les exemplaires disponibles dans les 3 médiathèques.")
-                            )
-                            .background(Color.surfaceGrouped)
-                        }
+                // iPad : résultats et fiche côte à côte. Pas de NavigationSplitView ici :
+                // la racine de l'app en est déjà un (barre latérale).
+                NavigationStack {
+                    HStack(spacing: 0) {
+                        searchColumn
+                            .frame(width: 420)
+                        Divider()
+                        detailColumn
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
+                    .navigationBarTitleDisplayMode(.inline)
                 }
-                .navigationSplitViewStyle(.balanced)
             } else {
                 NavigationStack(path: $path) {
                     searchColumn
@@ -52,25 +52,43 @@ public struct SearchView: View {
         .sensoryFeedback(trigger: viewModel.feedback) { _, event in event.map(\.sensoryFeedback) }
     }
 
-    private var searchColumn: some View {
-        content
-            .background(Color.surfaceGrouped)
-            .navigationTitle(viewModel.browsingTitle ?? "Recherche")
-            .toolbar {
-                if viewModel.browsingTitle != nil {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button("Retour", systemImage: "chevron.left") { viewModel.cancelBrowsing() }
-                    }
-                }
-            }
-            .searchable(
-                text: $viewModel.text,
-                placement: .navigationBarDrawer(displayMode: .always),
-                prompt: "Titre, auteur, sujet, ISBN"
+    @ViewBuilder
+    private var detailColumn: some View {
+        if let selected {
+            DocumentDetailView(document: selected).id(selected.id)
+        } else {
+            ContentUnavailableView(
+                "Choisissez un document",
+                systemImage: "books.vertical",
+                description: Text("Sa fiche s'affiche ici, avec les exemplaires disponibles dans les 3 médiathèques.")
             )
-            .searchFocused($isSearchFocused)
-            .onChange(of: viewModel.text) { viewModel.textDidChange() }
-            .onSubmit(of: .search) { viewModel.submit() }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.surfaceGrouped)
+        }
+    }
+
+    @ViewBuilder
+    private var searchColumn: some View {
+        if sizeClass == .regular {
+            // iPad : le champ est en haut de la colonne des résultats, pas dans la barre de navigation.
+            VStack(spacing: 0) {
+                ColumnSearchField(text: $viewModel.text, isFocused: $isSearchFocused) { viewModel.submit() }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                content
+            }
+            .modifier(SearchColumnChrome(viewModel: viewModel))
+        } else {
+            content
+                .modifier(SearchColumnChrome(viewModel: viewModel))
+                .searchable(
+                    text: $viewModel.text,
+                    placement: .navigationBarDrawer(displayMode: .always),
+                    prompt: "Titre, auteur, sujet, ISBN"
+                )
+                .searchFocused($isSearchFocused)
+                .onSubmit(of: .search) { viewModel.submit() }
+        }
     }
 
     /// Lien vers la fiche : pile de navigation sur iPhone, colonne de droite sur iPad.
@@ -148,6 +166,54 @@ public struct SearchView: View {
             }
             .cardStyle(padding: 0)
         }
+    }
+}
+
+/// Titre, retour d'exploration et suivi de la saisie, communs à l'iPhone et à l'iPad.
+private struct SearchColumnChrome: ViewModifier {
+    let viewModel: SearchViewModel
+
+    func body(content: Content) -> some View {
+        content
+            .background(Color.surfaceGrouped)
+            .navigationTitle(viewModel.browsingTitle ?? "Recherche")
+            .toolbar {
+                if viewModel.browsingTitle != nil {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("Retour", systemImage: "chevron.left") { viewModel.cancelBrowsing() }
+                    }
+                }
+            }
+            .onChange(of: viewModel.text) { viewModel.textDidChange() }
+    }
+}
+
+/// Champ de recherche posé dans la colonne des résultats (iPad).
+struct ColumnSearchField: View {
+    @Binding var text: String
+    var isFocused: FocusState<Bool>.Binding
+    let submit: () -> Void
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass").foregroundStyle(Color.inkSecondary)
+            TextField("Titre, auteur, sujet, ISBN", text: $text)
+                .focused(isFocused)
+                .submitLabel(.search)
+                .autocorrectionDisabled()
+                .onSubmit(submit)
+            if !text.isEmpty {
+                Button("Effacer", systemImage: "xmark.circle.fill") { text = "" }
+                    .labelStyle(.iconOnly)
+                    .foregroundStyle(Color.inkSecondary)
+                    .buttonStyle(.plain)
+            }
+        }
+        .padding(.horizontal, 14)
+        .frame(height: 44)
+        .contentShape(Capsule())
+        .onTapGesture { isFocused.wrappedValue = true }
+        .glassEffect(.regular, in: Capsule())
     }
 }
 

@@ -13,6 +13,9 @@ struct WelcomeSetupView: View {
     @AppStorage(ReminderSettings.Key.holdAlerts, store: .shared) private var holdAlerts = true
     @State private var faceID = false
     @State private var isSaving = false
+    /// iOS a refusé les notifications (souvent sans rien afficher, si l'app a déjà été refusée).
+    @State private var notificationsDenied = false
+    @Environment(\.openURL) private var openURL
     private let biometricKind: String?
 
     init(patron: Patron, done: @escaping () -> Void) {
@@ -41,6 +44,19 @@ struct WelcomeSetupView: View {
                         toggle("Réservations", detail: "Quand un document vous attend", systemImage: "shippingbox", tint: .statusSuccess, isOn: $holdAlerts)
                     }
                     .cardStyle(padding: 0)
+
+                    if notificationsDenied {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Label("Les notifications sont désactivées pour l'app : les rappels ne pourront pas vous prévenir.", systemImage: "bell.slash.fill")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(Color.statusWarning)
+                            Button("Autoriser dans Réglages") {
+                                if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+                            }
+                            .font(.subheadline.weight(.semibold))
+                        }
+                        .cardStyle()
+                    }
                 }
                 .padding(20)
             }
@@ -50,7 +66,11 @@ struct WelcomeSetupView: View {
                     Task { await save() }
                 } label: {
                     Group {
-                        if isSaving { ProgressView().tint(.white) } else { Text("Continuer") }
+                        if isSaving {
+                            ProgressView().tint(.white)
+                        } else {
+                            Text(notificationsDenied && !loanReminders && !holdAlerts ? "Continuer sans rappels" : "Continuer")
+                        }
                     }
                     .frame(maxWidth: .infinity)
                 }
@@ -62,6 +82,7 @@ struct WelcomeSetupView: View {
         }
         .interactiveDismissDisabled()
         .sensoryFeedback(.impact(weight: .light), trigger: [faceID, loanReminders, holdAlerts])
+        .sensoryFeedback(.error, trigger: notificationsDenied) { _, denied in denied }
     }
 
     private func toggle(_ title: String, detail: String, systemImage: String, tint: Color, isOn: Binding<Bool>) -> some View {
@@ -90,8 +111,11 @@ struct WelcomeSetupView: View {
         if loanReminders || holdAlerts {
             let granted = await notifications.requestAuthorization()
             if !granted {
+                // On reste sur la feuille pour l'expliquer, au lieu de couper les rappels en silence.
                 loanReminders = false
                 holdAlerts = false
+                notificationsDenied = true
+                return
             }
         }
         _ = try? await AccountSync.run(settings: .current())
