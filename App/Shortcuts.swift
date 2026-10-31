@@ -148,7 +148,7 @@ struct NextReturnsSnippet: View {
                     }
                 }
                 if let updatedAt = snapshot?.updatedAt {
-                    Text("Synchronisé le \(updatedAt.formatted(.dateTime.day().month().hour().minute()))")
+                    Text("Synchronisé le \(updatedAt.formatted(.dateTime.day().month().hour().minute().locale(Locale(identifier: "fr_FR"))))")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                 }

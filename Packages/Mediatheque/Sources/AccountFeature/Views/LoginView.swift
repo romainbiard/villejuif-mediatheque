@@ -14,26 +14,15 @@ struct LoginView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             background
-            VStack(alignment: .leading, spacing: 0) {
-                VStack(alignment: .leading, spacing: 14) {
-                    VillejuifLogo.white
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 56)
-                        .accessibilityLabel("Ville de Villejuif")
-                    Text("Médiathèques").font(.largeTitle.weight(.heavy)).foregroundStyle(.white)
-                    Text("Vos prêts, vos réservations et la médiathèque numérique, dans votre poche.")
-                        .font(.body)
-                        .foregroundStyle(.white.opacity(0.92))
+            // Défilable quand la hauteur manque (iPhone Duo, clavier, grande taille de texte) :
+            // rien n'est tronqué, et le formulaire reste en bas quand tout tient.
+            GeometryReader { proxy in
+                ScrollView {
+                    content.frame(minHeight: proxy.size.height)
                 }
-                .padding(.horizontal, 28)
-                .padding(.top, 72)
-                Spacer()
-                form
+                .scrollBounceBehavior(.basedOnSize)
+                .scrollDismissesKeyboard(.interactively)
             }
-            // iPad : colonne de lecture centrée plutôt qu'un formulaire pleine largeur.
-            .frame(maxWidth: 560)
-            .frame(maxWidth: .infinity)
         }
         .fullScreenCover(isPresented: $showsScanner) {
             CardScannerView { viewModel.cardNumber = $0; focus = .password }
@@ -42,6 +31,30 @@ struct LoginView: View {
             LostPasswordView(cardNumber: viewModel.cardNumber)
         }
         .sensoryFeedback(trigger: viewModel.feedback) { _, event in event.map(\.sensoryFeedback) }
+    }
+
+    private var content: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 14) {
+                VillejuifLogo.white
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 56)
+                    .accessibilityLabel("Ville de Villejuif")
+                Text("Médiathèques").font(.largeTitle.weight(.heavy)).foregroundStyle(.white)
+                Text("Vos prêts, vos réservations et la médiathèque numérique, dans votre poche.")
+                    .font(.body)
+                    .foregroundStyle(.white.opacity(0.92))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.horizontal, 28)
+            .padding(.top, 72)
+            Spacer(minLength: 24)
+            form
+        }
+        // iPad : colonne de lecture centrée plutôt qu'un formulaire pleine largeur.
+        .frame(maxWidth: 560)
+        .frame(maxWidth: .infinity)
     }
 
     private var background: some View {
@@ -110,6 +123,7 @@ struct LoginView: View {
 
             Text("Pas encore inscrit ? L'inscription est gratuite, à l'accueil de chaque médiathèque.")
                 .font(.footnote)
+                .fixedSize(horizontal: false, vertical: true)
                 .foregroundStyle(Color.inkSecondary)
                 .frame(maxWidth: .infinity)
                 .multilineTextAlignment(.center)

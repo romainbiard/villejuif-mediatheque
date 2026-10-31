@@ -50,10 +50,17 @@ struct RootTabView: View {
     @State private var intentRouter = AppIntentRouter.shared
     @Environment(\.horizontalSizeClass) private var sizeClass
     @Environment(SessionStore.self) private var session
+    @State private var windowWidth: CGFloat = .infinity
+
+    /// La barre latérale prend ~320 pt : en dessous de cette largeur de fenêtre (iPhone Duo déplié
+    /// tenu à la verticale, iPad en Split View étroit), la barre d'onglets laisse plus de place au contenu.
+    static let sidebarMinWindowWidth: CGFloat = 800
+
+    private var usesSidebar: Bool { sizeClass == .regular && windowWidth >= Self.sidebarMinWindowWidth }
 
     var body: some View {
         Group {
-            if sizeClass == .regular {
+            if usesSidebar {
                 SidebarRootView(
                     selection: $selection,
                     searchFocusRequest: searchFocusRequest,
@@ -65,6 +72,7 @@ struct RootTabView: View {
             }
         }
         .tint(.brandViolet)
+        .measuringWidth($windowWidth)
         .focusedSceneValue(\.appNavigation, AppNavigation(
             select: { selection = $0 },
             focusSearch: {
@@ -76,9 +84,9 @@ struct RootTabView: View {
             if loggedOut, case .accountSection = selection { selection = .account }
         }
         .onChange(of: intentRouter.pending, initial: true) { handleIntentRequest() }
-        .onChange(of: sizeClass) {
+        .onChange(of: usesSidebar) {
             // Les sections de Mon compte n'existent pas dans la barre d'onglets.
-            if sizeClass == .compact, case .accountSection = selection { selection = .account }
+            if !usesSidebar, case .accountSection = selection { selection = .account }
         }
     }
 

@@ -99,11 +99,19 @@ struct FeaturedOfferCard: View {
     let open: () -> Void
     let help: () -> Void
 
+    /// Place réservée à droite du texte pour le cercle « lecture » (104 pt + marges).
+    static let artworkWidth: CGFloat = 116
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(offer.category).font(.caption.weight(.bold)).textCase(.uppercase).opacity(0.8)
-            Text(offer.provider).font(.title.weight(.heavy))
-            Text(offer.quota).font(.subheadline).opacity(0.85)
+            VStack(alignment: .leading, spacing: 6) {
+                Text(offer.category).font(.caption.weight(.bold)).textCase(.uppercase).opacity(0.8)
+                Text(offer.provider).font(.title.weight(.heavy))
+                Text(offer.quota).font(.subheadline).opacity(0.85)
+            }
+            // Le texte s'arrête avant le cercle « lecture », quelle que soit la largeur de la carte.
+            .padding(.trailing, Self.artworkWidth)
+            .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 24)
             HStack(spacing: 10) {
                 Button(action: open) {
@@ -121,12 +129,19 @@ struct FeaturedOfferCard: View {
         .padding(20)
         .frame(maxWidth: .infinity, minHeight: 230, alignment: .leading)
         .background {
-            ZStack {
+            // Décor accroché au coin supérieur droit (et non au centre) : il ne glisse plus
+            // sous le titre quand la carte s'élargit (iPad, iPhone Duo déplié).
+            ZStack(alignment: .topTrailing) {
                 Color(hex: 0x17161C)
-                Circle().fill(Color.brandVioletDeep).frame(width: 300).offset(x: 150, y: -110)
-                Circle().fill(Color.brandMagenta).frame(width: 130).offset(x: 120, y: -40)
-                Image(systemName: "play.fill").font(.title).foregroundStyle(.white).offset(x: 120, y: -40)
+                Circle().fill(Color.brandVioletDeep).frame(width: 260).offset(x: 110, y: -130)
+                ZStack {
+                    Circle().fill(Color.brandMagenta)
+                    Image(systemName: "play.fill").font(.title).foregroundStyle(.white)
+                }
+                .frame(width: 104, height: 104)
+                .padding([.top, .trailing], 20)
             }
+            .accessibilityHidden(true)
         }
         .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
     }

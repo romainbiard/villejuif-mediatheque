@@ -6,13 +6,17 @@ public struct AgendaView: View {
     @State private var viewModel = AgendaViewModel()
     @State private var showsFilters = false
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @State private var contentWidth: CGFloat = .infinity
+
+    /// Mini-calendrier (320 pt), au moins deux cartes de 240 pt, marges.
+    static let columnsMinWidth: CGFloat = 900
 
     public init() {}
 
     public var body: some View {
         NavigationStack {
             Group {
-                if sizeClass == .regular {
+                if sizeClass == .regular && contentWidth >= Self.columnsMinWidth {
                     regularLayout
                 } else {
                     ScrollView {
@@ -52,6 +56,7 @@ public struct AgendaView: View {
             .task { await viewModel.load() }
             .refreshable { await viewModel.load() }
         }
+        .measuringWidth($contentWidth)
         .sensoryFeedback(.selection, trigger: viewModel.selectedDay)
     }
 
@@ -463,14 +468,17 @@ struct EventList: View {
 }
 
 enum EventFormatting {
+    /// Heures à la française (« 10:30 ») même si la région de l'appareil est en 12 h, comme le reste de l'app.
+    static let time = Date.FormatStyle(date: .omitted, time: .shortened).locale(Locale(identifier: "fr_FR"))
+
     static func schedule(_ event: Event) -> String {
         guard let start = event.start else { return event.place ?? "" }
         var parts: [String]
         if event.isAllDay {
             parts = event.end.map { ["Jusqu'au \($0.formatted(.dateTime.day().month(.wide)))"] } ?? []
         } else {
-            let time = start.formatted(.dateTime.hour().minute())
-            parts = [event.end.map { "\(time) – \($0.formatted(.dateTime.hour().minute()))" } ?? time]
+            let time = start.formatted(Self.time)
+            parts = [event.end.map { "\(time) – \($0.formatted(Self.time))" } ?? time]
         }
         if let place = event.library?.shortName ?? event.place { parts.append(place) }
         return parts.joined(separator: " · ")

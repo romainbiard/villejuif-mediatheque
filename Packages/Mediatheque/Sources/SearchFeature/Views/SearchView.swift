@@ -11,7 +11,13 @@ public struct SearchView: View {
     @State private var selected: Notice?
     @FocusState private var isSearchFocused: Bool
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @State private var contentWidth: CGFloat = .infinity
     private let focusRequest: Int
+
+    /// Colonne des résultats (420 pt) et une fiche d'au moins 400 pt.
+    static let columnsMinWidth: CGFloat = 820
+
+    private var showsColumns: Bool { sizeClass == .regular && contentWidth >= Self.columnsMinWidth }
     /// Recherche demandée de l'extérieur (Siri, Raccourcis) : lancée puis remise à `nil`.
     @Binding private var queryRequest: String?
 
@@ -30,7 +36,7 @@ public struct SearchView: View {
 
     public var body: some View {
         Group {
-            if sizeClass == .regular {
+            if showsColumns {
                 // iPad : résultats et fiche côte à côte. Pas de NavigationSplitView ici :
                 // la racine de l'app en est déjà un (barre latérale).
                 NavigationStack {
@@ -52,6 +58,7 @@ public struct SearchView: View {
                 }
             }
         }
+        .measuringWidth($contentWidth)
         .onChange(of: focusRequest) { isSearchFocused = true }
         .onChange(of: queryRequest, initial: true) {
             guard let query = queryRequest else { return }
@@ -80,6 +87,8 @@ public struct SearchView: View {
 
     @ViewBuilder
     private var searchColumn: some View {
+        // Champ dans la colonne dès que la largeur est « regular » : en barre de navigation,
+        // iOS le réduit à un bouton flottant (iPhone Duo déplié, iPad en fenêtre étroite).
         if sizeClass == .regular {
             // iPad : le champ est en haut de la colonne des résultats, pas dans la barre de navigation.
             VStack(spacing: 0) {
@@ -107,7 +116,7 @@ public struct SearchView: View {
     private func resultLink(_ document: Notice) -> some View {
         let row = SearchResultRow(document: document, availability: viewModel.availability[document.id])
         Group {
-            if sizeClass == .regular {
+            if showsColumns {
                 Button { selected = document } label: {
                     row.background(selected?.id == document.id ? Color.soft(.brandViolet) : .clear)
                 }

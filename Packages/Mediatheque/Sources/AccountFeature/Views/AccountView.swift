@@ -128,12 +128,13 @@ struct AccountHomeView: View {
     @State private var path = NavigationPath()
     @State private var confirmsLogout = false
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @State private var contentWidth: CGFloat = .infinity
     @AppStorage(ReminderSettings.Key.onboardingDone, store: .shared) private var onboardingDone = false
 
     var body: some View {
         NavigationStack(path: $path) {
             ScrollView {
-                if sizeClass == .regular {
+                if sizeClass == .regular && contentWidth >= Self.twoColumnsMinWidth {
                     // iPad : carte et compteurs à gauche, menu à droite.
                     HStack(alignment: .top, spacing: 24) {
                         VStack(alignment: .leading, spacing: 14) {
@@ -197,8 +198,12 @@ struct AccountHomeView: View {
                 Button("Se déconnecter", role: .destructive) { Task { await session.logout() } }
             }
         }
+        .measuringWidth($contentWidth)
         .sensoryFeedback(.impact(weight: .medium), trigger: session.state == .loggedOut)
     }
+
+    /// Carte (440 pt), menu lisible (≥ 360 pt), marges et espacement.
+    static let twoColumnsMinWidth: CGFloat = 880
 
     @ViewBuilder
     private var cardAndCounters: some View {
@@ -312,8 +317,12 @@ struct LibraryCardView: View {
                 BarcodeView(value: patron.cardNumber).frame(height: 44)
                 HStack {
                     Text(patron.cardNumber).font(.footnote.weight(.semibold)).monospacedDigit().tracking(2)
-                    Spacer()
+                        .lineLimit(1)
+                        .fixedSize()
+                    Spacer(minLength: 8)
                     Text("Toucher pour agrandir").font(.footnote).foregroundStyle(Color(hex: 0x5E5B66))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                 }
             }
             .foregroundStyle(Color(hex: 0x1C1B22))
@@ -429,6 +438,8 @@ struct CounterTile: View {
         VStack(alignment: .leading, spacing: 2) {
             Text("\(value)").font(.title.weight(.heavy)).foregroundStyle(color)
             Text(label).font(.subheadline).foregroundStyle(Color.inkSecondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
         }
         .cardStyle(padding: 12)
         .accessibilityElement(children: .combine)

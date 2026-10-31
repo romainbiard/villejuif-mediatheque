@@ -212,3 +212,13 @@ public struct SkeletonRow: View {
         .accessibilityHidden(true)
     }
 }
+
+// MARK: - Largeur disponible
+
+extension View {
+    /// Relève la largeur réellement disponible. La classe de taille ne suffit pas : l'iPhone Duo déplié
+    /// est `.regular`, mais une fois la barre latérale posée il reste à peine 670 pt pour le contenu.
+    public func measuringWidth(_ width: Binding<CGFloat>) -> some View {
+        onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width.wrappedValue = $0 }
+    }
+}

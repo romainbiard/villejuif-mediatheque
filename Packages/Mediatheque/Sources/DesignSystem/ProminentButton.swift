@@ -34,6 +34,9 @@ public struct ProminentButtonStyle: ButtonStyle {
         let isActive = isEnabled && !isLoading
         configuration.label
             .font(size.font)
+            // Toujours une ligne : un libellé long rétrécit un peu au lieu de grandir le bouton.
+            .lineLimit(1)
+            .minimumScaleFactor(0.75)
             .foregroundStyle(foreground)
             .opacity(isLoading ? 0 : isActive ? 1 : 0.8)
             .overlay {
