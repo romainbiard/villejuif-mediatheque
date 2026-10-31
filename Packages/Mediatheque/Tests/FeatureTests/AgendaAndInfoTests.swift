@@ -15,7 +15,7 @@ struct AgendaViewModelTests {
     func makeViewModel(now: Date) async -> AgendaViewModel {
         let viewModel = withDependencies {
             $0.date.now = now
-            $0.agendaClient.events = { SampleData.events }
+            $0.agendaClient.events = { _ in SampleData.events }
         } operation: {
             AgendaViewModel()
         }
@@ -80,7 +80,7 @@ struct InfoViewModelTests {
     func makeViewModel(now: Date) async -> InfoViewModel {
         let viewModel = withDependencies {
             $0.date.now = now
-            $0.libraryClient.libraries = { SampleData.libraries.reversed() }
+            $0.libraryClient.libraries = { _ in SampleData.libraries.reversed() }
         } operation: {
             InfoViewModel()
         }
@@ -114,7 +114,7 @@ struct AgendaPeriodTests {
     func makeViewModel(period: AgendaPeriod) async -> AgendaViewModel {
         let viewModel = withDependencies {
             $0.date.now = thursday
-            $0.agendaClient.events = { SampleData.events }
+            $0.agendaClient.events = { _ in SampleData.events }
         } operation: { AgendaViewModel() }
         await viewModel.load()
         viewModel.filters.period = period

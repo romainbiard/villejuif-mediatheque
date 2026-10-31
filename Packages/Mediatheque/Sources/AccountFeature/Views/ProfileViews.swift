@@ -150,6 +150,7 @@ struct ContactEditSheet: View {
                     Text("Pour les avis de réservation disponible et les rappels de la médiathèque.")
                 }
             }
+            .scrollDismissesKeyboard(.immediately)
             .navigationTitle("Coordonnées")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -190,6 +191,7 @@ struct PasswordSheet: View {
                     }
                 }
             }
+            .scrollDismissesKeyboard(.immediately)
             .navigationTitle("Mot de passe")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

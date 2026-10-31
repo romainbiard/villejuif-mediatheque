@@ -35,6 +35,11 @@ public struct Endpoint: Sendable, Equatable {
         }
     }
 
+    /// Clé unique d'une requête GET (chemin et paramètres), pour les caches.
+    public var cacheKey: String {
+        ([encodedPath] + query.map { "\($0.name)=\($0.value)" }).joined(separator: "&")
+    }
+
     /// Chemin percent-encodé, segment par segment (les espaces deviennent `%20`).
     var encodedPath: String {
         "/" + pathSegments

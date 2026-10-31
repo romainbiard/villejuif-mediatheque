@@ -94,10 +94,11 @@ public final class AgendaViewModel {
         displayedMonth = Calendar.paris.dateInterval(of: .month, for: now)?.start ?? now
     }
 
-    public func load() async {
+    /// `.reload` pour « tirer pour rafraîchir » : on ignore le cache, sans perdre la liste en cas d'échec.
+    public func load(_ policy: CachePolicy = .useCache) async {
         if state.value == nil { state = .loading }
         do {
-            state = .loaded(try await agenda.events())
+            state = .loaded(try await agenda.events(policy))
         } catch {
             if state.value == nil { state = .failed(LoadError(error)) }
         }

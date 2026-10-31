@@ -1,8 +1,8 @@
 import Foundation
 
 /// Horaires habituels d'une médiathèque, lus dans « Mardi : 13h - 19h ».
-public struct OpeningHours: Hashable, Sendable {
-    public struct Slot: Hashable, Sendable {
+public struct OpeningHours: Hashable, Sendable, Codable {
+    public struct Slot: Hashable, Sendable, Codable {
         /// Minutes depuis minuit.
         public let opens: Int
         public let closes: Int
@@ -71,7 +71,7 @@ public struct OpeningHours: Hashable, Sendable {
 }
 
 /// Fiche pratique d'une médiathèque.
-public struct LibraryInfo: Identifiable, Hashable, Sendable {
+public struct LibraryInfo: Identifiable, Hashable, Sendable, Codable {
     public var id: String { library?.rawValue ?? slug }
     public let library: Library?
     public let slug: String

@@ -54,7 +54,7 @@ public struct AgendaView: View {
                 AgendaFiltersView(viewModel: viewModel)
             }
             .task { await viewModel.load() }
-            .refreshable { await viewModel.load() }
+            .refreshable { await viewModel.load(.reload) }
         }
         .measuringWidth($contentWidth)
         .sensoryFeedback(.selection, trigger: viewModel.selectedDay)

@@ -178,3 +178,58 @@ struct Code39Tests {
         #expect(Code39.elements(for: "ab-1") != nil)
     }
 }
+
+struct DataCacheTests {
+    private struct Failure: Error {}
+
+    private func makeCache() -> (DataCache, URL) {
+        let directory = FileManager.default.temporaryDirectory.appending(path: "DataCacheTests-\(UUID().uuidString)")
+        return (DataCache(directory: directory), directory)
+    }
+
+    @Test func freshValueAvoidsTheLoad() async throws {
+        let (cache, _) = makeCache()
+        let start = Date(timeIntervalSince1970: 1_000)
+        let first = try await cache.value(for: "k", maxAge: 60, now: { start }) { 1 }
+        let second = try await cache.value(for: "k", maxAge: 60, now: { start + 30 }) { 2 }
+        #expect(first == 1)
+        #expect(second == 1)
+    }
+
+    @Test func staleValueIsReloadedAndReloadPolicyBypassesTheCache() async throws {
+        let (cache, _) = makeCache()
+        let start = Date(timeIntervalSince1970: 1_000)
+        _ = try await cache.value(for: "k", maxAge: 60, now: { start }) { 1 }
+        let stale = try await cache.value(for: "k", maxAge: 60, now: { start + 61 }) { 2 }
+        let forced = try await cache.value(for: "k", maxAge: 60, policy: .reload, now: { start + 62 }) { 3 }
+        #expect(stale == 2)
+        #expect(forced == 3)
+    }
+
+    @Test func failedLoadFallsBackToTheStaleValue() async throws {
+        let (cache, _) = makeCache()
+        let start = Date(timeIntervalSince1970: 1_000)
+        _ = try await cache.value(for: "k", maxAge: 60, now: { start }) { "hier" }
+        let offline: String = try await cache.value(for: "k", maxAge: 60, policy: .reload, now: { start + 3600 }) {
+            throw Failure()
+        }
+        #expect(offline == "hier")
+        await #expect(throws: Failure.self) {
+            let _: String = try await cache.value(for: "absent", maxAge: 60) { throw Failure() }
+        }
+    }
+
+    @Test func valuesSurviveOnDiskButNotWhenMemoryOnly() async throws {
+        let (cache, directory) = makeCache()
+        let start = Date(timeIntervalSince1970: 1_000)
+        _ = try await cache.value(for: "disque", maxAge: 60, now: { start }) { [1, 2] }
+        _ = try await cache.value(for: "mémoire", maxAge: 60, persist: false, now: { start }) { [3] }
+
+        // Nouveau cache sur le même dossier : comme au relancement de l'app.
+        let reopened = DataCache(directory: directory)
+        let fromDisk: [Int] = try await reopened.value(for: "disque", maxAge: 60, now: { start + 10 }) { [] }
+        let notPersisted: [Int] = try await reopened.value(for: "mémoire", maxAge: 60, persist: false, now: { start + 10 }) { [] }
+        #expect(fromDisk == [1, 2])
+        #expect(notPersisted == [])
+    }
+}

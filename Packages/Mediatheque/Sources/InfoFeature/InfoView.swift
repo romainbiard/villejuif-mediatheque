@@ -23,7 +23,7 @@ public struct InfoView: View {
             .background(Color.surfaceGrouped)
             .navigationTitle("Infos pratiques")
             .task { await viewModel.load() }
-            .refreshable { await viewModel.load() }
+            .refreshable { await viewModel.load(.reload) }
         }
     }
 

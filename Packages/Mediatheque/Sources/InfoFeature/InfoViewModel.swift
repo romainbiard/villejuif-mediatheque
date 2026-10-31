@@ -14,10 +14,11 @@ public final class InfoViewModel {
 
     public init() {}
 
-    public func load() async {
+    /// `.reload` pour « tirer pour rafraîchir » ; sinon les horaires en cache (12 h) s'affichent tout de suite.
+    public func load(_ policy: CachePolicy = .useCache) async {
         if state.value == nil { state = .loading }
         do {
-            let libraries = try await libraryClient.libraries()
+            let libraries = try await libraryClient.libraries(policy)
             // Les 3 médiathèques dans l'ordre du réseau.
             state = .loaded(libraries.sorted { ($0.library?.rawValue ?? "9") < ($1.library?.rawValue ?? "9") })
         } catch {

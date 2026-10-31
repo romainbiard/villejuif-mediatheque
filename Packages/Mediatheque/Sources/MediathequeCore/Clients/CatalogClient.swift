@@ -19,11 +19,17 @@ extension CatalogClient: DependencyKey {
         return CatalogClient(
             search: { query in
                 let endpoint = Endpoint.search(query.text, facets: query.facets, sort: query.sort.rawValue, page: query.page)
-                return SearchPage(dto: try await http.decode(SearchResponseDTO.self, from: endpoint))
+                // En mémoire 5 min : changer de filtre et revenir, ou rouvrir une recherche récente, est instantané.
+                return try await DataCache.shared.value(for: "search-\(endpoint.cacheKey)", maxAge: 5 * 60, persist: false) {
+                    SearchPage(dto: try await http.decode(SearchResponseDTO.self, from: endpoint))
+                }
             },
             availability: { recordID in
-                let badge = try HTMLParsers.availability(in: try await http.string(for: .availability(recordID: recordID)))
-                return Availability(label: badge.label, isAvailable: badge.isAvailable)
+                // Le badge doit rester proche du temps réel : 2 min, juste assez pour ne pas le redemander en défilant.
+                try await DataCache.shared.value(for: "availability-\(recordID)", maxAge: 2 * 60, persist: false) {
+                    let badge = try HTMLParsers.availability(in: try await http.string(for: .availability(recordID: recordID)))
+                    return Availability(label: badge.label, isAvailable: badge.isAvailable)
+                }
             },
             copies: { recordID in
                 try HTMLParsers.copies(in: try await http.string(for: .copies(recordID: recordID))).map(LiveCopy.init(dto:))

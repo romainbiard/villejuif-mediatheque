@@ -222,3 +222,18 @@ extension View {
         onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width.wrappedValue = $0 }
     }
 }
+
+// MARK: - Clavier
+
+extension View {
+    /// Toucher une zone vide (hors champ, hors bouton) ferme le clavier.
+    /// Les champs et boutons enfants gardent la priorité sur ce geste.
+    public func dismissesKeyboardOnTap() -> some View {
+        contentShape(Rectangle())
+            .onTapGesture {
+                #if canImport(UIKit)
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                #endif
+            }
+    }
+}

@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Event: Identifiable, Hashable, Sendable {
+public struct Event: Identifiable, Hashable, Sendable, Codable {
     public let id: Int
     public let title: String
     public let imageURL: URL?

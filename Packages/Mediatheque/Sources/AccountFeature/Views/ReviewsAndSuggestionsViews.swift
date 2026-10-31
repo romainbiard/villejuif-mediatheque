@@ -216,6 +216,7 @@ struct ReviewSheet: View {
                     Text("Votre avis est publié sous votre pseudo, après validation par la médiathèque.")
                 }
             }
+            .scrollDismissesKeyboard(.immediately)
             .navigationTitle("Donner mon avis")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -259,6 +260,7 @@ struct SuggestionsView: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
         }
+        .dismissesKeyboardOnTap()
         .background(Color.surfaceGrouped)
         .navigationTitle("Mes suggestions")
         .scrollDismissesKeyboard(.interactively)

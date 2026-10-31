@@ -10,6 +10,12 @@ struct VillejuifApp: App {
 
     nonisolated static let refreshTaskID = "com.rbiard.mediatheques-villejuif.refresh"
 
+    init() {
+        // Jaquettes et affiches (AsyncImage passe par URLSession.shared) : le cache par défaut,
+        // quelques Mo, se vide dès qu'on fait défiler une recherche. Les images restent ainsi d'un lancement à l'autre.
+        URLCache.shared = URLCache(memoryCapacity: 50 * 1024 * 1024, diskCapacity: 300 * 1024 * 1024)
+    }
+
     var body: some Scene {
         WindowGroup {
             RootTabView()

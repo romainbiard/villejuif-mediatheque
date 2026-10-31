@@ -18,7 +18,9 @@ struct LoginView: View {
             // rien n'est tronqué, et le formulaire reste en bas quand tout tient.
             GeometryReader { proxy in
                 ScrollView {
-                    content.frame(minHeight: proxy.size.height)
+                    content
+                        .frame(minHeight: proxy.size.height)
+                        .dismissesKeyboardOnTap()
                 }
                 .scrollBounceBehavior(.basedOnSize)
                 .scrollDismissesKeyboard(.interactively)
@@ -78,7 +80,13 @@ struct LoginView: View {
                 HStack(spacing: 8) {
                     TextField("Au dos de votre carte", text: $viewModel.cardNumber)
                         .textContentType(.username)
-                        .keyboardType(.numberPad)
+                        // Pas de pavé numérique : il n'a pas de barre de suggestions, donc
+                        // iOS ne peut pas y proposer l'identifiant enregistré dans les mots de passe.
+                        .keyboardType(.numbersAndPunctuation)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .submitLabel(.next)
+                        .onSubmit { focus = .password }
                         .focused($focus, equals: .card)
                     if CardScannerView.isAvailable {
                         Button("Scanner ma carte", systemImage: "barcode.viewfinder") { showsScanner = true }
@@ -170,7 +178,9 @@ struct LostPasswordView: View {
 
                 TextField("Numéro de carte", text: $viewModel.cardNumber)
                     .textContentType(.username)
-                    .keyboardType(.numberPad)
+                    .keyboardType(.numbersAndPunctuation)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
                     .fieldStyle(isFocused: false)
 
                 switch viewModel.state {
@@ -197,6 +207,8 @@ struct LostPasswordView: View {
                 Spacer()
             }
             .padding(20)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .dismissesKeyboardOnTap()
             .background(Color.surfaceGrouped)
             .navigationTitle("Mot de passe oublié")
             .toolbar {

@@ -24,7 +24,7 @@ public struct DocumentKind: Hashable, Sendable, Codable {
     public static let boardGame = DocumentKind(code: "15", label: "Jeu de société")
 }
 
-public struct Notice: Identifiable, Hashable, Sendable {
+public struct Notice: Identifiable, Hashable, Sendable, Codable {
     public let id: Int
     /// Clé Bokeh (`identifier`), nécessaire pour la page notice.
     public let key: String
@@ -67,13 +67,13 @@ public struct Notice: Identifiable, Hashable, Sendable {
     }
 }
 
-public struct HarvestedCopy: Hashable, Sendable {
+public struct HarvestedCopy: Hashable, Sendable, Codable {
     public let library: Library?
     public let shelfMark: String
     public let barcode: String?
 }
 
-public struct SearchPage: Sendable, Equatable {
+public struct SearchPage: Sendable, Equatable, Codable {
     public let total: Int
     public let page: Int
     public let pageSize: Int
@@ -143,7 +143,7 @@ public struct LiveCopy: Hashable, Sendable {
 }
 
 /// Badge de disponibilité d'une notice dans une liste de résultats.
-public struct Availability: Hashable, Sendable {
+public struct Availability: Hashable, Sendable, Codable {
     public let label: String
     public let isAvailable: Bool
 }
