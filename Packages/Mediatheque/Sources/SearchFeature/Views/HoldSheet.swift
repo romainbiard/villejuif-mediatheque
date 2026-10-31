@@ -77,15 +77,10 @@ struct HoldSheet: View {
             Button {
                 Task { await viewModel.submit() }
             } label: {
-                Group {
-                    if case .submitting = viewModel.step { ProgressView().tint(.white) } else { Text("Confirmer la réservation") }
-                }
-                .frame(maxWidth: .infinity)
+                Text("Confirmer la réservation").frame(maxWidth: .infinity)
             }
-            .buttonStyle(.glassProminent)
-            .tint(.brandViolet)
-            .controlSize(.extraLarge)
-            .disabled(viewModel.pickup == nil)
+            .buttonStyle(.prominent(isLoading: viewModel.isSubmitting))
+            .disabled(viewModel.pickup == nil || viewModel.isSubmitting)
         case let .confirmed(message, pickup):
             VStack(spacing: 12) {
                 Image(systemName: "checkmark")
@@ -98,9 +93,7 @@ struct HoldSheet: View {
                     .multilineTextAlignment(.center)
                     .foregroundStyle(Color.inkSecondary)
                 Button("Fermer") { dismiss() }
-                    .buttonStyle(.glassProminent)
-                    .tint(.brandViolet)
-                    .controlSize(.large)
+                    .buttonStyle(.prominent(size: .large))
             }
             .frame(maxWidth: .infinity)
             .padding(.top, 8)

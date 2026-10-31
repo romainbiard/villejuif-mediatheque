@@ -22,6 +22,10 @@ public final class HoldViewModel {
     }
     public private(set) var feedback: FeedbackEvent?
 
+    public var isSubmitting: Bool {
+        if case .submitting = step { true } else { false }
+    }
+
     @ObservationIgnored @Dependency(\.accountClient) private var account
 
     public init(notice: Notice, defaultPickup: Library?) {

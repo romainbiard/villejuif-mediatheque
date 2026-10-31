@@ -53,9 +53,7 @@ struct AgendaFiltersView: View {
                     Text(count == 0 ? "Aucun événement" : "Voir \(count) événement\(count > 1 ? "s" : "")")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.glassProminent)
-                .tint(.brandViolet)
-                .controlSize(.extraLarge)
+                .buttonStyle(.prominent())
                 .padding(16)
             }
         }

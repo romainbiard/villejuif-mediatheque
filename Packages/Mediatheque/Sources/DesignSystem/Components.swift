@@ -169,9 +169,7 @@ public struct EmptyStateView: View {
 
             if let primary {
                 Button(primary.label, action: primary.action)
-                    .buttonStyle(.glassProminent)
-                    .tint(tint)
-                    .controlSize(.large)
+                    .buttonStyle(.prominent(tint: tint, size: .large))
                     .padding(.top, 8)
             }
             if let secondary {

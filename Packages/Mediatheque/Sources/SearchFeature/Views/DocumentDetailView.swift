@@ -83,9 +83,7 @@ public struct DocumentDetailView: View {
             } label: {
                 Label("Réserver", systemImage: "bookmark").frame(maxWidth: .infinity)
             }
-            .buttonStyle(.glassProminent)
-            .tint(.brandViolet)
-            .controlSize(.extraLarge)
+            .buttonStyle(.prominent())
         }
     }
 

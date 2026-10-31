@@ -65,18 +65,11 @@ struct WelcomeSetupView: View {
                 Button {
                     Task { await save() }
                 } label: {
-                    Group {
-                        if isSaving {
-                            ProgressView().tint(.white)
-                        } else {
-                            Text(notificationsDenied && !loanReminders && !holdAlerts ? "Continuer sans rappels" : "Continuer")
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
+                    Text(notificationsDenied && !loanReminders && !holdAlerts ? "Continuer sans rappels" : "Continuer")
+                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.glassProminent)
-                .tint(.brandViolet)
-                .controlSize(.extraLarge)
+                .buttonStyle(.prominent(isLoading: isSaving))
+                .disabled(isSaving)
                 .padding(16)
             }
         }
@@ -137,10 +130,7 @@ struct LockedView: View {
                 .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 34, style: .continuous))
             Text("Compte verrouillé").font(.title.weight(.heavy)).foregroundStyle(.white)
             Button("Déverrouiller") { Task { await session.unlock() } }
-                .buttonStyle(.glassProminent)
-                .tint(.white)
-                .foregroundStyle(Color.brandViolet)
-                .controlSize(.extraLarge)
+                .buttonStyle(.prominent(tint: .white, foreground: .brandViolet))
             Button("Se déconnecter") { Task { await session.logout() } }
                 .foregroundStyle(.white.opacity(0.85))
             Spacer()

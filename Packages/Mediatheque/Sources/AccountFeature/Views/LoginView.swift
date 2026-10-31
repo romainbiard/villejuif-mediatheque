@@ -103,14 +103,9 @@ struct LoginView: View {
             Button {
                 Task { await viewModel.submit(into: session) }
             } label: {
-                Group {
-                    if viewModel.isSubmitting { ProgressView().tint(.white) } else { Text("Se connecter") }
-                }
-                .frame(maxWidth: .infinity)
+                Text("Se connecter").frame(maxWidth: .infinity)
             }
-            .buttonStyle(.glassProminent)
-            .tint(.brandViolet)
-            .controlSize(.extraLarge)
+            .buttonStyle(.prominent(isLoading: viewModel.isSubmitting))
             .disabled(!viewModel.canSubmit)
 
             Text("Pas encore inscrit ? L'inscription est gratuite, à l'accueil de chaque médiathèque.")
@@ -177,14 +172,10 @@ struct LostPasswordView: View {
                 Button {
                     Task { await viewModel.send() }
                 } label: {
-                    Group {
-                        if viewModel.state == .sending { ProgressView().tint(.white) } else { Text("Recevoir l'e-mail") }
-                    }
-                    .frame(maxWidth: .infinity)
+                    Text("Recevoir l'e-mail").frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.glassProminent)
-                .tint(.brandViolet)
-                .controlSize(.extraLarge)
+                .buttonStyle(.prominent(isLoading: viewModel.state == .sending))
+                .disabled(viewModel.state == .sending)
 
                 Text("Pas d'e-mail sur votre compte ? L'équipe peut réinitialiser votre mot de passe à l'accueil, sur présentation de votre carte.")
                     .font(.footnote)

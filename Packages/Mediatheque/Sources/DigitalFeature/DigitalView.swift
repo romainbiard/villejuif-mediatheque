@@ -107,19 +107,10 @@ struct FeaturedOfferCard: View {
             Spacer(minLength: 24)
             HStack(spacing: 10) {
                 Button(action: open) {
-                    Group {
-                        if isResolving {
-                            ProgressView().tint(Color.ink)
-                        } else {
-                            Text(offer.app.map { "Ouvrir \($0.name)" } ?? "Ouvrir")
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
+                    Text(offer.app.map { "Ouvrir \($0.name)" } ?? "Ouvrir").frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.glassProminent)
-                .tint(.white)
-                .foregroundStyle(Color(hex: 0x1C1B22))
-                .controlSize(.large)
+                .buttonStyle(.prominent(tint: .white, foreground: Color(hex: 0x1C1B22), size: .large, isLoading: isResolving))
+                .disabled(isResolving)
                 Button("Première utilisation", systemImage: "questionmark", action: help)
                     .labelStyle(.iconOnly)
                     .buttonStyle(.glass)
@@ -237,9 +228,7 @@ struct FirstUseSheet: View {
                         } label: {
                             Label("Installer \(app.name)", systemImage: "arrow.down.app").frame(maxWidth: .infinity)
                         }
-                        .buttonStyle(.glassProminent)
-                        .tint(.brandViolet)
-                        .controlSize(.large)
+                        .buttonStyle(.prominent(size: .large))
                     }
 
                     Button("Voir le tutoriel complet (PDF)") { openURL(offer.tutorialURL) }
@@ -276,7 +265,7 @@ struct PortalSheet: View {
                         VStack(spacing: 14) {
                             Image(systemName: "arrow.up.forward.app").font(.largeTitle).foregroundStyle(Color.brandViolet)
                             Text("Ouvert dans \(session.offer.app?.name ?? "l'app")").font(.title3.weight(.bold))
-                            Button("Fermer") { dismiss() }.buttonStyle(.glassProminent).tint(.brandViolet)
+                            Button("Fermer") { dismiss() }.buttonStyle(.prominent(size: .large))
                         }
                         .padding(28)
                         .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 30, style: .continuous))

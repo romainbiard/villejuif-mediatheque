@@ -39,9 +39,7 @@ public struct EventDetailView: View {
                 } label: {
                     Label("Ajouter au calendrier", systemImage: "calendar.badge.plus").frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.glassProminent)
-                .tint(.brandViolet)
-                .controlSize(.large)
+                .buttonStyle(.prominent(size: .large))
 
                 switch viewModel.detail {
                 case .idle, .loading:

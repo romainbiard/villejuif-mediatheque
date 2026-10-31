@@ -307,14 +307,9 @@ struct SuggestionsView: View {
                 focused = nil
                 Task { await model.send() }
             } label: {
-                Group {
-                    if model.isSending { ProgressView().tint(.white) } else { Text("Envoyer la suggestion") }
-                }
-                .frame(maxWidth: .infinity)
+                Text("Envoyer la suggestion").frame(maxWidth: .infinity)
             }
-            .buttonStyle(.glassProminent)
-            .tint(.brandViolet)
-            .controlSize(.large)
+            .buttonStyle(.prominent(size: .large, isLoading: model.isSending))
             .disabled(!model.draft.isValid || model.isSending)
         }
         .cardStyle()

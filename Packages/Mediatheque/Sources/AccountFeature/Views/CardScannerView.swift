@@ -32,10 +32,7 @@ struct CardScannerView: View {
                         onScan(detected)
                         dismiss()
                     }
-                    .buttonStyle(.glassProminent)
-                    .tint(.white)
-                    .foregroundStyle(Color.ink)
-                    .controlSize(.extraLarge)
+                    .buttonStyle(.prominent(tint: .white, foreground: .ink))
                 } else {
                     Text(prompt).font(.headline)
                 }
