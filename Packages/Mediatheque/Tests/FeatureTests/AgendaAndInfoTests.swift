@@ -51,6 +51,28 @@ struct AgendaViewModelTests {
         #expect(viewModel.availableTypes == ["Lectures", "Rencontre"])
         #expect(viewModel.availablePlaces.first == "Pulp Nord" || viewModel.availablePlaces.first == "Médiathèque Elsa-Triolet")
     }
+
+    @Test func monthCalendarStartsOnMondayAndStaysInTheFuture() async {
+        let viewModel = await makeViewModel(now: paris(2026, 10, 31, 9))
+        // Le 1er octobre 2026 est un jeudi : 3 cases vides (lundi à mercredi).
+        #expect(viewModel.displayedMonth == paris(2026, 10, 1))
+        #expect(viewModel.monthGrid.prefix(3).allSatisfy { $0 == nil })
+        #expect(viewModel.monthGrid.count == 3 + 31)
+        #expect(!viewModel.canShowPreviousMonth)
+        #expect(!viewModel.isSelectable(paris(2026, 10, 30)))
+        #expect(viewModel.isSelectable(paris(2026, 10, 31)))
+
+        viewModel.showNextMonth()
+        // Le 1er novembre 2026 est un dimanche : 6 cases vides.
+        #expect(viewModel.displayedMonth == paris(2026, 11, 1))
+        #expect(viewModel.monthGrid.prefix(6).allSatisfy { $0 == nil })
+        #expect(viewModel.monthGrid[6] == paris(2026, 11, 1))
+        #expect(viewModel.canShowPreviousMonth)
+
+        viewModel.showPreviousMonth()
+        viewModel.select(day: paris(2026, 12, 2))
+        #expect(viewModel.displayedMonth == paris(2026, 12, 1))
+    }
 }
 
 @MainActor

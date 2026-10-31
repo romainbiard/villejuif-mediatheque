@@ -7,33 +7,93 @@ import SwiftUI
 public struct SearchView: View {
     @State private var viewModel = SearchViewModel()
     @State private var path: [Notice] = []
+    /// iPad : notice affichée dans la colonne de droite.
+    @State private var selected: Notice?
+    @FocusState private var isSearchFocused: Bool
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    private let focusRequest: Int
 
-    public init() {}
+    /// `focusRequest` : chaque changement donne le focus au champ de recherche (⌘F).
+    public init(focusRequest: Int = 0) {
+        self.focusRequest = focusRequest
+    }
 
     public var body: some View {
-        NavigationStack(path: $path) {
-            content
-                .background(Color.surfaceGrouped)
-                .navigationTitle(viewModel.browsingTitle ?? "Recherche")
-                .toolbar {
-                    if viewModel.browsingTitle != nil {
-                        ToolbarItem(placement: .topBarLeading) {
-                            Button("Retour", systemImage: "chevron.left") { viewModel.cancelBrowsing() }
+        Group {
+            if sizeClass == .regular {
+                NavigationSplitView {
+                    searchColumn
+                        .navigationSplitViewColumnWidth(420)
+                } detail: {
+                    NavigationStack {
+                        if let selected {
+                            DocumentDetailView(document: selected).id(selected.id)
+                        } else {
+                            ContentUnavailableView(
+                                "Choisissez un document",
+                                systemImage: "books.vertical",
+                                description: Text("Sa fiche s'affiche ici, avec les exemplaires disponibles dans les 3 médiathèques.")
+                            )
+                            .background(Color.surfaceGrouped)
                         }
                     }
                 }
-                .navigationDestination(for: Notice.self) { document in
-                    DocumentDetailView(document: document)
+                .navigationSplitViewStyle(.balanced)
+            } else {
+                NavigationStack(path: $path) {
+                    searchColumn
+                        .navigationDestination(for: Notice.self) { document in
+                            DocumentDetailView(document: document)
+                        }
                 }
-                .searchable(
-                    text: $viewModel.text,
-                    placement: .navigationBarDrawer(displayMode: .always),
-                    prompt: "Titre, auteur, sujet, ISBN"
-                )
-                .onChange(of: viewModel.text) { viewModel.textDidChange() }
-                .onSubmit(of: .search) { viewModel.submit() }
+            }
         }
+        .onChange(of: focusRequest) { isSearchFocused = true }
         .sensoryFeedback(trigger: viewModel.feedback) { _, event in event.map(\.sensoryFeedback) }
+    }
+
+    private var searchColumn: some View {
+        content
+            .background(Color.surfaceGrouped)
+            .navigationTitle(viewModel.browsingTitle ?? "Recherche")
+            .toolbar {
+                if viewModel.browsingTitle != nil {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("Retour", systemImage: "chevron.left") { viewModel.cancelBrowsing() }
+                    }
+                }
+            }
+            .searchable(
+                text: $viewModel.text,
+                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: "Titre, auteur, sujet, ISBN"
+            )
+            .searchFocused($isSearchFocused)
+            .onChange(of: viewModel.text) { viewModel.textDidChange() }
+            .onSubmit(of: .search) { viewModel.submit() }
+    }
+
+    /// Lien vers la fiche : pile de navigation sur iPhone, colonne de droite sur iPad.
+    @ViewBuilder
+    private func resultLink(_ document: Notice) -> some View {
+        let row = SearchResultRow(document: document, availability: viewModel.availability[document.id])
+        Group {
+            if sizeClass == .regular {
+                Button { selected = document } label: {
+                    row.background(selected?.id == document.id ? Color.soft(.brandViolet) : .clear)
+                }
+                .accessibilityAddTraits(selected?.id == document.id ? .isSelected : [])
+            } else {
+                NavigationLink(value: document) { row }
+            }
+        }
+        .buttonStyle(.plain)
+        .hoverEffect(.highlight)
+        .contextMenu {
+            if let permalink = document.permalink {
+                ShareLink("Partager", item: permalink, subject: Text(document.title))
+            }
+        }
     }
 
     @ViewBuilder
@@ -78,11 +138,8 @@ public struct SearchView: View {
                 .foregroundStyle(Color.inkSecondary)
             LazyVStack(spacing: 0) {
                 ForEach(documents) { document in
-                    NavigationLink(value: document) {
-                        SearchResultRow(document: document, availability: viewModel.availability[document.id])
-                    }
-                    .buttonStyle(.plain)
-                    .onAppear { viewModel.rowAppeared(document) }
+                    resultLink(document)
+                        .onAppear { viewModel.rowAppeared(document) }
                     if document.id != documents.last?.id { Divider().padding(.leading, 76) }
                 }
                 if viewModel.isLoadingMore {

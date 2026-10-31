@@ -5,23 +5,30 @@ import SwiftUI
 public struct AgendaView: View {
     @State private var viewModel = AgendaViewModel()
     @State private var showsFilters = false
+    @Environment(\.horizontalSizeClass) private var sizeClass
 
     public init() {}
 
     public var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    if viewModel.filters.period == .all {
-                        DayStrip(viewModel: viewModel)
-                        content
-                    } else {
-                        PeriodHeader(viewModel: viewModel)
-                        periodContent
+            Group {
+                if sizeClass == .regular {
+                    regularLayout
+                } else {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 16) {
+                            if viewModel.filters.period == .all {
+                                DayStrip(viewModel: viewModel)
+                                content
+                            } else {
+                                PeriodHeader(viewModel: viewModel)
+                                periodContent
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 24)
                     }
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 24)
             }
             .background(Color.surfaceGrouped)
             .navigationTitle("Agenda")
@@ -46,6 +53,75 @@ public struct AgendaView: View {
             .refreshable { await viewModel.load() }
         }
         .sensoryFeedback(.selection, trigger: viewModel.selectedDay)
+    }
+
+    /// iPad : mini-calendrier et filtres rapides à gauche, grille de cartes à droite.
+    private var regularLayout: some View {
+        HStack(alignment: .top, spacing: 24) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    MonthCalendar(viewModel: viewModel)
+                    QuickPeriods(viewModel: viewModel)
+                }
+                .padding(.bottom, 24)
+            }
+            .frame(width: 320)
+            .scrollIndicators(.hidden)
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    if viewModel.filters.period == .all {
+                        Text(viewModel.selectedDay.formatted(.dateTime.weekday(.wide).day().month(.wide)).capitalized(with: Locale(identifier: "fr_FR")))
+                            .font(.title2.weight(.heavy))
+                        regularDayContent
+                    } else {
+                        PeriodHeader(viewModel: viewModel)
+                        regularPeriodContent
+                    }
+                }
+                .padding(.bottom, 24)
+            }
+        }
+        .padding(.horizontal, 24)
+    }
+
+    @ViewBuilder
+    private var regularDayContent: some View {
+        switch viewModel.state {
+        case .idle, .loading, .failed:
+            content
+        case .loaded:
+            let events = viewModel.eventsOfSelectedDay
+            if events.isEmpty {
+                emptyDay
+            } else {
+                EventGrid(events: events)
+            }
+            if !viewModel.ongoingEvents.isEmpty {
+                SectionHeader("En ce moment")
+                EventGrid(events: viewModel.ongoingEvents)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var regularPeriodContent: some View {
+        switch viewModel.state {
+        case .idle, .loading, .failed:
+            periodContent
+        case .loaded:
+            if viewModel.periodDays.isEmpty && viewModel.periodOngoingEvents.isEmpty {
+                periodContent
+            }
+            ForEach(viewModel.periodDays) { periodDay in
+                SectionHeader(periodDay.day.formatted(.dateTime.weekday(.wide).day().month(.wide)).capitalized(with: Locale(identifier: "fr_FR")))
+                EventGrid(events: periodDay.events)
+            }
+            if !viewModel.periodOngoingEvents.isEmpty {
+                SectionHeader("Pendant cette période")
+                EventGrid(events: viewModel.periodOngoingEvents)
+            }
+        }
     }
 
     @ViewBuilder
@@ -198,10 +274,122 @@ struct DayStrip: View {
     }
 }
 
+// MARK: - iPad
+
+/// Mini-calendrier du mois : points sous les jours avec un événement, jours de fermeture grisés.
+struct MonthCalendar: View {
+    let viewModel: AgendaViewModel
+
+    private let columns = Array(repeating: GridItem(.flexible(), spacing: 2), count: 7)
+    private static let weekdays = ["L", "M", "M", "J", "V", "S", "D"]
+
+    var body: some View {
+        VStack(spacing: 10) {
+            HStack {
+                Text(viewModel.displayedMonth.formatted(.dateTime.month(.wide).year()).capitalized(with: Locale(identifier: "fr_FR")))
+                    .font(.headline)
+                Spacer()
+                Button("Mois précédent", systemImage: "chevron.left") { viewModel.showPreviousMonth() }
+                    .disabled(!viewModel.canShowPreviousMonth)
+                Button("Mois suivant", systemImage: "chevron.right") { viewModel.showNextMonth() }
+            }
+            .labelStyle(.iconOnly)
+            .buttonStyle(.borderless)
+
+            LazyVGrid(columns: columns, spacing: 4) {
+                ForEach(Array(Self.weekdays.enumerated()), id: \.offset) { _, letter in
+                    Text(letter).font(.caption.weight(.semibold)).foregroundStyle(Color.inkSecondary)
+                }
+                ForEach(Array(viewModel.monthGrid.enumerated()), id: \.offset) { _, day in
+                    if let day {
+                        dayCell(day)
+                    } else {
+                        Color.clear.frame(height: 40)
+                    }
+                }
+            }
+        }
+        .cardStyle()
+    }
+
+    private func dayCell(_ day: Date) -> some View {
+        let isSelected = Calendar.paris.isDate(day, inSameDayAs: viewModel.selectedDay)
+        let isSelectable = viewModel.isSelectable(day)
+        return Button { viewModel.select(day: day) } label: {
+            VStack(spacing: 2) {
+                Text(day.formatted(.dateTime.day()))
+                    .font(.subheadline.weight(isSelected ? .heavy : .medium))
+                Circle()
+                    .fill(viewModel.hasEvents(on: day) ? (isSelected ? Color.white : Color.brandMagenta) : .clear)
+                    .frame(width: 4, height: 4)
+            }
+            .foregroundStyle(isSelected ? Color.white : !isSelectable || viewModel.isLibraryClosingDay(day) ? Color.inkSecondary : Color.ink)
+            .frame(maxWidth: .infinity, minHeight: 40)
+            .background { if isSelected { Circle().fill(Color.brandViolet) } }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(!isSelectable)
+        .opacity(isSelectable ? 1 : 0.4)
+        .hoverEffect(.highlight)
+        .accessibilityLabel(day.formatted(date: .complete, time: .omitted))
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+}
+
+/// Raccourcis « Quand » sous le mini-calendrier.
+struct QuickPeriods: View {
+    let viewModel: AgendaViewModel
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            SectionHeader("Quand")
+            VStack(spacing: 0) {
+                ForEach(AgendaPeriod.allCases) { period in
+                    Button { viewModel.filters.period = period } label: {
+                        HStack {
+                            Text(period == .all ? "Jour par jour" : period.label).foregroundStyle(Color.ink)
+                            Spacer()
+                            if viewModel.filters.period == period {
+                                Image(systemName: "checkmark").font(.subheadline.weight(.semibold)).foregroundStyle(Color.brandViolet)
+                            }
+                        }
+                        .padding(.horizontal, 14)
+                        .frame(height: 46)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .hoverEffect(.highlight)
+                    .accessibilityAddTraits(viewModel.filters.period == period ? .isSelected : [])
+                    if period != AgendaPeriod.allCases.last { Divider().padding(.leading, 14) }
+                }
+            }
+            .cardStyle(padding: 0)
+        }
+    }
+}
+
+/// Grille de cartes d'événements, l'affiche en fond et un bandeau en verre.
+struct EventGrid: View {
+    let events: [Event]
+
+    var body: some View {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 240), spacing: 16)], spacing: 16) {
+            ForEach(events) { event in
+                NavigationLink(value: event) { FeaturedEventCard(event: event, height: 300, compact: true) }
+                    .buttonStyle(.plain)
+                    .hoverEffect(.lift)
+            }
+        }
+    }
+}
+
 // MARK: - Cartes
 
 struct FeaturedEventCard: View {
     let event: Event
+    var height: CGFloat = 340
+    var compact = false
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -211,7 +399,7 @@ struct FeaturedEventCard: View {
                     if let type = event.type { StatusPill(type, style: .accent) }
                     if let audience = event.audience { StatusPill(audience, style: .accent) }
                 }
-                Text(event.title).font(.title2.weight(.heavy)).foregroundStyle(Color.ink).lineLimit(2)
+                Text(event.title).font(compact ? .headline : .title2.weight(.heavy)).foregroundStyle(Color.ink).lineLimit(2)
                 Text(EventFormatting.schedule(event)).font(.subheadline.weight(.medium)).foregroundStyle(Color.ink)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -219,7 +407,7 @@ struct FeaturedEventCard: View {
             .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
             .padding(10)
         }
-        .frame(height: 340)
+        .frame(height: height)
         .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
         .accessibilityElement(children: .combine)
     }

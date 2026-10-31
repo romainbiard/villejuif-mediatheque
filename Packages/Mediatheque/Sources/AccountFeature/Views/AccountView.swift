@@ -31,6 +31,90 @@ enum AccountRoute: Hashable {
     case information, settings
 }
 
+/// Les 7 sections de Mon compte, pour la barre latérale de l'iPad.
+public enum AccountSection: String, CaseIterable, Identifiable, Sendable {
+    case loans, holds, selections, reviews, suggestions, information, settings
+
+    public var id: String { rawValue }
+
+    public var title: String {
+        switch self {
+        case .loans: "Mes prêts"
+        case .holds: "Mes réservations"
+        case .selections: "Mes sélections"
+        case .reviews: "Mes avis"
+        case .suggestions: "Mes suggestions"
+        case .information: "Mes informations"
+        case .settings: "Mes configurations"
+        }
+    }
+
+    public var systemImage: String {
+        switch self {
+        case .loans: "books.vertical"
+        case .holds: "bookmark"
+        case .selections: "heart"
+        case .reviews: "star"
+        case .suggestions: "lightbulb"
+        case .information: "person.text.rectangle"
+        case .settings: "gearshape"
+        }
+    }
+
+    var route: AccountRoute {
+        switch self {
+        case .loans: .loans
+        case .holds: .holds
+        case .selections: .selections
+        case .reviews: .reviews
+        case .suggestions: .suggestions
+        case .information: .information
+        case .settings: .settings
+        }
+    }
+}
+
+/// Une section de Mon compte ouverte seule (onglet de la barre latérale sur iPad).
+/// Sans session, on affiche la connexion de l'onglet Compte.
+public struct AccountSectionView: View {
+    let section: AccountSection
+    @Environment(SessionStore.self) private var session
+
+    public init(_ section: AccountSection) {
+        self.section = section
+    }
+
+    public var body: some View {
+        if case let .loggedIn(patron) = session.state {
+            NavigationStack {
+                AccountDestination(route: section.route, patron: patron)
+                    .navigationDestination(for: AccountRoute.self) { AccountDestination(route: $0, patron: patron) }
+            }
+        } else {
+            AccountView()
+        }
+    }
+}
+
+struct AccountDestination: View {
+    let route: AccountRoute
+    let patron: Patron
+
+    var body: some View {
+        switch route {
+        case .loans: LoansView()
+        case .holds: HoldsView()
+        case .selections: SelectionsView()
+        case let .selection(selection): SelectionDetailView(selection: selection)
+        case let .notice(notice): DocumentDetailView(document: notice)
+        case .reviews: ReviewsView()
+        case .suggestions: SuggestionsView()
+        case .information: InformationView(patron: patron)
+        case .settings: ProfileSettingsView(patron: patron)
+        }
+    }
+}
+
 struct AccountHomeView: View {
     let patron: Patron
     @Environment(SessionStore.self) private var session
@@ -39,42 +123,39 @@ struct AccountHomeView: View {
     @State private var showsNotifications = false
     @State private var path = NavigationPath()
     @State private var confirmsLogout = false
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @AppStorage(ReminderSettings.Key.onboardingDone, store: .shared) private var onboardingDone = false
 
     var body: some View {
         NavigationStack(path: $path) {
             ScrollView {
-                VStack(alignment: .leading, spacing: 14) {
-                    if patron.cardExpired || patron.cardAboutToExpire {
-                        CardExpiryBanner(patron: patron)
+                if sizeClass == .regular {
+                    // iPad : carte et compteurs à gauche, menu à droite.
+                    HStack(alignment: .top, spacing: 24) {
+                        VStack(alignment: .leading, spacing: 14) {
+                            cardAndCounters
+                            logoutButton
+                        }
+                        .frame(maxWidth: 440)
+                        menu
                     }
-                    Button { showsCard = true } label: { LibraryCardView(patron: patron) }
-                        .buttonStyle(.plain)
-                        .accessibilityHint("Affiche la carte en grand pour le comptoir")
-                    counters
-                    menu
-                    Button("Se déconnecter", role: .destructive) { confirmsLogout = true }
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, 8)
+                    .frame(maxWidth: 1100)
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 24)
+                    .frame(maxWidth: .infinity)
+                } else {
+                    VStack(alignment: .leading, spacing: 14) {
+                        cardAndCounters
+                        menu
+                        logoutButton
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 24)
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 24)
             }
             .background(Color.surfaceGrouped)
             .navigationTitle("Mon compte")
-            .navigationDestination(for: AccountRoute.self) { route in
-                switch route {
-                case .loans: LoansView()
-                case .holds: HoldsView()
-                case .selections: SelectionsView()
-                case let .selection(selection): SelectionDetailView(selection: selection)
-                case let .notice(notice): DocumentDetailView(document: notice)
-                case .reviews: ReviewsView()
-                case .suggestions: SuggestionsView()
-                case .information: InformationView(patron: patron)
-                case .settings: ProfileSettingsView(patron: patron)
-                }
-            }
+            .navigationDestination(for: AccountRoute.self) { AccountDestination(route: $0, patron: patron) }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { showsNotifications = true } label: {
@@ -108,6 +189,23 @@ struct AccountHomeView: View {
             }
         }
         .sensoryFeedback(.impact(weight: .medium), trigger: session.state == .loggedOut)
+    }
+
+    @ViewBuilder
+    private var cardAndCounters: some View {
+        if patron.cardExpired || patron.cardAboutToExpire {
+            CardExpiryBanner(patron: patron)
+        }
+        Button { showsCard = true } label: { LibraryCardView(patron: patron) }
+            .buttonStyle(.plain)
+            .accessibilityHint("Affiche la carte en grand pour le comptoir")
+        counters
+    }
+
+    private var logoutButton: some View {
+        Button("Se déconnecter", role: .destructive) { confirmsLogout = true }
+            .frame(maxWidth: .infinity)
+            .padding(.top, 8)
     }
 
     private var counters: some View {
@@ -344,5 +442,6 @@ struct MenuRow<Accessory: View>: View {
         .padding(.horizontal, 14)
         .frame(height: 56)
         .contentShape(Rectangle())
+        .hoverEffect(.highlight)
     }
 }

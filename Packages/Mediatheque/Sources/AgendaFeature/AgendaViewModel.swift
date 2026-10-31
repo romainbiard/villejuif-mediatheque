@@ -75,6 +75,8 @@ public struct AgendaFilters: Hashable, Sendable {
 public final class AgendaViewModel {
     public private(set) var state: LoadState<[Event]> = .idle
     public private(set) var selectedDay: Date
+    /// Premier jour du mois affiché par le mini-calendrier (iPad).
+    public private(set) var displayedMonth: Date
     public var filters = AgendaFilters() {
         didSet { feedback = .selection }
     }
@@ -89,6 +91,7 @@ public final class AgendaViewModel {
     public init() {
         @Dependency(\.date.now) var now
         selectedDay = Calendar.paris.startOfDay(for: now)
+        displayedMonth = Calendar.paris.dateInterval(of: .month, for: now)?.start ?? now
     }
 
     public func load() async {
@@ -103,6 +106,44 @@ public final class AgendaViewModel {
     public func select(day: Date) {
         guard !calendar.isDate(day, inSameDayAs: selectedDay) else { return }
         selectedDay = calendar.startOfDay(for: day)
+        if let month = calendar.dateInterval(of: .month, for: day)?.start { displayedMonth = month }
+        feedback = .selection
+    }
+
+    // MARK: Mini-calendrier (iPad)
+
+    /// Les cases du mois affiché, lundi en premier : `nil` pour les cases vides du début.
+    public var monthGrid: [Date?] {
+        guard let range = calendar.range(of: .day, in: .month, for: displayedMonth) else { return [] }
+        // weekday : 1 = dimanche ; décalage pour commencer la semaine le lundi.
+        let leading = (calendar.component(.weekday, from: displayedMonth) + 5) % 7
+        let days = range.compactMap { calendar.date(byAdding: .day, value: $0 - 1, to: displayedMonth) }
+        return Array(repeating: nil, count: leading) + days
+    }
+
+    /// On ne remonte pas avant le mois en cours : l'agenda ne montre que l'avenir.
+    public var canShowPreviousMonth: Bool {
+        guard let current = calendar.dateInterval(of: .month, for: now)?.start else { return false }
+        return displayedMonth > current
+    }
+
+    public func showPreviousMonth() {
+        guard canShowPreviousMonth else { return }
+        moveMonth(by: -1)
+    }
+
+    public func showNextMonth() {
+        moveMonth(by: 1)
+    }
+
+    /// Les jours passés ne se choisissent pas.
+    public func isSelectable(_ day: Date) -> Bool {
+        day >= calendar.startOfDay(for: now)
+    }
+
+    private func moveMonth(by value: Int) {
+        guard let month = calendar.date(byAdding: .month, value: value, to: displayedMonth) else { return }
+        displayedMonth = month
         feedback = .selection
     }
 

@@ -15,6 +15,7 @@ struct VillejuifApp: App {
                 .environment(session)
                 .task { await session.restore() }
         }
+        .commands { AppCommands() }
         .onChange(of: scenePhase) { _, phase in
             if phase == .background { Self.scheduleRefresh() }
         }
