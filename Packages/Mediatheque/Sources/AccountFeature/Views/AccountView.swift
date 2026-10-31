@@ -7,8 +7,12 @@ import SwiftUI
 /// Onglet Compte : connexion, ou accueil du compte une fois la session ouverte.
 public struct AccountView: View {
     @Environment(SessionStore.self) private var session
+    /// Passé à `true` (raccourci « Montrer ma carte ») : affiche la carte en grand, puis repasse à `false`.
+    @Binding private var cardRequest: Bool
 
-    public init() {}
+    public init(cardRequest: Binding<Bool> = .constant(false)) {
+        _cardRequest = cardRequest
+    }
 
     public var body: some View {
         switch session.state {
@@ -19,7 +23,7 @@ public struct AccountView: View {
         case .loggedOut:
             LoginView()
         case let .loggedIn(patron):
-            AccountHomeView(patron: patron)
+            AccountHomeView(patron: patron, cardRequest: $cardRequest)
         }
     }
 }
@@ -117,6 +121,7 @@ struct AccountDestination: View {
 
 struct AccountHomeView: View {
     let patron: Patron
+    @Binding var cardRequest: Bool
     @Environment(SessionStore.self) private var session
     @State private var viewModel = AccountHomeViewModel()
     @State private var showsCard = false
@@ -181,6 +186,11 @@ struct AccountHomeView: View {
             .refreshable { await viewModel.refresh(session) }
             .task { await viewModel.refresh(session) }
             .fullScreenCover(isPresented: $showsCard) { FullScreenCardView(patron: patron) }
+            .onChange(of: cardRequest, initial: true) {
+                guard cardRequest else { return }
+                showsCard = true
+                cardRequest = false
+            }
             .sheet(isPresented: Binding(get: { !onboardingDone }, set: { if !$0 { onboardingDone = true } })) {
                 WelcomeSetupView(patron: patron) { onboardingDone = true }
             }

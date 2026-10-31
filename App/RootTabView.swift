@@ -44,13 +44,22 @@ enum AppTab: Hashable {
 struct RootTabView: View {
     @State private var selection: AppTab = .account
     @State private var searchFocusRequest = 0
+    /// Demandes des raccourcis (App Intents), relayées aux écrans concernés.
+    @State private var cardRequest = false
+    @State private var searchQueryRequest: String?
+    @State private var intentRouter = AppIntentRouter.shared
     @Environment(\.horizontalSizeClass) private var sizeClass
     @Environment(SessionStore.self) private var session
 
     var body: some View {
         Group {
             if sizeClass == .regular {
-                SidebarRootView(selection: $selection, searchFocusRequest: searchFocusRequest)
+                SidebarRootView(
+                    selection: $selection,
+                    searchFocusRequest: searchFocusRequest,
+                    cardRequest: $cardRequest,
+                    searchQueryRequest: $searchQueryRequest
+                )
             } else {
                 tabs
             }
@@ -66,16 +75,32 @@ struct RootTabView: View {
         .onChange(of: session.patron == nil) { _, loggedOut in
             if loggedOut, case .accountSection = selection { selection = .account }
         }
+        .onChange(of: intentRouter.pending, initial: true) { handleIntentRequest() }
         .onChange(of: sizeClass) {
             // Les sections de Mon compte n'existent pas dans la barre d'onglets.
             if sizeClass == .compact, case .accountSection = selection { selection = .account }
         }
     }
 
+    private func handleIntentRequest() {
+        guard let request = intentRouter.pending else { return }
+        intentRouter.pending = nil
+        switch request {
+        case .libraryCard:
+            selection = .account
+            cardRequest = true
+        case let .search(query):
+            selection = .search
+            searchQueryRequest = query
+        case let .tab(tab):
+            selection = tab
+        }
+    }
+
     private var tabs: some View {
         TabView(selection: $selection) {
             Tab(AppTab.account.title, systemImage: AppTab.account.systemImage, value: .account) {
-                AccountView()
+                AccountView(cardRequest: $cardRequest)
             }
             Tab(AppTab.agenda.title, systemImage: AppTab.agenda.systemImage, value: .agenda) {
                 AgendaView()
@@ -87,7 +112,7 @@ struct RootTabView: View {
                 InfoView()
             }
             Tab(value: .search, role: .search) {
-                SearchView(focusRequest: searchFocusRequest)
+                SearchView(focusRequest: searchFocusRequest, queryRequest: $searchQueryRequest)
             }
         }
     }
@@ -100,6 +125,8 @@ struct RootTabView: View {
 struct SidebarRootView: View {
     @Binding var selection: AppTab
     let searchFocusRequest: Int
+    @Binding var cardRequest: Bool
+    @Binding var searchQueryRequest: String?
     @Environment(SessionStore.self) private var session
     /// Détenu ici pour garder la requête et les résultats quand on change d'écran.
     @State private var searchModel = SearchViewModel()
@@ -134,11 +161,11 @@ struct SidebarRootView: View {
     @ViewBuilder
     private func screen(for tab: AppTab) -> some View {
         switch tab {
-        case .account: AccountView()
+        case .account: AccountView(cardRequest: $cardRequest)
         case .agenda: AgendaView()
         case .digital: DigitalView()
         case .info: InfoView()
-        case .search: SearchView(viewModel: searchModel, focusRequest: searchFocusRequest)
+        case .search: SearchView(viewModel: searchModel, focusRequest: searchFocusRequest, queryRequest: $searchQueryRequest)
         case let .accountSection(section): AccountSectionView(section)
         }
     }

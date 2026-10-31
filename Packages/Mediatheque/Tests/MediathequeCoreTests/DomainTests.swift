@@ -122,3 +122,30 @@ struct LoanTests {
         #expect(SampleData.loans[0].patronID == "100001")
     }
 }
+
+struct ReturnsSummaryTests {
+    private func paris(_ month: Int, _ day: Int, _ hour: Int = 9) -> Date {
+        Calendar.paris.date(from: DateComponents(year: 2026, month: month, day: day, hour: hour))!
+    }
+
+    @Test func lateLoanComesFirstThenNextReturn() {
+        let snapshot = AccountSnapshot(loans: SampleData.loans, holds: [], updatedAt: paris(10, 31))
+        #expect(ReturnsSummary.sentence(for: snapshot, now: paris(10, 31), calendar: .paris)
+            == "« Le Petit Prince » est en retard. Prochain retour : « Sway », dans 5 jours, le jeudi 5 novembre.")
+    }
+
+    @Test func nextReturnAndRemainingCount() {
+        let snapshot = AccountSnapshot(loans: Array(SampleData.loans.dropFirst()), holds: [], updatedAt: paris(11, 1))
+        #expect(ReturnsSummary.sentence(for: snapshot, now: paris(11, 1), calendar: .paris)
+            == "Vous devez rendre « Sway » dans 4 jours, le jeudi 5 novembre. Puis 1 autre plus tard.")
+        #expect(ReturnsSummary.sentence(for: snapshot, now: paris(11, 5), calendar: .paris)
+            == "Vous devez rendre « Sway » aujourd'hui. Puis 1 autre plus tard.")
+    }
+
+    @Test func noSnapshotOrNoLoans() {
+        #expect(ReturnsSummary.sentence(for: nil, now: paris(10, 31), calendar: .paris)
+            == "Connectez-vous dans l'app Médiathèques pour suivre vos prêts.")
+        let empty = AccountSnapshot(loans: [], holds: [], updatedAt: paris(10, 31))
+        #expect(ReturnsSummary.sentence(for: empty, now: paris(10, 31), calendar: .paris) == "Vous n'avez aucun prêt en cours.")
+    }
+}

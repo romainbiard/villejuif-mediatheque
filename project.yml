@@ -44,6 +44,9 @@ targets:
         BGTaskSchedulerPermittedIdentifiers: [com.rbiard.mediatheques-villejuif.refresh]
     entitlements:
       path: App/App.entitlements
+      properties:
+        # Partagé par l'app, le widget et les raccourcis : snapshot, boîte de notifications, réglages.
+        com.apple.security.application-groups: [group.com.rbiard.mediatheques-villejuif]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.rbiard.mediatheques-villejuif
@@ -84,6 +87,9 @@ targets:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     entitlements:
       path: Widget/Widget.entitlements
+      properties:
+        # Partagé par l'app, le widget et les raccourcis : snapshot, boîte de notifications, réglages.
+        com.apple.security.application-groups: [group.com.rbiard.mediatheques-villejuif]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.rbiard.mediatheques-villejuif.widget

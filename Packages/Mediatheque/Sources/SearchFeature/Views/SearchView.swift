@@ -12,16 +12,20 @@ public struct SearchView: View {
     @FocusState private var isSearchFocused: Bool
     @Environment(\.horizontalSizeClass) private var sizeClass
     private let focusRequest: Int
+    /// Recherche demandée de l'extérieur (Siri, Raccourcis) : lancée puis remise à `nil`.
+    @Binding private var queryRequest: String?
 
     /// `focusRequest` : chaque changement donne le focus au champ de recherche (⌘F).
-    public init(focusRequest: Int = 0) {
+    public init(focusRequest: Int = 0, queryRequest: Binding<String?> = .constant(nil)) {
         self.focusRequest = focusRequest
+        _queryRequest = queryRequest
     }
 
     /// Avec un view model détenu par l'appelant, qui survit à la disparition de la vue (iPad).
-    public init(viewModel: SearchViewModel, focusRequest: Int = 0) {
+    public init(viewModel: SearchViewModel, focusRequest: Int = 0, queryRequest: Binding<String?> = .constant(nil)) {
         _viewModel = State(initialValue: viewModel)
         self.focusRequest = focusRequest
+        _queryRequest = queryRequest
     }
 
     public var body: some View {
@@ -49,6 +53,13 @@ public struct SearchView: View {
             }
         }
         .onChange(of: focusRequest) { isSearchFocused = true }
+        .onChange(of: queryRequest, initial: true) {
+            guard let query = queryRequest else { return }
+            path = []
+            selected = nil
+            viewModel.search(recent: query)
+            queryRequest = nil
+        }
         .sensoryFeedback(trigger: viewModel.feedback) { _, event in event.map(\.sensoryFeedback) }
     }
 
