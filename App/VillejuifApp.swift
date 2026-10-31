@@ -5,6 +5,7 @@ import SwiftUI
 @main
 struct VillejuifApp: App {
     @State private var session = SessionStore()
+    @State private var showsSplash = true
     @Environment(\.scenePhase) private var scenePhase
 
     nonisolated static let refreshTaskID = "com.rbiard.mediatheques-villejuif.refresh"
@@ -12,6 +13,9 @@ struct VillejuifApp: App {
     var body: some Scene {
         WindowGroup {
             RootTabView()
+                .overlay {
+                    if showsSplash { SplashOverlay(isPresented: $showsSplash) }
+                }
                 .environment(session)
                 .task { await session.restore() }
         }

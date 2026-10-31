@@ -29,10 +29,15 @@ targets:
     info:
       path: App/Info.plist
       properties:
-        CFBundleDisplayName: Médiathèques
+        CFBundleDisplayName: Ma médiathèque
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
-        UILaunchScreen: {}
+        # Écran de lancement système : blason blanc sur le magenta de la charte, centré sur tout l'écran.
+        # SplashOverlay reprend exactement cette image au démarrage, puis s'efface vers l'app.
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+          UIImageName: LaunchCrest
+          UIImageRespectsSafeAreaInsets: false
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: true
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
@@ -80,7 +85,7 @@ targets:
     info:
       path: Widget/Info.plist
       properties:
-        CFBundleDisplayName: Médiathèques
+        CFBundleDisplayName: Ma médiathèque
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSExtension:

@@ -155,7 +155,7 @@ struct SidebarRootView: View {
                     }
                 }
             }
-            .navigationTitle("Médiathèques")
+            .navigationTitle("Ma médiathèque")
             .navigationSplitViewColumnWidth(280)
             .toolbar(removing: .sidebarToggle)
         } detail: {

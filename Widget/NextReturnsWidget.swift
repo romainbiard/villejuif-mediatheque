@@ -70,7 +70,7 @@ struct NextReturnsView: View {
                 Text(inlineText)
             case .accessoryRectangular:
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("Médiathèques").font(.caption2.weight(.bold))
+                    Text("Ma médiathèque").font(.caption2.weight(.bold))
                     ForEach(loans.prefix(2)) { loan in
                         Text("\(loan.title) · \(dueText(loan))").font(.caption2).lineLimit(1)
                     }

@@ -6,7 +6,7 @@ public enum ReturnsSummary {
     /// Sans snapshot (jamais connecté, ou déconnecté), invite à se connecter.
     public static func sentence(for snapshot: AccountSnapshot?, now: Date, calendar: Calendar) -> String {
         guard let snapshot else {
-            return "Connectez-vous dans l'app Médiathèques pour suivre vos prêts."
+            return "Connectez-vous dans l'app Ma médiathèque pour suivre vos prêts."
         }
         let loans = snapshot.upcomingLoans
         guard let first = loans.first else {

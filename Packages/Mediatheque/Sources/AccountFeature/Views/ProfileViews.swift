@@ -258,6 +258,10 @@ struct ProfileSettingsView: View {
                     }
                 }
                 Button("Se déconnecter", role: .destructive) { confirmsLogout = true }
+                    // Attaché au bouton : sur iOS 26 la confirmation est un popover qui pointe vers sa vue.
+                    .confirmationDialog("Se déconnecter de votre compte ?", isPresented: $confirmsLogout, titleVisibility: .visible) {
+                        Button("Se déconnecter", role: .destructive) { Task { await session.logout() } }
+                    }
                     .frame(maxWidth: .infinity)
                     .padding(.top, 4)
             }
@@ -267,9 +271,6 @@ struct ProfileSettingsView: View {
         .background(Color.surfaceGrouped)
         .navigationTitle("Mes configurations")
         .task { await viewModel.load() }
-        .confirmationDialog("Se déconnecter de votre compte ?", isPresented: $confirmsLogout, titleVisibility: .visible) {
-            Button("Se déconnecter", role: .destructive) { Task { await session.logout() } }
-        }
         .overlay(alignment: .bottom) { MessageToast(message: viewModel.message) { viewModel.dismissMessage() } }
         .sensoryFeedback(trigger: viewModel.feedback) { _, event in event.map(\.sensoryFeedback) }
         .sensoryFeedback(.impact(weight: .light), trigger: faceID)

@@ -194,9 +194,6 @@ struct AccountHomeView: View {
             .sheet(isPresented: Binding(get: { !onboardingDone }, set: { if !$0 { onboardingDone = true } })) {
                 WelcomeSetupView(patron: patron) { onboardingDone = true }
             }
-            .confirmationDialog("Se déconnecter de votre compte ?", isPresented: $confirmsLogout, titleVisibility: .visible) {
-                Button("Se déconnecter", role: .destructive) { Task { await session.logout() } }
-            }
         }
         .measuringWidth($contentWidth)
         .sensoryFeedback(.impact(weight: .medium), trigger: session.state == .loggedOut)
@@ -218,6 +215,10 @@ struct AccountHomeView: View {
 
     private var logoutButton: some View {
         Button("Se déconnecter", role: .destructive) { confirmsLogout = true }
+            // Attaché au bouton : sur iOS 26 la confirmation est un popover qui pointe vers sa vue.
+            .confirmationDialog("Se déconnecter de votre compte ?", isPresented: $confirmsLogout, titleVisibility: .visible) {
+                Button("Se déconnecter", role: .destructive) { Task { await session.logout() } }
+            }
             .frame(maxWidth: .infinity)
             .padding(.top, 8)
     }

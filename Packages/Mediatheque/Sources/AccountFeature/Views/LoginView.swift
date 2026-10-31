@@ -41,7 +41,7 @@ struct LoginView: View {
                     .scaledToFit()
                     .frame(height: 56)
                     .accessibilityLabel("Ville de Villejuif")
-                Text("Médiathèques").font(.largeTitle.weight(.heavy)).foregroundStyle(.white)
+                Text("Ma médiathèque").font(.largeTitle.weight(.heavy)).foregroundStyle(.white)
                 Text("Vos prêts, vos réservations et la médiathèque numérique, dans votre poche.")
                     .font(.body)
                     .foregroundStyle(.white.opacity(0.92))
