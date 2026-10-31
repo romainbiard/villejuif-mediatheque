@@ -347,25 +347,139 @@ struct LibraryCardView: View {
 }
 
 /// Carte plein écran pour le comptoir, luminosité au maximum le temps de l'affichage.
+///
+/// Le code-barres est vertical, collé au bord droit et à la taille de celui de la carte en plastique :
+/// en plus grand, il dépasse de la fenêtre des douchettes ; au bord, on peut approcher le téléphone du lecteur.
 struct FullScreenCardView: View {
     let patron: Patron
     @Environment(\.dismiss) private var dismiss
     @State private var previousBrightness: CGFloat?
+    /// Sens du code-barres choisi par l'abonné (selon le lecteur), retenu d'un affichage à l'autre.
+    @AppStorage("card.barcodeFlipped") private var isFlipped = true
+
+    /// Environ 43 × 11 mm sur iPhone, comme le code-barres imprimé sur la carte.
+    static let barcodeLength: CGFloat = 260
+    static let barcodeThickness: CGFloat = 64
+    static let edgeInset: CGFloat = 14
 
     var body: some View {
-        VStack(spacing: 24) {
-            Spacer()
-            Text(patron.displayName).font(.title.weight(.bold))
-            BarcodeView(value: patron.cardNumber).frame(height: 140).padding(.horizontal, 24)
-            Text(patron.cardNumber).font(.title2.weight(.semibold)).monospacedDigit().tracking(4)
-            Spacer()
-            Button("Fermer") { dismiss() }.buttonStyle(.glass).controlSize(.large)
+        ZStack {
+            Color.white.ignoresSafeArea()
+            HStack(spacing: 0) {
+                identity
+                Spacer(minLength: 16)
+                barcode
+            }
+            .padding(.leading, 24)
+            .padding(.trailing, Self.edgeInset)
         }
+        .overlay(alignment: .trailing) {
+            // Repère du bord à présenter au lecteur.
+            UnevenRoundedRectangle(topLeadingRadius: 2, bottomLeadingRadius: 2)
+                .fill(Color.brandViolet.opacity(0.35))
+                .frame(width: 4, height: Self.barcodeLength)
+                .ignoresSafeArea(edges: .trailing)
+                .accessibilityHidden(true)
+        }
+        .overlay(alignment: .topLeading) {
+            Button("Fermer", systemImage: "xmark") { dismiss() }
+                .labelStyle(.iconOnly)
+                .buttonStyle(.glass)
+                .buttonBorderShape(.circle)
+                .controlSize(.large)
+                .padding(.leading, 20)
+                .padding(.top, 8)
+        }
+        .overlay(alignment: .topTrailing) {
+            Button("Pivoter le code-barres", systemImage: "arrow.trianglehead.2.clockwise.rotate.90") {
+                withAnimation(.smooth(duration: 0.35)) { isFlipped.toggle() }
+            }
+            .labelStyle(.iconOnly)
+            .buttonStyle(.glass)
+            .buttonBorderShape(.circle)
+            .controlSize(.large)
+            .padding(.trailing, 20)
+            .padding(.top, 8)
+            .sensoryFeedback(.selection, trigger: isFlipped)
+        }
+        .overlay(alignment: .bottom) { hint }
         .foregroundStyle(Color(hex: 0x1C1B22))
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.white)
         .onAppear(perform: brighten)
         .onDisappear(perform: restore)
+    }
+
+    private var identity: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Carte d'abonné")
+                .font(.caption.weight(.bold))
+                .textCase(.uppercase)
+                .tracking(0.8)
+                .foregroundStyle(Color.brandViolet)
+            Text(patron.displayName).font(.title.weight(.heavy))
+            Text("Médiathèques de Villejuif").font(.subheadline).foregroundStyle(Color(hex: 0x5E5B66))
+            Text("N° de carte")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(Color(hex: 0x5E5B66))
+                .padding(.top, 18)
+            Text(patron.cardNumber)
+                .font(.title2.weight(.bold))
+                .monospacedDigit()
+                .tracking(3)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+            if let expiry = patron.cardExpiry {
+                Text("Valable jusqu'au \(expiry.formatted(.dateTime.day().month(.wide).year()))")
+                    .font(.footnote)
+                    .foregroundStyle(Color(hex: 0x5E5B66))
+            }
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    private var barcode: some View {
+        HStack(spacing: 8) {
+            // Numéro en clair le long du code-barres, lu de bas en haut comme sur la carte.
+            Text("*\(patron.cardNumber)*")
+                .font(.caption.weight(.semibold))
+                .monospacedDigit()
+                .tracking(4)
+                .lineLimit(1)
+                .fixedSize()
+                .frame(width: Self.barcodeLength)
+                .rotationEffect(.degrees(-90))
+                .frame(width: 16, height: Self.barcodeLength)
+                .accessibilityHidden(true)
+            BarcodeView(value: patron.cardNumber, axis: .vertical)
+                .frame(width: Self.barcodeThickness, height: Self.barcodeLength)
+        }
+        // Par défaut retourné d'un demi-tour : le numéro passe côté bord et se lit de haut en bas.
+        .rotationEffect(.degrees(isFlipped ? 180 : 0))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Code-barres de la carte, numéro \(patron.cardNumber)")
+    }
+
+    private var hint: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "arrow.right")
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(.white)
+                .frame(width: 34, height: 34)
+                .background(Color.brandViolet, in: Circle())
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Approchez ce bord du lecteur").font(.subheadline.weight(.semibold))
+                Text("Luminosité au maximum pendant l'affichage")
+                    .font(.footnote)
+                    .foregroundStyle(Color(hex: 0x5E5B66))
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(Color(hex: 0xF4F3F8), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .padding(.horizontal, 24)
+        .padding(.bottom, 12)
+        .accessibilityElement(children: .combine)
     }
 
     private func brighten() {
@@ -387,8 +501,10 @@ struct FullScreenCardView: View {
 }
 
 /// Code-barres du numéro de carte, en Code 39 comme sur la carte en plastique (lu par les douchettes).
+/// En `.vertical`, il se lit de haut en bas.
 struct BarcodeView: View {
     let value: String
+    var axis: Axis = .horizontal
     @Environment(\.displayScale) private var displayScale
 
     /// Rapport large/étroit : 3 est le maximum de la norme et le plus tolérant à la lecture.
@@ -397,16 +513,21 @@ struct BarcodeView: View {
     var body: some View {
         Canvas { context, size in
             guard let elements = Code39.elements(for: value) else { return }
+            let isVertical = axis == .vertical
+            let length = isVertical ? size.height : size.width
             let total = Code39.width(of: elements, wideRatio: Self.wideRatio)
             // Module étroit calé sur un nombre entier de pixels : des barres nettes, sans flou.
-            let module = max(1, (size.width * displayScale / total).rounded(.down)) / displayScale
-            var x = ((size.width - module * total) / 2)
+            let module = max(1, (length * displayScale / total).rounded(.down)) / displayScale
+            var position = (length - module * total) / 2
             for element in elements {
                 let width = module * (element.isWide ? Self.wideRatio : 1)
                 if element.isBar {
-                    context.fill(Path(CGRect(x: x, y: 0, width: width, height: size.height)), with: .color(.black))
+                    let rect = isVertical
+                        ? CGRect(x: 0, y: position, width: size.width, height: width)
+                        : CGRect(x: position, y: 0, width: width, height: size.height)
+                    context.fill(Path(rect), with: .color(.black))
                 }
-                x += width
+                position += width
             }
         }
         .accessibilityHidden(true)
