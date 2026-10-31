@@ -149,3 +149,32 @@ struct ReturnsSummaryTests {
         #expect(ReturnsSummary.sentence(for: empty, now: paris(10, 31), calendar: .paris) == "Vous n'avez aucun prêt en cours.")
     }
 }
+
+struct Code39Tests {
+    @Test func everyCharacterHasThreeWideElementsOutOfNine() {
+        for (character, pattern) in Code39.patterns {
+            #expect(pattern.count == 9, "\(character)")
+            #expect(pattern.filter { $0 == "w" }.count == 3, "\(character)")
+        }
+    }
+
+    @Test func digitsAreFramedByStartAndStop() throws {
+        let elements = try #require(Code39.elements(for: "1234567"))
+        // 9 caractères (start, 7 chiffres, stop) de 9 éléments, et 8 espaces entre eux.
+        #expect(elements.count == 9 * 9 + 8)
+        #expect(elements.first?.isBar == true)
+        #expect(elements.last?.isBar == true)
+        let star = Code39.patterns["*"]!.map { $0 == "w" }
+        #expect(elements.prefix(9).map(\.isWide) == star)
+        #expect(elements.suffix(9).map(\.isWide) == star)
+        // Chiffre « 1 » juste après le start et son espace : w n n w n n n n w.
+        #expect(elements[10..<19].map(\.isWide) == [true, false, false, true, false, false, false, false, true])
+        #expect(Code39.width(of: elements, wideRatio: 3) == Double(9 * 15 + 8))
+    }
+
+    @Test func unsupportedCharactersAreRejected() {
+        #expect(Code39.elements(for: "é") == nil)
+        #expect(Code39.elements(for: "12*3") == nil)
+        #expect(Code39.elements(for: "ab-1") != nil)
+    }
+}

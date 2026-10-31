@@ -1,4 +1,3 @@
-import CoreImage.CIFilterBuiltins
 import DesignSystem
 import MediathequeCore
 import SearchFeature
@@ -376,25 +375,30 @@ struct FullScreenCardView: View {
     }
 }
 
-/// Code-barres Code 128 du numéro de carte.
-/// ⚠️ La symbologie lue par les douchettes des médiathèques reste à confirmer.
+/// Code-barres du numéro de carte, en Code 39 comme sur la carte en plastique (lu par les douchettes).
 struct BarcodeView: View {
     let value: String
+    @Environment(\.displayScale) private var displayScale
+
+    /// Rapport large/étroit : 3 est le maximum de la norme et le plus tolérant à la lecture.
+    static let wideRatio = 3.0
 
     var body: some View {
-        if let image = Self.render(value) {
-            Image(decorative: image, scale: 1).resizable().interpolation(.none)
-        } else {
-            Color.clear
+        Canvas { context, size in
+            guard let elements = Code39.elements(for: value) else { return }
+            let total = Code39.width(of: elements, wideRatio: Self.wideRatio)
+            // Module étroit calé sur un nombre entier de pixels : des barres nettes, sans flou.
+            let module = max(1, (size.width * displayScale / total).rounded(.down)) / displayScale
+            var x = ((size.width - module * total) / 2)
+            for element in elements {
+                let width = module * (element.isWide ? Self.wideRatio : 1)
+                if element.isBar {
+                    context.fill(Path(CGRect(x: x, y: 0, width: width, height: size.height)), with: .color(.black))
+                }
+                x += width
+            }
         }
-    }
-
-    static func render(_ value: String) -> CGImage? {
-        let filter = CIFilter.code128BarcodeGenerator()
-        filter.message = Data(value.utf8)
-        filter.quietSpace = 0
-        guard let output = filter.outputImage else { return nil }
-        return CIContext().createCGImage(output, from: output.extent)
+        .accessibilityHidden(true)
     }
 }
 
