@@ -223,9 +223,7 @@ struct PasswordSheet: View {
 
 struct ProfileSettingsView: View {
     let patron: Patron
-    @Environment(SessionStore.self) private var session
     @State private var viewModel: ProfileSettingsViewModel
-    @State private var confirmsLogout = false
     @AppStorage(ReminderSettings.Key.loanReminders, store: .shared) private var loanReminders = true
     @AppStorage(ReminderSettings.Key.holdAlerts, store: .shared) private var holdAlerts = true
     @AppStorage(ReminderSettings.Key.agendaDigest, store: .shared) private var agendaDigest = false
@@ -271,13 +269,6 @@ struct ProfileSettingsView: View {
                         )
                     }
                 }
-                Button(.local("Se déconnecter"), role: .destructive) { confirmsLogout = true }
-                    // Attached to the button: on iOS 26 the confirmation is a popover pointing at its view.
-                    .confirmationDialog(Text(.local("Se déconnecter de votre compte ?")), isPresented: $confirmsLogout, titleVisibility: .visible) {
-                        Button(.local("Se déconnecter"), role: .destructive) { Task { await session.logout() } }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 4)
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
