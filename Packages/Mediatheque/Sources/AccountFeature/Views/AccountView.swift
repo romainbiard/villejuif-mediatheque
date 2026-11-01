@@ -560,10 +560,14 @@ struct LibraryCardView: View {
 ///
 /// The barcode is vertical, against the right edge and the same size as the one on the plastic card:
 /// any larger and it overflows the handheld scanner's window; at the edge, the phone can get close to the reader.
+/// When the right edge holds the camera and status bar (iPhone Duo), the barcode moves to the left edge.
 struct FullScreenCardView: View {
     let patron: Patron
     @Environment(\.dismiss) private var dismiss
     @State private var previousBrightness: CGFloat?
+    /// The right edge has a safe-area inset and not the left one: barcode against the left edge.
+    /// iPhone in portrait and iPad have no side inset, so they keep the right edge.
+    @State private var barcodeOnLeading = false
     /// Barcode orientation chosen by the patron (depending on the reader), remembered between displays.
     @AppStorage("card.barcodeFlipped") private var isFlipped = true
 
@@ -576,20 +580,34 @@ struct FullScreenCardView: View {
         ZStack {
             Color.white.ignoresSafeArea()
             HStack(spacing: 0) {
-                identity
-                Spacer(minLength: 16)
-                barcode
+                if barcodeOnLeading {
+                    barcode
+                    Spacer(minLength: 16)
+                    identity
+                } else {
+                    identity
+                    Spacer(minLength: 16)
+                    barcode
+                }
             }
-            .padding(.leading, 24)
-            .padding(.trailing, Self.edgeInset)
+            .padding(.leading, barcodeOnLeading ? Self.edgeInset : 24)
+            .padding(.trailing, barcodeOnLeading ? 24 : Self.edgeInset)
         }
-        .overlay(alignment: .trailing) {
+        .onGeometryChange(for: Bool.self) { proxy in
+            proxy.safeAreaInsets.trailing > proxy.safeAreaInsets.leading
+        } action: { barcodeOnLeading = $0 }
+        .overlay(alignment: barcodeOnLeading ? .leading : .trailing) {
             // Marker for the edge to present to the reader.
-            UnevenRoundedRectangle(topLeadingRadius: 2, bottomLeadingRadius: 2)
-                .fill(Color.brandViolet.opacity(0.35))
-                .frame(width: 4, height: Self.barcodeLength)
-                .ignoresSafeArea(edges: .trailing)
-                .accessibilityHidden(true)
+            UnevenRoundedRectangle(
+                topLeadingRadius: barcodeOnLeading ? 0 : 2,
+                bottomLeadingRadius: barcodeOnLeading ? 0 : 2,
+                bottomTrailingRadius: barcodeOnLeading ? 2 : 0,
+                topTrailingRadius: barcodeOnLeading ? 2 : 0
+            )
+            .fill(Color.brandViolet.opacity(0.35))
+            .frame(width: 4, height: Self.barcodeLength)
+            .ignoresSafeArea(edges: barcodeOnLeading ? .leading : .trailing)
+            .accessibilityHidden(true)
         }
         .overlay(alignment: .topLeading) {
             Button(.local("Fermer"), systemImage: "xmark") { dismiss() }
@@ -663,14 +681,15 @@ struct FullScreenCardView: View {
                 .frame(width: Self.barcodeThickness, height: Self.barcodeLength)
         }
         // Rotated a half turn by default: the number moves to the edge side and reads top to bottom.
-        .rotationEffect(.degrees(isFlipped ? 180 : 0))
+        // Against the left edge, the default is the other way round, so the number stays on the edge side.
+        .rotationEffect(.degrees(isFlipped != barcodeOnLeading ? 180 : 0))
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(.local("Code-barres de la carte, numéro \(patron.cardNumber)")))
     }
 
     private var hint: some View {
         HStack(spacing: 12) {
-            Image(systemName: "arrow.right")
+            Image(systemName: barcodeOnLeading ? "arrow.left" : "arrow.right")
                 .font(.subheadline.weight(.bold))
                 .foregroundStyle(.white)
                 .frame(width: 34, height: 34)
