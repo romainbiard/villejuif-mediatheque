@@ -46,13 +46,13 @@ public enum AccountSection: String, CaseIterable, Identifiable, Sendable {
 
     public var title: String {
         switch self {
-        case .loans: "Mes prêts"
-        case .holds: "Mes réservations"
-        case .selections: "Mes sélections"
-        case .reviews: "Mes avis"
-        case .suggestions: "Mes suggestions"
-        case .information: "Mes informations"
-        case .settings: "Mes configurations"
+        case .loans: .local("Mes prêts")
+        case .holds: .local("Mes réservations")
+        case .selections: .local("Mes sélections")
+        case .reviews: .local("Mes avis")
+        case .suggestions: .local("Mes suggestions")
+        case .information: .local("Mes informations")
+        case .settings: .local("Mes configurations")
         }
     }
 
@@ -163,7 +163,7 @@ struct AccountHomeView: View {
                 }
             }
             .background(Color.surfaceGrouped)
-            .navigationTitle("Mon compte")
+            .navigationTitle(Text(.local("Mon compte")))
             .navigationDestination(for: AccountRoute.self) { AccountDestination(route: $0, patron: patron) }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -177,8 +177,8 @@ struct AccountHomeView: View {
                         }
                     }
                     .accessibilityLabel(viewModel.unreadNotifications > 0
-                        ? "Notifications, \(viewModel.unreadNotifications) non lue\(viewModel.unreadNotifications > 1 ? "s" : "")"
-                        : "Notifications")
+                        ? Text(.local("Notifications, \(viewModel.unreadNotifications) non lues"))
+                        : Text(.local("Notifications")))
                 }
             }
             .sheet(isPresented: $showsNotifications, onDismiss: viewModel.refreshUnreadCount) {
@@ -214,15 +214,15 @@ struct AccountHomeView: View {
         }
         Button { showsCard = true } label: { LibraryCardView(patron: patron) }
             .buttonStyle(.plain)
-            .accessibilityHint("Affiche la carte en grand pour le comptoir")
+            .accessibilityHint(Text(.local("Affiche la carte en grand pour le comptoir")))
         counters
     }
 
     private var logoutButton: some View {
-        Button("Se déconnecter", role: .destructive) { confirmsLogout = true }
+        Button(.local("Se déconnecter"), role: .destructive) { confirmsLogout = true }
             // Attached to the button: on iOS 26 the confirmation is a popover pointing at its view.
-            .confirmationDialog("Se déconnecter de votre compte ?", isPresented: $confirmsLogout, titleVisibility: .visible) {
-                Button("Se déconnecter", role: .destructive) { Task { await session.logout() } }
+            .confirmationDialog(Text(.local("Se déconnecter de votre compte ?")), isPresented: $confirmsLogout, titleVisibility: .visible) {
+                Button(.local("Se déconnecter"), role: .destructive) { Task { await session.logout() } }
             }
             .frame(maxWidth: .infinity)
             .padding(.top, 8)
@@ -231,13 +231,13 @@ struct AccountHomeView: View {
     private var counters: some View {
         HStack(spacing: 10) {
             NavigationLink(value: AccountRoute.loans) {
-                CounterTile(value: patron.counters.loans, label: "Prêts", color: .ink)
+                CounterTile(value: patron.counters.loans, label: .local("Prêts"), color: .ink)
             }
             NavigationLink(value: AccountRoute.loans) {
-                CounterTile(value: patron.counters.lateLoans, label: "En retard", color: .statusDanger)
+                CounterTile(value: patron.counters.lateLoans, label: .local("En retard"), color: .statusDanger)
             }
             NavigationLink(value: AccountRoute.holds) {
-                CounterTile(value: patron.counters.waitingToBePulled, label: "À retirer", color: .statusSuccess)
+                CounterTile(value: patron.counters.waitingToBePulled, label: .local("À retirer"), color: .statusSuccess)
             }
         }
         .buttonStyle(.plain)
@@ -245,20 +245,20 @@ struct AccountHomeView: View {
 
     private var menu: some View {
         VStack(alignment: .leading, spacing: 8) {
-            SectionHeader("Mes emprunts")
+            SectionHeader(.local("Mes emprunts"))
             VStack(spacing: 0) {
                 NavigationLink(value: AccountRoute.loans) {
-                    MenuRow(title: "Mes prêts", systemImage: "books.vertical.fill", tint: .brandViolet) {
+                    MenuRow(title: .local("Mes prêts"), systemImage: "books.vertical.fill", tint: .brandViolet) {
                         if patron.counters.lateLoans > 0 {
-                            StatusPill("\(patron.counters.lateLoans) en retard", style: .danger)
+                            StatusPill(.local("\(patron.counters.lateLoans) en retard"), style: .danger)
                         }
                     }
                 }
                 Divider().padding(.leading, 58)
                 NavigationLink(value: AccountRoute.holds) {
-                    MenuRow(title: "Mes réservations", systemImage: "bookmark.fill", tint: .statusSuccess) {
+                    MenuRow(title: .local("Mes réservations"), systemImage: "bookmark.fill", tint: .statusSuccess) {
                         if patron.counters.waitingToBePulled > 0 {
-                            StatusPill("\(patron.counters.waitingToBePulled) à retirer", style: .success)
+                            StatusPill(.local("\(patron.counters.waitingToBePulled) à retirer"), style: .success)
                         }
                     }
                 }
@@ -266,22 +266,22 @@ struct AccountHomeView: View {
             .buttonStyle(.plain)
             .cardStyle(padding: 0)
 
-            SectionHeader("Mes listes").padding(.top, 10)
+            SectionHeader(.local("Mes listes")).padding(.top, 10)
             VStack(spacing: 0) {
-                menuLink(.selections, "Mes sélections", "heart.fill", .brandMagenta)
+                menuLink(.selections, .local("Mes sélections"), "heart.fill", .brandMagenta)
                 Divider().padding(.leading, 58)
-                menuLink(.reviews, "Mes avis", "star.fill", .statusWarning)
+                menuLink(.reviews, .local("Mes avis"), "star.fill", .statusWarning)
                 Divider().padding(.leading, 58)
-                menuLink(.suggestions, "Mes suggestions d'achat", "lightbulb.fill", .brandVioletDeep)
+                menuLink(.suggestions, .local("Mes suggestions d'achat"), "lightbulb.fill", .brandVioletDeep)
             }
             .buttonStyle(.plain)
             .cardStyle(padding: 0)
 
-            SectionHeader("Mon profil").padding(.top, 10)
+            SectionHeader(.local("Mon profil")).padding(.top, 10)
             VStack(spacing: 0) {
-                menuLink(.information, "Mes informations", "person.text.rectangle.fill", .ink)
+                menuLink(.information, .local("Mes informations"), "person.text.rectangle.fill", .ink)
                 Divider().padding(.leading, 58)
-                menuLink(.settings, "Mes configurations", "gearshape.fill", .inkSecondary)
+                menuLink(.settings, .local("Mes configurations"), "gearshape.fill", .inkSecondary)
             }
             .buttonStyle(.plain)
             .cardStyle(padding: 0)
@@ -304,16 +304,16 @@ struct LibraryCardView: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 8) {
-                    VillejuifLogo.white.resizable().scaledToFit().frame(height: 26).accessibilityLabel("Ville de Villejuif")
+                    VillejuifLogo.white.resizable().scaledToFit().frame(height: 26).accessibilityLabel(Text(.local("Ville de Villejuif")))
                     Text(patron.displayName).font(.title2.weight(.bold))
                     if let expiry = patron.cardExpiry {
-                        Text("Carte valable jusqu'au \(expiry.formatted(.dateTime.day().month(.wide).year()))")
+                        Text(.local("Carte valable jusqu'au \(expiry.formatted(.dateTime.day().month(.wide).year()))"))
                             .font(.footnote)
                             .opacity(0.85)
                     }
                 }
                 Spacer()
-                Text("Gratuit")
+                Text(.local("Gratuit"))
                     .font(.caption.weight(.semibold))
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
@@ -326,7 +326,7 @@ struct LibraryCardView: View {
                         .lineLimit(1)
                         .fixedSize()
                     Spacer(minLength: 8)
-                    Text("Toucher pour agrandir").font(.footnote).foregroundStyle(Color(hex: 0x5E5B66))
+                    Text(.local("Toucher pour agrandir")).font(.footnote).foregroundStyle(Color(hex: 0x5E5B66))
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
                 }
@@ -346,7 +346,7 @@ struct LibraryCardView: View {
         }
         .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Carte d'abonné de \(patron.displayName), numéro \(patron.cardNumber)")
+        .accessibilityLabel(Text(.local("Carte d'abonné de \(patron.displayName), numéro \(patron.cardNumber)")))
     }
 }
 
@@ -386,7 +386,7 @@ struct FullScreenCardView: View {
                 .accessibilityHidden(true)
         }
         .overlay(alignment: .topLeading) {
-            Button("Fermer", systemImage: "xmark") { dismiss() }
+            Button(.local("Fermer"), systemImage: "xmark") { dismiss() }
                 .labelStyle(.iconOnly)
                 .buttonStyle(.glass)
                 .buttonBorderShape(.circle)
@@ -395,7 +395,7 @@ struct FullScreenCardView: View {
                 .padding(.top, 8)
         }
         .overlay(alignment: .topTrailing) {
-            Button("Pivoter le code-barres", systemImage: "arrow.trianglehead.2.clockwise.rotate.90") {
+            Button(.local("Pivoter le code-barres"), systemImage: "arrow.trianglehead.2.clockwise.rotate.90") {
                 withAnimation(.smooth(duration: 0.35)) { isFlipped.toggle() }
             }
             .labelStyle(.iconOnly)
@@ -414,14 +414,14 @@ struct FullScreenCardView: View {
 
     private var identity: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("Carte d'abonné")
+            Text(.local("Carte d'abonné"))
                 .font(.caption.weight(.bold))
                 .textCase(.uppercase)
                 .tracking(0.8)
                 .foregroundStyle(Color.brandViolet)
             Text(patron.displayName).font(.title.weight(.heavy))
-            Text("Médiathèques de Villejuif").font(.subheadline).foregroundStyle(Color(hex: 0x5E5B66))
-            Text("N° de carte")
+            Text(.local("Médiathèques de Villejuif")).font(.subheadline).foregroundStyle(Color(hex: 0x5E5B66))
+            Text(.local("N° de carte"))
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(Color(hex: 0x5E5B66))
                 .padding(.top, 18)
@@ -432,7 +432,7 @@ struct FullScreenCardView: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
             if let expiry = patron.cardExpiry {
-                Text("Valable jusqu'au \(expiry.formatted(.dateTime.day().month(.wide).year()))")
+                Text(.local("Valable jusqu'au \(expiry.formatted(.dateTime.day().month(.wide).year()))"))
                     .font(.footnote)
                     .foregroundStyle(Color(hex: 0x5E5B66))
             }
@@ -443,7 +443,7 @@ struct FullScreenCardView: View {
     private var barcode: some View {
         HStack(spacing: 8) {
             // Human-readable number along the barcode, read bottom to top as on the card.
-            Text("*\(patron.cardNumber)*")
+            Text(verbatim: "*\(patron.cardNumber)*")
                 .font(.caption.weight(.semibold))
                 .monospacedDigit()
                 .tracking(4)
@@ -459,7 +459,7 @@ struct FullScreenCardView: View {
         // Rotated a half turn by default: the number moves to the edge side and reads top to bottom.
         .rotationEffect(.degrees(isFlipped ? 180 : 0))
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Code-barres de la carte, numéro \(patron.cardNumber)")
+        .accessibilityLabel(Text(.local("Code-barres de la carte, numéro \(patron.cardNumber)")))
     }
 
     private var hint: some View {
@@ -471,8 +471,8 @@ struct FullScreenCardView: View {
                 .background(Color.brandViolet, in: Circle())
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
-                Text("Approchez ce bord du lecteur").font(.subheadline.weight(.semibold))
-                Text("Luminosité au maximum pendant l'affichage")
+                Text(.local("Approchez ce bord du lecteur")).font(.subheadline.weight(.semibold))
+                Text(.local("Luminosité au maximum pendant l'affichage"))
                     .font(.footnote)
                     .foregroundStyle(Color(hex: 0x5E5B66))
             }
@@ -544,8 +544,8 @@ struct CardExpiryBanner: View {
     var body: some View {
         Label(
             patron.cardExpired
-                ? "Votre carte a expiré. Renouvelez-la à l'accueil d'une médiathèque."
-                : "Votre carte expire dans \(patron.cardExpiresInDays) jours. Renouvelez-la à l'accueil.",
+                ? String.local("Votre carte a expiré. Renouvelez-la à l'accueil d'une médiathèque.")
+                : String.local("Votre carte expire dans \(patron.cardExpiresInDays) jours. Renouvelez-la à l'accueil."),
             systemImage: "exclamationmark.triangle.fill"
         )
         .font(.subheadline.weight(.semibold))
@@ -563,7 +563,7 @@ struct CounterTile: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text("\(value)").font(.title.weight(.heavy)).foregroundStyle(color)
+            Text(value, format: .number).font(.title.weight(.heavy)).foregroundStyle(color)
             Text(label).font(.subheadline).foregroundStyle(Color.inkSecondary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)

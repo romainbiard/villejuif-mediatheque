@@ -29,7 +29,7 @@ struct InstallAppSheet: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(app.name).font(.title3.weight(.heavy))
                     Text(app.publisher).font(.subheadline).foregroundStyle(Color.inkSecondary)
-                    Text("Gratuite · iPhone et iPad").font(.footnote).foregroundStyle(Color.inkSecondary)
+                    Text(.local("Gratuite · iPhone et iPad")).font(.footnote).foregroundStyle(Color.inkSecondary)
                 }
                 .accessibilityElement(children: .combine)
             }
@@ -37,7 +37,7 @@ struct InstallAppSheet: View {
             Text(title)
                 .font(.title2.weight(.heavy))
                 .padding(.top, 22)
-            Text("\(offer.provider) a sa propre app. Installez-la une fois : Ma médiathèque vous y connecte ensuite à chaque fois.")
+            Text(.local("\(offer.provider) a sa propre app. Installez-la une fois : Ma médiathèque vous y connecte ensuite à chaque fois."))
                 .font(.subheadline)
                 .foregroundStyle(Color.inkSecondary)
                 .padding(.top, 6)
@@ -61,12 +61,12 @@ struct InstallAppSheet: View {
             }
 
             Button(action: get) {
-                Label("Obtenir l'app", systemImage: "arrow.down").frame(maxWidth: .infinity)
+                Label(.local("Obtenir l'app"), systemImage: "arrow.down").frame(maxWidth: .infinity)
             }
             .buttonStyle(.prominent(size: .large))
             .padding(.top, 24)
 
-            Button("Continuer dans le navigateur", action: continueOnWeb)
+            Button(.local("Continuer dans le navigateur"), action: continueOnWeb)
                 .font(.body.weight(.semibold))
                 .frame(maxWidth: .infinity, minHeight: 48)
                 .padding(.top, 4)
@@ -81,10 +81,10 @@ struct InstallAppSheet: View {
 
     private var title: String {
         switch offer.id {
-        case "films": "Regardez vos films dans l'app"
-        case "presse": "Lisez la presse dans l'app"
-        case "formation": "Suivez vos cours dans l'app"
-        default: "Profitez-en dans l'app"
+        case "films": .local("Regardez vos films dans l'app")
+        case "presse": .local("Lisez la presse dans l'app")
+        case "formation": .local("Suivez vos cours dans l'app")
+        default: .local("Profitez-en dans l'app")
         }
     }
 }

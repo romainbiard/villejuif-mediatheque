@@ -46,9 +46,9 @@ struct LoginView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(height: 56)
-                    .accessibilityLabel("Ville de Villejuif")
-                Text("Ma médiathèque").font(.largeTitle.weight(.heavy)).foregroundStyle(.white)
-                Text("Vos prêts, vos réservations et la médiathèque numérique, dans votre poche.")
+                    .accessibilityLabel(Text(.local("Ville de Villejuif")))
+                Text(verbatim: "Ma médiathèque").font(.largeTitle.weight(.heavy)).foregroundStyle(.white)
+                Text(.local("Vos prêts, vos réservations et la médiathèque numérique, dans votre poche."))
                     .font(.body)
                     .foregroundStyle(.white.opacity(0.92))
                     .fixedSize(horizontal: false, vertical: true)
@@ -77,12 +77,12 @@ struct LoginView: View {
 
     private var form: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Connexion").font(.title2.weight(.heavy))
+            Text(.local("Connexion")).font(.title2.weight(.heavy))
 
             VStack(alignment: .leading, spacing: 6) {
-                Text("Numéro de carte").font(.footnote.weight(.semibold)).foregroundStyle(Color.inkSecondary)
+                Text(.local("Numéro de carte")).font(.footnote.weight(.semibold)).foregroundStyle(Color.inkSecondary)
                 HStack(spacing: 8) {
-                    TextField("Au dos de votre carte", text: $viewModel.cardNumber)
+                    TextField(text: $viewModel.cardNumber) { Text(.local("Au dos de votre carte")) }
                         .textContentType(.username)
                         // No number pad: it has no suggestions bar, so
                         // iOS can't offer the username saved in Passwords there.
@@ -93,7 +93,7 @@ struct LoginView: View {
                         .onSubmit { focus = .password }
                         .focused($focus, equals: .card)
                     if CardScannerView.isAvailable {
-                        Button("Scanner ma carte", systemImage: "barcode.viewfinder") { showsScanner = true }
+                        Button(.local("Scanner ma carte"), systemImage: "barcode.viewfinder") { showsScanner = true }
                             .labelStyle(.iconOnly)
                             .font(.title3)
                             .foregroundStyle(Color.brandVioletDeep)
@@ -104,8 +104,8 @@ struct LoginView: View {
                 .fieldStyle(isFocused: focus == .card)
             }
             VStack(alignment: .leading, spacing: 6) {
-                Text("Mot de passe").font(.footnote.weight(.semibold)).foregroundStyle(Color.inkSecondary)
-                SecureField("Votre mot de passe", text: $viewModel.password)
+                Text(.local("Mot de passe")).font(.footnote.weight(.semibold)).foregroundStyle(Color.inkSecondary)
+                SecureField(text: $viewModel.password) { Text(.local("Votre mot de passe")) }
                     .textContentType(.password)
                     .focused($focus, equals: .password)
                     .submitLabel(.go)
@@ -121,19 +121,19 @@ struct LoginView: View {
 
             HStack {
                 Spacer()
-                Button("Mot de passe oublié ?") { showsLostPassword = true }
+                Button(.local("Mot de passe oublié ?")) { showsLostPassword = true }
                     .font(.subheadline.weight(.semibold))
             }
 
             Button {
                 Task { await viewModel.submit(into: session) }
             } label: {
-                Text("Se connecter").frame(maxWidth: .infinity)
+                Text(.local("Se connecter")).frame(maxWidth: .infinity)
             }
             .buttonStyle(.prominent(isLoading: viewModel.isSubmitting))
             .disabled(!viewModel.canSubmit)
 
-            Text("Pas encore inscrit ? L'inscription est gratuite, à l'accueil de chaque médiathèque.")
+            Text(.local("Pas encore inscrit ? L'inscription est gratuite, à l'accueil de chaque médiathèque."))
                 .font(.footnote)
                 .fixedSize(horizontal: false, vertical: true)
                 .foregroundStyle(Color.inkSecondary)
@@ -177,10 +177,10 @@ struct LostPasswordView: View {
                     .foregroundStyle(Color.brandVioletDeep)
                     .frame(width: 64, height: 64)
                     .background(Color.soft(.brandViolet), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-                Text("Indiquez votre numéro de carte. Vous recevrez un e-mail pour choisir un nouveau mot de passe, à l'adresse enregistrée sur votre compte.")
+                Text(.local("Indiquez votre numéro de carte. Vous recevrez un e-mail pour choisir un nouveau mot de passe, à l'adresse enregistrée sur votre compte."))
                     .foregroundStyle(Color.inkSecondary)
 
-                TextField("Numéro de carte", text: $viewModel.cardNumber)
+                TextField(text: $viewModel.cardNumber) { Text(.local("Numéro de carte")) }
                     .textContentType(.username)
                     .keyboardType(.numbersAndPunctuation)
                     .textInputAutocapitalization(.never)
@@ -189,7 +189,7 @@ struct LostPasswordView: View {
 
                 switch viewModel.state {
                 case .sent:
-                    Label("E-mail envoyé. Pensez à vérifier vos indésirables.", systemImage: "checkmark.circle.fill")
+                    Label(.local("E-mail envoyé. Pensez à vérifier vos indésirables."), systemImage: "checkmark.circle.fill")
                         .foregroundStyle(Color.statusSuccess)
                 case let .failed(message):
                     Label(message, systemImage: "exclamationmark.circle.fill").foregroundStyle(Color.statusDanger)
@@ -200,12 +200,12 @@ struct LostPasswordView: View {
                 Button {
                     Task { await viewModel.send() }
                 } label: {
-                    Text("Recevoir l'e-mail").frame(maxWidth: .infinity)
+                    Text(.local("Recevoir l'e-mail")).frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.prominent(isLoading: viewModel.state == .sending))
                 .disabled(viewModel.state == .sending)
 
-                Text("Pas d'e-mail sur votre compte ? L'équipe peut réinitialiser votre mot de passe à l'accueil, sur présentation de votre carte.")
+                Text(.local("Pas d'e-mail sur votre compte ? L'équipe peut réinitialiser votre mot de passe à l'accueil, sur présentation de votre carte."))
                     .font(.footnote)
                     .foregroundStyle(Color.inkSecondary)
                 Spacer()
@@ -214,9 +214,9 @@ struct LostPasswordView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .dismissesKeyboardOnTap()
             .background(Color.surfaceGrouped)
-            .navigationTitle("Mot de passe oublié")
+            .navigationTitle(Text(.local("Mot de passe oublié")))
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Fermer") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button(.local("Fermer")) { dismiss() } }
             }
         }
         .sensoryFeedback(.success, trigger: viewModel.state == .sent)

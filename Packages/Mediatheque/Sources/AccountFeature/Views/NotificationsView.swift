@@ -19,9 +19,9 @@ struct NotificationsView: View {
                     if viewModel.inbox.items.isEmpty {
                         EmptyStateView(
                             systemImage: "bell",
-                            title: "Rien de nouveau",
-                            message: "Les rappels de retour, les réservations arrivées et les messages de la médiathèque apparaîtront ici.",
-                            primary: ("Régler les notifications", openSettings)
+                            title: .local("Rien de nouveau"),
+                            message: .local("Les rappels de retour, les réservations arrivées et les messages de la médiathèque apparaîtront ici."),
+                            primary: (String.local("Régler les notifications"), openSettings)
                         )
                     } else {
                         ForEach(viewModel.sections) { section in
@@ -38,7 +38,7 @@ struct NotificationsView: View {
                             }
                             .cardStyle(padding: 0)
                         }
-                        Text("Historique gardé \(Inbox.retentionDays) jours sur cet appareil.")
+                        Text(.local("Historique gardé \(Inbox.retentionDays) jours sur cet appareil."))
                             .font(.footnote)
                             .foregroundStyle(Color.inkSecondary)
                             .frame(maxWidth: .infinity)
@@ -48,16 +48,16 @@ struct NotificationsView: View {
                 .padding(.bottom, 24)
             }
             .background(Color.surfaceGrouped)
-            .navigationTitle("Notifications")
+            .navigationTitle(Text(.local("Notifications")))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Fermer") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button(.local("Fermer")) { dismiss() } }
                 ToolbarItem(placement: .primaryAction) {
-                    Button("Tout lire") { viewModel.markAllRead() }
+                    Button(.local("Tout lire")) { viewModel.markAllRead() }
                         .disabled(viewModel.inbox.unreadCount == 0)
                 }
                 ToolbarItem(placement: .secondaryAction) {
-                    Button("Réglages des notifications", systemImage: "gearshape", action: openSettings)
+                    Button(.local("Réglages des notifications"), systemImage: "gearshape", action: openSettings)
                 }
             }
             .onAppear { viewModel.load() }
@@ -99,8 +99,8 @@ struct NotificationRow: View {
         .contentShape(Rectangle())
         .onTapGesture { viewModel.markRead(item) }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(item.isRead ? item.title : "Non lu, \(item.title)")
-        .accessibilityAction(named: "Marquer comme lu") { viewModel.markRead(item) }
+        .accessibilityLabel(item.isRead ? item.title : String.local("Non lu, \(item.title)"))
+        .accessibilityAction(named: Text(.local("Marquer comme lu"))) { viewModel.markRead(item) }
     }
 
     @ViewBuilder
@@ -108,7 +108,7 @@ struct NotificationRow: View {
         if let loanID = item.loanID, viewModel.renewing.contains(loanID) {
             ProgressView()
         } else {
-            Button("Prolonger") { Task { await viewModel.renew(item) } }
+            Button(.local("Prolonger")) { Task { await viewModel.renew(item) } }
                 .buttonStyle(.glass)
                 .tint(.brandVioletDeep)
                 .font(.footnote.weight(.bold))

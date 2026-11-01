@@ -52,10 +52,10 @@ public struct DocumentDetailView: View {
         .sheet(isPresented: $showsHold) {
             HoldSheet(notice: document, defaultPickup: session.patron?.homeLibrary)
         }
-        .alert("Connectez-vous pour réserver", isPresented: $showsLoginHint) {
-            Button("OK", role: .cancel) {}
+        .alert(Text(.local("Connectez-vous pour réserver")), isPresented: $showsLoginHint) {
+            Button(role: .cancel) {} label: { Text(.local("OK")) }
         } message: {
-            Text("Ouvrez l'onglet Compte et connectez-vous avec votre carte d'abonné.")
+            Text(.local("Ouvrez l'onglet Compte et connectez-vous avec votre carte d'abonné."))
         }
         .task { await viewModel.load() }
         .refreshable { await viewModel.load() }
@@ -78,14 +78,14 @@ public struct DocumentDetailView: View {
     @ViewBuilder
     private var reserveButton: some View {
         if session.patron?.permissions.holdForbidden == true {
-            Label("Les réservations sont suspendues sur votre compte. Renseignez-vous à l'accueil.", systemImage: "info.circle")
+            Label(.local("Les réservations sont suspendues sur votre compte. Renseignez-vous à l'accueil."), systemImage: "info.circle")
                 .font(.subheadline)
                 .foregroundStyle(Color.inkSecondary)
         } else {
             Button {
                 if session.patron == nil { showsLoginHint = true } else { showsHold = true }
             } label: {
-                Label("Réserver", systemImage: "bookmark").frame(maxWidth: .infinity)
+                Label(.local("Réserver", comment: "Button: place a hold on the item"), systemImage: "bookmark").frame(maxWidth: .infinity)
             }
             .buttonStyle(.prominent())
         }
@@ -95,7 +95,7 @@ public struct DocumentDetailView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 6) {
                 StatusPill(document.kind.label, style: .accent)
-                if let volume = document.volume, !volume.isEmpty { StatusPill("Tome \(volume)", style: .accent) }
+                if let volume = document.volume, !volume.isEmpty { StatusPill(String.local("Tome \(volume)", comment: "Volume number in a series"), style: .accent) }
             }
             Text(document.title).font(.title.weight(.heavy)).foregroundStyle(Color.ink)
             Text([document.authors.joined(separator: ", "), document.publisher].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " · "))
@@ -107,14 +107,14 @@ public struct DocumentDetailView: View {
     @ViewBuilder
     private var whereToFind: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SectionHeader("Où le trouver")
+            SectionHeader(String.local("Où le trouver"))
             switch viewModel.copies {
             case .idle, .loading:
                 VStack(spacing: 14) { ForEach(0..<2, id: \.self) { _ in SkeletonRow() } }.cardStyle()
             case .failed:
-                Text("Disponibilité indisponible pour le moment.").foregroundStyle(Color.inkSecondary).cardStyle()
+                Text(.local("Disponibilité indisponible pour le moment.")).foregroundStyle(Color.inkSecondary).cardStyle()
             case let .loaded(copies) where copies.isEmpty:
-                Text("Aucun exemplaire en rayon.").foregroundStyle(Color.inkSecondary).cardStyle()
+                Text(.local("Aucun exemplaire en rayon.")).foregroundStyle(Color.inkSecondary).cardStyle()
             case .loaded:
                 VStack(spacing: 0) {
                     ForEach(Array(viewModel.copiesByLibrary.enumerated()), id: \.element.name) { index, group in
@@ -131,9 +131,9 @@ public struct DocumentDetailView: View {
 
     private var onlineCard: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Label("Disponible en ligne", systemImage: "play.rectangle.on.rectangle")
+            Label(.local("Disponible en ligne"), systemImage: "play.rectangle.on.rectangle")
                 .font(.headline)
-            Text("Cette ressource est incluse dans votre abonnement. Ouvrez-la depuis l'onglet Numérique.")
+            Text(.local("Cette ressource est incluse dans votre abonnement. Ouvrez-la depuis l'onglet Numérique."))
                 .font(.subheadline)
                 .foregroundStyle(Color.inkSecondary)
         }
@@ -142,13 +142,13 @@ public struct DocumentDetailView: View {
 
     private var information: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SectionHeader("Informations")
+            SectionHeader(String.local("Informations"))
             VStack(spacing: 0) {
-                InfoLine(label: "Type", value: document.kind.label)
-                if let publisher = document.publisher { InfoLine(label: "Éditeur", value: publisher) }
-                if let year = document.year { InfoLine(label: "Année", value: year) }
+                InfoLine(label: .local("Type", comment: "Item details: kind of item"), value: document.kind.label)
+                if let publisher = document.publisher { InfoLine(label: .local("Éditeur"), value: publisher) }
+                if let year = document.year { InfoLine(label: .local("Année"), value: year) }
                 if let series = document.series {
-                    InfoLine(label: "Série", value: [series, document.volume.map { "tome \($0)" }].compactMap { $0 }.joined(separator: ", "))
+                    InfoLine(label: .local("Série"), value: [series, document.volume.map { String.local("tome \($0)", comment: "Volume number, after the series name") }].compactMap { $0 }.joined(separator: ", "))
                 }
             }
             .cardStyle(padding: 0)
@@ -178,10 +178,10 @@ struct CopyRow: View {
     private var details: String {
         var parts = [copy.statusLabel]
         if case let .onLoan(dueDate?) = copy.status {
-            parts = ["En prêt · retour prévu le \(dueDate.formatted(.dateTime.day().month(.wide)))"]
+            parts = [String.local("En prêt · retour prévu le \(dueDate.formatted(.dateTime.day().month(.wide)))")]
         }
         parts += [copy.section, copy.shelfMark].compactMap { $0 }
-        if copy.holdCount > 0 { parts.append("\(copy.holdCount) réservation\(copy.holdCount > 1 ? "s" : "")") }
+        if copy.holdCount > 0 { parts.append(String.local("\(copy.holdCount) réservations", comment: "Number of holds on a copy")) }
         return parts.joined(separator: " · ")
     }
 }

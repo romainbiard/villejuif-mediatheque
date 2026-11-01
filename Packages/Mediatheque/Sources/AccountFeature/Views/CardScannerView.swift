@@ -9,8 +9,8 @@ import VisionKit
 
 /// Full-screen camera barcode scan: library card, or ISBN for a suggestion.
 struct CardScannerView: View {
-    var prompt = "Visez le code-barres au dos de votre carte"
-    var detectedTitle = "Carte détectée"
+    var prompt: String = .local("Visez le code-barres au dos de votre carte")
+    var detectedTitle: String = .local("Carte détectée")
     let onScan: (String) -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var detected: String?
@@ -32,7 +32,7 @@ struct CardScannerView: View {
                     Label(detectedTitle, systemImage: "checkmark.circle.fill")
                         .font(.headline)
                     Text(detected).font(.title3.weight(.semibold)).monospacedDigit().tracking(1)
-                    Button("Utiliser ce numéro") {
+                    Button(.local("Utiliser ce numéro")) {
                         onScan(detected)
                         dismiss()
                     }
@@ -40,7 +40,7 @@ struct CardScannerView: View {
                 } else {
                     Text(prompt).font(.headline)
                 }
-                Button(detected == nil ? "Saisir à la main" : "Recommencer") {
+                Button(detected == nil ? String.local("Saisir à la main") : String.local("Recommencer")) {
                     if detected == nil { dismiss() } else { detected = nil }
                 }
             }
@@ -51,7 +51,7 @@ struct CardScannerView: View {
             .padding(12)
         }
         .overlay(alignment: .topLeading) {
-            Button("Fermer", systemImage: "xmark") { dismiss() }
+            Button(.local("Fermer"), systemImage: "xmark") { dismiss() }
                 .labelStyle(.iconOnly)
                 .buttonStyle(.glass)
                 .padding(16)

@@ -47,22 +47,23 @@ public enum ReminderPlanner {
         let byDay = Dictionary(grouping: loans) { calendar.startOfDay(for: $0.dueDate) }
         return byDay.flatMap { day, loans -> [Reminder] in
             let titles = loans.map(\.title)
-            let what = titles.count == 1 ? "« \(titles[0]) »" : "\(titles.count) documents"
+            let what: String = titles.count == 1 ? .local("« \(titles[0]) »") : .local("\(titles.count) documents")
+            let dayText = day.formatted(.dateTime.weekday(.wide).day().month(.wide))
             var reminders: [Reminder] = []
             if let before = calendar.date(byAdding: .day, value: -daysBefore, to: day),
                let fire = calendar.date(bySettingHour: hour, minute: 0, second: 0, of: before) {
                 reminders.append(Reminder(
                     id: "loan-before-\(Int(day.timeIntervalSince1970))",
-                    title: "À rendre dans \(daysBefore) jours",
-                    body: "\(what) à rendre le \(day.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(Locale(identifier: "fr_FR")))). Vous pouvez prolonger depuis l'app.",
+                    title: .local("À rendre dans \(daysBefore) jours"),
+                    body: .local("\(what) à rendre le \(dayText). Vous pouvez prolonger depuis l'app."),
                     fireDate: fire
                 ))
             }
             if let fire = calendar.date(bySettingHour: hour, minute: 0, second: 0, of: day) {
                 reminders.append(Reminder(
                     id: "loan-due-\(Int(day.timeIntervalSince1970))",
-                    title: "À rendre aujourd'hui",
-                    body: "\(what) à rendre aujourd'hui. Prolongez-le si vous n'avez pas fini.",
+                    title: .local("À rendre aujourd'hui"),
+                    body: .local("\(what) à rendre aujourd'hui. Prolongez-le si vous n'avez pas fini."),
                     fireDate: fire
                 ))
             }
@@ -75,8 +76,8 @@ public enum ReminderPlanner {
     public static func holdReadyReminder(for hold: Hold) -> Reminder {
         Reminder(
             id: "hold-ready-\(hold.id)",
-            title: "\(hold.title) vous attend",
-            body: "À retirer à \(hold.pickupLibrary?.shortName ?? hold.pickupLibraryName). \(hold.statusText)",
+            title: .local("\(hold.title) vous attend"),
+            body: .local("À retirer à \(hold.pickupLibrary?.shortName ?? hold.pickupLibraryName). \(hold.statusText)"),
             fireDate: .now
         )
     }

@@ -1,0 +1,222 @@
+{
+  "sourceLanguage": "fr",
+  "strings": {
+    "%@ vous attend": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is waiting for you"
+          }
+        }
+      },
+      "comment": "A hold is ready; %@ is the title"
+    },
+    "%@ · %@": {
+      "comment": "Title · due date, both already translated",
+      "shouldTranslate": false
+    },
+    "%lld réservations à retirer": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld réservation à retirer"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld réservations à retirer"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld hold ready for pickup"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld holds ready for pickup"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Connectez-vous dans l'app pour voir vos retours.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in to the app to see your returns."
+          }
+        }
+      }
+    },
+    "Ma médiathèque": {
+      "comment": "App name",
+      "shouldTranslate": false
+    },
+    "Prochains retours": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upcoming Returns"
+          }
+        }
+      },
+      "comment": "Widget name"
+    },
+    "Rien à rendre pour l'instant.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing due right now."
+          }
+        }
+      }
+    },
+    "Vos prochains documents à rendre et les réservations qui vous attendent.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your next items due and the holds waiting for you."
+          }
+        }
+      },
+      "comment": "Widget description"
+    },
+    "aujourd'hui": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "today"
+          }
+        }
+      },
+      "comment": "A loan is due today"
+    },
+    "dans %lld jours": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "dans %lld jour"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "dans %lld jours"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "in %lld day"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "in %lld days"
+                }
+              }
+            }
+          }
+        }
+      },
+      "comment": "A loan is due in N days"
+    },
+    "demain": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "tomorrow"
+          }
+        }
+      },
+      "comment": "A loan is due tomorrow"
+    },
+    "en retard de %lld j": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "en retard de %lld j"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "en retard de %lld j"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld day late"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld days late"
+                }
+              }
+            }
+          }
+        }
+      },
+      "comment": "Short: a loan is overdue by N days"
+    },
+    "À rendre": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Due"
+          }
+        }
+      },
+      "comment": "Widget header"
+    }
+  },
+  "version": "1.0"
+}

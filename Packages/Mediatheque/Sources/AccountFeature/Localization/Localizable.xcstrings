@@ -1,0 +1,2752 @@
+{
+  "sourceLanguage": "fr",
+  "strings": {
+    "%@, obligatoire": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, required"
+          }
+        }
+      },
+      "comment": "Accessibility label of a required form field; %@ is the field name"
+    },
+    "%lld documents": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld item"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld items"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld document"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld documents"
+                }
+              }
+            }
+          }
+        }
+      },
+      "comment": "Number of items in a list"
+    },
+    "%lld en retard": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld overdue"
+          }
+        }
+      },
+      "comment": "Status pill: number of overdue loans"
+    },
+    "%lld prolongés, %lld non prolongeables": {
+      "comment": "Result of renewing several loans: number renewed, number that can't be renewed",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%#@renewed@, %#@refused@"
+          },
+          "substitutions": {
+            "renewed": {
+              "argNum": 1,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg renewed"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg renewed"
+                    }
+                  }
+                }
+              }
+            },
+            "refused": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg can't be renewed"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg can't be renewed"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%#@renewed@, %#@refused@"
+          },
+          "substitutions": {
+            "renewed": {
+              "argNum": 1,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg prolongé"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg prolongés"
+                    }
+                  }
+                }
+              }
+            },
+            "refused": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg non prolongeable"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg non prolongeables"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld prêts prolongés": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Loan renewed"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld loans renewed"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Prêt prolongé"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld prêts prolongés"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld à retirer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld ready for pickup"
+          }
+        }
+      },
+      "comment": "Status pill: number of holds ready for pickup"
+    },
+    "%lld étoiles sur 5": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld star out of 5"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld stars out of 5"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld étoile sur 5"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld étoiles sur 5"
+                }
+              }
+            }
+          }
+        }
+      },
+      "comment": "Accessibility label of a star rating"
+    },
+    "3 jours avant et le jour J": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3 days before and on the due date"
+          }
+        }
+      },
+      "comment": "Detail of the return reminders setting"
+    },
+    "3 jours avant, puis le jour même": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3 days before, then on the day"
+          }
+        }
+      },
+      "comment": "Detail of the return reminders setting"
+    },
+    "Abonnement": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Membership"
+          }
+        }
+      },
+      "comment": "Section header"
+    },
+    "Actions pour %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actions for %@"
+          }
+        }
+      },
+      "comment": "Accessibility label of a menu; %@ is a document title"
+    },
+    "Activer les notifications": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn on notifications"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Adresse": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Address"
+          }
+        }
+      },
+      "comment": "Label: postal address"
+    },
+    "Adresse e-mail invalide": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid email address"
+          }
+        }
+      }
+    },
+    "Adresse e-mail à renseigner": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No email address yet"
+          }
+        }
+      },
+      "comment": "Shown instead of the email address when the member has none"
+    },
+    "Affiche la carte en grand pour le comptoir": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows the card full screen for the front desk"
+          }
+        }
+      },
+      "comment": "Accessibility hint"
+    },
+    "Affiché avec vos avis.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shown with your reviews."
+          }
+        }
+      },
+      "comment": "Footer under the nickname field"
+    },
+    "Agenda": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Events"
+          }
+        }
+      },
+      "comment": "Setting: weekly events digest notification"
+    },
+    "Agenda de la semaine": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week's events"
+          }
+        }
+      },
+      "comment": "Setting: weekly events digest notification"
+    },
+    "Ajoutez des documents depuis leur fiche, avec le cœur ou le menu Partager.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add items from their page, with the heart or the Share menu."
+          }
+        }
+      }
+    },
+    "Annuler": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Annuler la réservation": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel hold"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Annuler la réservation de « %@ » ?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel the hold on “%@”?"
+          }
+        }
+      },
+      "comment": "Confirmation title; %@ is a document title"
+    },
+    "Approchez ce bord du lecteur": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold this edge near the scanner"
+          }
+        }
+      },
+      "comment": "Hint on the full-screen library card"
+    },
+    "Au dos de votre carte": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On the back of your card"
+          }
+        }
+      },
+      "comment": "Placeholder of the card number field"
+    },
+    "Aucune réservation": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No holds"
+          }
+        }
+      }
+    },
+    "Aujourd'hui": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today"
+          }
+        }
+      },
+      "comment": "Section title"
+    },
+    "Auteur": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Author"
+          }
+        }
+      },
+      "comment": "Form field"
+    },
+    "Autorisez les notifications dans Réglages pour recevoir les rappels": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allow notifications in Settings to get reminders"
+          }
+        }
+      },
+      "comment": "Settings is the iOS Settings app"
+    },
+    "Avis": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reviews"
+          }
+        }
+      },
+      "comment": "Label of the segmented control"
+    },
+    "Carte d'abonné": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Library card"
+          }
+        }
+      },
+      "comment": "Title"
+    },
+    "Carte d'abonné de %@, numéro %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Library card for %@, number %@"
+          }
+        }
+      },
+      "comment": "Accessibility label; first %@ is the member's name, second is the card number"
+    },
+    "Carte détectée": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Card detected"
+          }
+        }
+      }
+    },
+    "Carte valable jusqu'au %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Card valid until %@"
+          }
+        }
+      },
+      "comment": "%@ is a date"
+    },
+    "Ce prêt ne peut pas être prolongé": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This loan can't be renewed"
+          }
+        }
+      }
+    },
+    "Ces prêts ne peuvent pas être prolongés": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "These loans can't be renewed"
+          }
+        }
+      }
+    },
+    "Cette semaine": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week"
+          }
+        }
+      },
+      "comment": "Section title"
+    },
+    "Changer le mot de passe": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change password"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Code-barres de la carte, numéro %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Card barcode, number %@"
+          }
+        }
+      },
+      "comment": "Accessibility label; %@ is the card number"
+    },
+    "Commentaire (facultatif)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comment (optional)"
+          }
+        }
+      },
+      "comment": "Form field"
+    },
+    "Compte verrouillé": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Account locked"
+          }
+        }
+      }
+    },
+    "Confirmer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirm"
+          }
+        }
+      },
+      "comment": "Placeholder: confirm the new password"
+    },
+    "Connexion": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in"
+          }
+        }
+      },
+      "comment": "Title of the sign-in form"
+    },
+    "Coordonnées": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contact details"
+          }
+        }
+      },
+      "comment": "Section header and screen title"
+    },
+    "Coordonnées enregistrées": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contact details saved"
+          }
+        }
+      }
+    },
+    "Créer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Donner mon avis": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Write a review"
+          }
+        }
+      },
+      "comment": "Screen title"
+    },
+    "Dès qu'un document arrive": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "As soon as an item arrives"
+          }
+        }
+      },
+      "comment": "Detail of the holds notification setting"
+    },
+    "Déverrouiller": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "E-mail": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Email"
+          }
+        }
+      },
+      "comment": "Label / form field"
+    },
+    "E-mail envoyé. Pensez à vérifier vos indésirables.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Email sent. Be sure to check your spam folder."
+          }
+        }
+      }
+    },
+    "En attente": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting"
+          }
+        }
+      },
+      "comment": "Section title: holds not yet available"
+    },
+    "En retard": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Overdue"
+          }
+        }
+      },
+      "comment": "Counter label / section title"
+    },
+    "En retard de %lld jours": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld day overdue"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld days overdue"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "En retard de %lld jour"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "En retard de %lld jours"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Enregistrer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Envoyer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Envoyer la suggestion": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send suggestion"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Envoyées": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sent"
+          }
+        }
+      },
+      "comment": "Section header: purchase suggestions already sent"
+    },
+    "Fermer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Garder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep"
+          }
+        }
+      },
+      "comment": "Button: keep the hold"
+    },
+    "Gratuit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free"
+          }
+        }
+      },
+      "comment": "Badge on the library card"
+    },
+    "Historique gardé %lld jours sur cet appareil.": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "History is kept for %lld day on this device."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "History is kept for %lld days on this device."
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Historique gardé %lld jour sur cet appareil."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Historique gardé %lld jours sur cet appareil."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ISBN détecté": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ISBN detected"
+          }
+        }
+      }
+    },
+    "ISBN ou code-barres": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ISBN or barcode"
+          }
+        }
+      },
+      "comment": "Form field"
+    },
+    "Indiquez votre numéro de carte. Vous recevrez un e-mail pour choisir un nouveau mot de passe, à l'adresse enregistrée sur votre compte.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter your card number. You'll get an email at the address on your account to choose a new password."
+          }
+        }
+      }
+    },
+    "L'actualité du réseau des médiathèques, par e-mail.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "News from the library network, by email."
+          }
+        }
+      }
+    },
+    "L'annulation n'a pas abouti": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't cancel the hold"
+          }
+        }
+      }
+    },
+    "L'app mettra à jour le mot de passe enregistré sur cet appareil.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The app will update the password saved on this device."
+          }
+        }
+      }
+    },
+    "L'enregistrement est impossible hors ligne": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't save while offline"
+          }
+        }
+      }
+    },
+    "L'enregistrement n'a pas abouti": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't save"
+          }
+        }
+      }
+    },
+    "L'envoi est impossible hors ligne": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't send while offline"
+          }
+        }
+      }
+    },
+    "L'envoi n'a pas abouti": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't send"
+          }
+        }
+      }
+    },
+    "L'envoi n'a pas abouti. Réessayez, ou demandez à l'accueil d'une médiathèque.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't send. Try again, or ask at the front desk of a library."
+          }
+        }
+      }
+    },
+    "La création est impossible hors ligne": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't create a list while offline"
+          }
+        }
+      }
+    },
+    "La création n'a pas abouti": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't create the list"
+          }
+        }
+      }
+    },
+    "La liste de vos suggestions n'a pas pu être chargée.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your suggestions couldn't be loaded."
+          }
+        }
+      }
+    },
+    "La modification est impossible hors ligne": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't make changes while offline"
+          }
+        }
+      }
+    },
+    "La modification n'a pas abouti": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't save the change"
+          }
+        }
+      }
+    },
+    "La prolongation n'a pas abouti": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't renew"
+          }
+        }
+      }
+    },
+    "Le changement est impossible hors ligne": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't change the password while offline"
+          }
+        }
+      }
+    },
+    "Le changement n'a pas abouti": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't change the password"
+          }
+        }
+      }
+    },
+    "Le compte s'ouvre après validation, même si l'app reste connectée.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your account opens after verification, even while the app stays signed in."
+          }
+        }
+      }
+    },
+    "Le nom et l'adresse se changent à l'accueil d'une médiathèque, avec un justificatif.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To change your name or address, go to the front desk of a library with proof."
+          }
+        }
+      }
+    },
+    "Le retrait est impossible hors ligne": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't remove while offline"
+          }
+        }
+      }
+    },
+    "Le retrait n'a pas abouti": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't remove the item"
+          }
+        }
+      }
+    },
+    "Le site de la médiathèque ne répond pas": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The library website isn't responding"
+          }
+        }
+      }
+    },
+    "Le site de la médiathèque ne répond pas. Réessayez dans un instant.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The library website isn't responding. Try again in a moment."
+          }
+        }
+      }
+    },
+    "Les animations du lundi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Events, on Mondays"
+          }
+        }
+      },
+      "comment": "Detail of the weekly events setting"
+    },
+    "Les animations, le lundi matin": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Events, on Monday mornings"
+          }
+        }
+      },
+      "comment": "Detail of the weekly events setting"
+    },
+    "Les deux mots de passe ne correspondent pas": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The passwords don't match"
+          }
+        }
+      }
+    },
+    "Les deux mots de passe ne correspondent pas.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The passwords don't match."
+          }
+        }
+      }
+    },
+    "Les rappels de retour, les réservations arrivées et les messages de la médiathèque apparaîtront ici.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Return reminders, holds ready for pickup and messages from the library will appear here."
+          }
+        }
+      }
+    },
+    "Lettre d'information": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Newsletter"
+          }
+        }
+      },
+      "comment": "Section header"
+    },
+    "Luminosité au maximum pendant l'affichage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brightness at maximum while shown"
+          }
+        }
+      }
+    },
+    "Marquer comme lu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mark as read"
+          }
+        }
+      },
+      "comment": "Accessibility action"
+    },
+    "Me contacter par": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contact me by"
+          }
+        }
+      },
+      "comment": "Picker: email, SMS…"
+    },
+    "Merci ! Votre avis sera publié après validation.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thanks! Your review will be published once approved."
+          }
+        }
+      }
+    },
+    "Mes avis": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My reviews"
+          }
+        }
+      },
+      "comment": "Screen title / menu item"
+    },
+    "Mes configurations": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
+          }
+        }
+      },
+      "comment": "Screen title / menu item"
+    },
+    "Mes emprunts": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Borrowing"
+          }
+        }
+      },
+      "comment": "Section header for loans and holds"
+    },
+    "Mes informations": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My details"
+          }
+        }
+      },
+      "comment": "Screen title / menu item"
+    },
+    "Mes listes": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lists and contributions"
+          }
+        }
+      },
+      "comment": "Section header for lists, reviews and purchase suggestions"
+    },
+    "Mes prêts": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My loans"
+          }
+        }
+      },
+      "comment": "Screen title / menu item"
+    },
+    "Mes réservations": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My holds"
+          }
+        }
+      },
+      "comment": "Screen title / menu item"
+    },
+    "Mes suggestions": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My suggestions"
+          }
+        }
+      },
+      "comment": "Screen title / menu item: purchase suggestions"
+    },
+    "Mes suggestions d'achat": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My purchase suggestions"
+          }
+        }
+      },
+      "comment": "Menu item"
+    },
+    "Mes sélections": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My lists"
+          }
+        }
+      },
+      "comment": "Screen title / menu item"
+    },
+    "Mises en avant dans la recherche et l'agenda.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Highlighted in search and events."
+          }
+        }
+      }
+    },
+    "Modifiables à tout moment dans Mes configurations.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can change them anytime in Settings."
+          }
+        }
+      }
+    },
+    "Modifier": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Mon compte": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Account"
+          }
+        }
+      },
+      "comment": "Screen title"
+    },
+    "Mon profil": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profile"
+          }
+        }
+      },
+      "comment": "Section header"
+    },
+    "Mot de passe": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Password"
+          }
+        }
+      },
+      "comment": "Field label / screen title"
+    },
+    "Mot de passe modifié": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Password changed"
+          }
+        }
+      }
+    },
+    "Mot de passe oublié": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forgot password"
+          }
+        }
+      },
+      "comment": "Screen title"
+    },
+    "Mot de passe oublié ?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forgot password?"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Médiathèque d'inscription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Home library"
+          }
+        }
+      },
+      "comment": "Label: library where the member signed up"
+    },
+    "Médiathèques de Villejuif": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Villejuif Libraries"
+          }
+        }
+      }
+    },
+    "Médiathèques préférées": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Favorite libraries"
+          }
+        }
+      },
+      "comment": "Section header"
+    },
+    "Ne ratez plus un retour": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Never miss a return date"
+          }
+        }
+      },
+      "comment": "Title"
+    },
+    "Nom": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name"
+          }
+        }
+      },
+      "comment": "Label"
+    },
+    "Nom de la sélection": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "List name"
+          }
+        }
+      },
+      "comment": "Placeholder"
+    },
+    "Non\nprolongeable": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't be\nrenewed"
+          }
+        }
+      },
+      "comment": "Shown instead of the Renew button; keep the line break"
+    },
+    "Non lu, %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unread, %@"
+          }
+        }
+      },
+      "comment": "Accessibility label; %@ is the notification title"
+    },
+    "Noter mes derniers prêts": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rate my recent loans"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Notifications": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifications"
+          }
+        }
+      },
+      "comment": "Screen title / section header"
+    },
+    "Notifications désactivées": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifications off"
+          }
+        }
+      }
+    },
+    "Notifications, %lld non lues": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Notifications, %lld unread"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Notifications, %lld unread"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Notifications, %lld non lue"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Notifications, %lld non lues"
+                }
+              }
+            }
+          }
+        }
+      },
+      "comment": "Accessibility label of the bell button"
+    },
+    "Nouveau mot de passe": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New password"
+          }
+        }
+      },
+      "comment": "Placeholder"
+    },
+    "Nouvelle sélection": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New list"
+          }
+        }
+      },
+      "comment": "Button and alert title"
+    },
+    "Numéro de carte": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Card number"
+          }
+        }
+      },
+      "comment": "Field label"
+    },
+    "Numéro de carte ou mot de passe incorrect.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Incorrect card number or password."
+          }
+        }
+      }
+    },
+    "N° de carte": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Card no."
+          }
+        }
+      },
+      "comment": "Label above the card number"
+    },
+    "Ouvrir Réglages": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Settings"
+          }
+        }
+      },
+      "comment": "Button: opens the iOS Settings app"
+    },
+    "Par exemple « Vacances » ou « Idées cadeaux ».": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For example “Vacation” or “Gift ideas”."
+          }
+        }
+      }
+    },
+    "Partagez vos coups de cœur": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share your favorites"
+          }
+        }
+      },
+      "comment": "Title"
+    },
+    "Pas avant le %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not before %@"
+          }
+        }
+      },
+      "comment": "%@ is a date"
+    },
+    "Pas d'e-mail sur votre compte ? L'équipe peut réinitialiser votre mot de passe à l'accueil, sur présentation de votre carte.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No email on your account? Staff can reset your password at the front desk when you show your card."
+          }
+        }
+      }
+    },
+    "Pas de connexion": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No connection"
+          }
+        }
+      }
+    },
+    "Pas de connexion. Réessayez une fois en ligne.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No connection. Try again once you're online."
+          }
+        }
+      }
+    },
+    "Pas encore inscrit ? L'inscription est gratuite, à l'accueil de chaque médiathèque.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not a member yet? Signing up is free at the front desk of any library."
+          }
+        }
+      }
+    },
+    "Pas maintenant": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not now"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Pivoter le code-barres": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rotate barcode"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Plus tard": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Later"
+          }
+        }
+      },
+      "comment": "Section title: loans due later"
+    },
+    "Plus tôt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Earlier"
+          }
+        }
+      },
+      "comment": "Section title: older notifications"
+    },
+    "Pour les avis de réservation disponible et les rappels de la médiathèque.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For hold pickup notices and reminders from the library."
+          }
+        }
+      }
+    },
+    "Pour recevoir les rappels de retour, autorisez les notifications dans Réglages.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To get return reminders, allow notifications in Settings."
+          }
+        }
+      }
+    },
+    "Prolongation impossible hors ligne": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't renew while offline"
+          }
+        }
+      }
+    },
+    "Prolonger": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renew"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Prolongé jusqu'au %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renewed until %@"
+          }
+        }
+      },
+      "comment": "%@ is a date"
+    },
+    "Protège l'accès à votre compte": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Protects access to your account"
+          }
+        }
+      }
+    },
+    "Prêtes à retirer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ready for pickup"
+          }
+        }
+      },
+      "comment": "Section title: holds"
+    },
+    "Prêts": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loans"
+          }
+        }
+      },
+      "comment": "Counter label"
+    },
+    "Pseudo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nickname"
+          }
+        }
+      },
+      "comment": "Label / form field"
+    },
+    "Publiés": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Published"
+          }
+        }
+      },
+      "comment": "Segmented control: published reviews"
+    },
+    "Quand un document vous attend": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When an item is waiting for you"
+          }
+        }
+      }
+    },
+    "Rang %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "#%lld in line"
+          }
+        }
+      },
+      "comment": "Position in the hold queue"
+    },
+    "Rappels de retour": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Return reminders"
+          }
+        }
+      },
+      "comment": "Setting"
+    },
+    "Recevoir l'e-mail": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send email"
+          }
+        }
+      },
+      "comment": "Button: request the password reset email"
+    },
+    "Recevoir la lettre": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get the newsletter"
+          }
+        }
+      },
+      "comment": "Setting"
+    },
+    "Recommencer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try again"
+          }
+        }
+      },
+      "comment": "Button: scan again"
+    },
+    "Retirer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Retirer de la sélection": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove from list"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Retiré de « %@ »": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Removed from “%@”"
+          }
+        }
+      },
+      "comment": "%@ is a list name"
+    },
+    "Retrait à %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pickup at %@"
+          }
+        }
+      },
+      "comment": "%@ is a library name"
+    },
+    "Rien de nouveau": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing new"
+          }
+        }
+      }
+    },
+    "Rien à noter pour l'instant": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing to rate yet"
+          }
+        }
+      }
+    },
+    "Rien à rendre pour l'instant": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing to return right now"
+          }
+        }
+      }
+    },
+    "Réessayer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try again"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Réglages des notifications": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notification settings"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Régler les notifications": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set up notifications"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Réservation annulée": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold canceled"
+          }
+        }
+      }
+    },
+    "Réservations": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Holds"
+          }
+        }
+      },
+      "comment": "Setting: hold notifications"
+    },
+    "Réservations disponibles": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Holds ready for pickup"
+          }
+        }
+      },
+      "comment": "Setting"
+    },
+    "Saisir à la main": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter manually"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Saisissez un nouveau mot de passe": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a new password"
+          }
+        }
+      }
+    },
+    "Sans mot de passe": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No password needed"
+          }
+        }
+      },
+      "comment": "Detail of the Face ID / Touch ID setting"
+    },
+    "Scanner l'ISBN": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan ISBN"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Scanner ma carte": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan my card"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Se connecter": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Se déconnecter": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign out"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Se déconnecter de votre compte ?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign out of your account?"
+          }
+        }
+      },
+      "comment": "Confirmation title"
+    },
+    "Suggestion envoyée. Merci !": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suggestion sent. Thank you!"
+          }
+        }
+      }
+    },
+    "Sécurité": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Security"
+          }
+        }
+      },
+      "comment": "Section header"
+    },
+    "Sélection vide": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Empty list"
+          }
+        }
+      }
+    },
+    "Sélection « %@ » créée": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "List “%@” created"
+          }
+        }
+      },
+      "comment": "%@ is a list name"
+    },
+    "Terminer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Titre": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Title"
+          }
+        }
+      },
+      "comment": "Form field"
+    },
+    "Titre (facultatif)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Title (optional)"
+          }
+        }
+      },
+      "comment": "Form field"
+    },
+    "Toucher pour agrandir": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap to enlarge"
+          }
+        }
+      }
+    },
+    "Touchez le cœur sur la fiche d'un document pour l'ajouter à « Mes préférés ».": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap the heart on an item's page to add it to “Mes préférés”."
+          }
+        }
+      },
+      "comment": "“Mes préférés” is the name of a list on the library website: keep it as is"
+    },
+    "Tout lire": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mark all read"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Tout prolonger": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renew all"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Type de document": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Item type"
+          }
+        }
+      },
+      "comment": "Picker label"
+    },
+    "Téléphone": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phone"
+          }
+        }
+      },
+      "comment": "Label / form field"
+    },
+    "Un document est emprunté ? Réservez-le depuis sa fiche et choisissez où le retirer.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Item checked out? Place a hold from its page and choose where to pick it up."
+          }
+        }
+      }
+    },
+    "Un document manque au catalogue ? Proposez-le : la médiathèque étudie chaque suggestion.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something missing from the catalog? Suggest it: the library reviews every suggestion."
+          }
+        }
+      }
+    },
+    "Un rappel trois jours avant chaque date de retour, et une alerte dès qu'une réservation vous attend. Rien d'autre.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A reminder three days before each due date, and an alert as soon as a hold is waiting for you. Nothing else."
+          }
+        }
+      }
+    },
+    "Une sélection porte déjà ce nom": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A list with this name already exists"
+          }
+        }
+      }
+    },
+    "Utiliser ce numéro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use this number"
+          }
+        }
+      },
+      "comment": "Button"
+    },
+    "Valable jusqu'au": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valid until"
+          }
+        }
+      },
+      "comment": "Label followed by a date"
+    },
+    "Valable jusqu'au %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valid until %@"
+          }
+        }
+      },
+      "comment": "%@ is a date"
+    },
+    "Valider": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        }
+      },
+      "comment": "Button: confirm the new password"
+    },
+    "Verrouiller avec %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock with %@"
+          }
+        }
+      },
+      "comment": "%@ is Face ID or Touch ID"
+    },
+    "Vide": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Empty"
+          }
+        }
+      },
+      "comment": "A list with no items"
+    },
+    "Ville de Villejuif": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "City of Villejuif"
+          }
+        }
+      },
+      "comment": "Accessibility label of the city logo"
+    },
+    "Visez le code-barres au dos de votre carte": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Point at the barcode on the back of your card"
+          }
+        }
+      }
+    },
+    "Visez le code-barres au dos du livre": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Point at the barcode on the back of the book"
+          }
+        }
+      }
+    },
+    "Vos avis aident les autres lecteurs à choisir. Ils sont publiés après validation par la médiathèque.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your reviews help other readers choose. They're published once approved by the library."
+          }
+        }
+      }
+    },
+    "Vos derniers emprunts. Une note suffit, le texte est facultatif.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your recent loans. A rating is enough; text is optional."
+          }
+        }
+      }
+    },
+    "Vos documents empruntés apparaîtront ici pour que vous puissiez les noter.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Items you borrow will appear here so you can rate them."
+          }
+        }
+      }
+    },
+    "Vos emprunts apparaîtront ici avec leur date de retour.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your loans will appear here with their due dates."
+          }
+        }
+      }
+    },
+    "Vos prêts, vos réservations et la médiathèque numérique, dans votre poche.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your loans, your holds and the digital library, in your pocket."
+          }
+        }
+      }
+    },
+    "Vos réglages": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your settings"
+          }
+        }
+      },
+      "comment": "Title"
+    },
+    "Vos suggestions envoyées apparaîtront ici.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suggestions you send will appear here."
+          }
+        }
+      }
+    },
+    "Votre avis (facultatif)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your review (optional)"
+          }
+        }
+      },
+      "comment": "Form field"
+    },
+    "Votre avis est publié sous votre pseudo, après validation par la médiathèque.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your review is published under your nickname once approved by the library."
+          }
+        }
+      }
+    },
+    "Votre carte a expiré. Renouvelez-la à l'accueil d'une médiathèque.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your card has expired. Renew it at the front desk of a library."
+          }
+        }
+      }
+    },
+    "Votre carte expire dans %lld jours. Renouvelez-la à l'accueil.": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Your card expires in %lld day. Renew it at the front desk."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Your card expires in %lld days. Renew it at the front desk."
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Votre carte expire dans %lld jour. Renouvelez-la à l'accueil."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Votre carte expire dans %lld jours. Renouvelez-la à l'accueil."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Votre mot de passe": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your password"
+          }
+        }
+      },
+      "comment": "Placeholder"
+    },
+    "Votre médiathèque d'inscription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your home library"
+          }
+        }
+      }
+    },
+    "Vous pourrez les activer plus tard dans Mes configurations.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can turn them on later in Settings."
+          }
+        }
+      }
+    },
+    "Vérifiez votre connexion, puis réessayez.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check your connection, then try again."
+          }
+        }
+      }
+    },
+    "maintenant": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "now"
+          }
+        }
+      },
+      "comment": "Time of a sample notification"
+    },
+    "« Murmuration » vous attend à Elsa-Triolet": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“Murmuration” is waiting for you at Elsa-Triolet"
+          }
+        }
+      },
+      "comment": "Sample notification; Murmuration is a book title, Elsa-Triolet a library"
+    },
+    "« Sway » est à rendre jeudi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“Sway” is due Thursday"
+          }
+        }
+      },
+      "comment": "Sample notification; Sway is a book title"
+    },
+    "À noter": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To rate"
+          }
+        }
+      },
+      "comment": "Segmented control"
+    },
+    "À rendre aujourd'hui": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Due today"
+          }
+        }
+      }
+    },
+    "À rendre le %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Due %@"
+          }
+        }
+      },
+      "comment": "%@ is a date"
+    },
+    "À retirer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ready for pickup"
+          }
+        }
+      },
+      "comment": "Counter label: holds ready for pickup"
+    }
+  },
+  "version": "1.0"
+}

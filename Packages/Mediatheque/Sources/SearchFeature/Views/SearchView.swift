@@ -79,11 +79,11 @@ public struct SearchView: View {
         if let selected {
             DocumentDetailView(document: selected).id(selected.id)
         } else {
-            ContentUnavailableView(
-                "Choisissez un document",
-                systemImage: "books.vertical",
-                description: Text("Sa fiche s'affiche ici, avec les exemplaires disponibles dans les 3 médiathèques.")
-            )
+            ContentUnavailableView {
+                Label(.local("Choisissez un document"), systemImage: "books.vertical")
+            } description: {
+                Text(.local("Sa fiche s'affiche ici, avec les exemplaires disponibles dans les 3 médiathèques."))
+            }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.surfaceGrouped)
         }
@@ -108,7 +108,7 @@ public struct SearchView: View {
                 .searchable(
                     text: $viewModel.text,
                     placement: .navigationBarDrawer(displayMode: .always),
-                    prompt: "Titre, auteur, sujet, ISBN"
+                    prompt: Text(.local("Titre, auteur, sujet, ISBN", comment: "Search field placeholder"))
                 )
                 .searchFocused($isSearchFocused)
                 .onSubmit(of: .search) { viewModel.submit() }
@@ -133,7 +133,7 @@ public struct SearchView: View {
         .hoverEffect(.highlight)
         .contextMenu {
             if let permalink = document.permalink {
-                ShareLink("Partager", item: permalink, subject: Text(document.title))
+                ShareLink(String.local("Partager"), item: permalink, subject: Text(document.title))
             }
         }
     }
@@ -163,19 +163,19 @@ public struct SearchView: View {
         case let .failed(error):
             EmptyStateView(
                 systemImage: error == .offline ? "wifi.slash" : "exclamationmark.triangle",
-                title: error == .offline ? "Pas de connexion" : "Le site de la médiathèque ne répond pas",
-                message: "Vérifiez votre connexion, puis réessayez.",
-                primary: ("Réessayer", { viewModel.submit() })
+                title: error == .offline ? String.local("Pas de connexion") : String.local("Le site de la médiathèque ne répond pas"),
+                message: String.local("Vérifiez votre connexion, puis réessayez."),
+                primary: (String.local("Réessayer"), { viewModel.submit() })
             )
         case let .loaded(documents) where documents.isEmpty:
             EmptyStateView(
                 systemImage: "text.magnifyingglass",
-                title: "Aucun résultat",
-                message: "Vérifiez l'orthographe, essayez moins de mots ou cherchez dans les 3 médiathèques.",
-                primary: viewModel.hasActiveFilters ? ("Retirer les filtres", { viewModel.clearFilters() }) : nil
+                title: String.local("Aucun résultat"),
+                message: String.local("Vérifiez l'orthographe, essayez moins de mots ou cherchez dans les 3 médiathèques."),
+                primary: viewModel.hasActiveFilters ? (String.local("Retirer les filtres"), { viewModel.clearFilters() }) : nil
             )
         case let .loaded(documents):
-            Text("\(viewModel.total) résultat\(viewModel.total > 1 ? "s" : "")")
+            Text(.local("\(viewModel.total) résultats"))
                 .font(.footnote)
                 .foregroundStyle(Color.inkSecondary)
             LazyVStack(spacing: 0) {
@@ -200,11 +200,11 @@ private struct SearchColumnChrome: ViewModifier {
     func body(content: Content) -> some View {
         content
             .background(Color.surfaceGrouped)
-            .navigationTitle(viewModel.browsingTitle ?? "Recherche")
+            .navigationTitle(viewModel.browsingTitle ?? String.local("Recherche", comment: "Screen title"))
             .toolbar {
                 if viewModel.browsingTitle != nil {
                     ToolbarItem(placement: .topBarLeading) {
-                        Button("Retour", systemImage: "chevron.left") { viewModel.cancelBrowsing() }
+                        Button(.local("Retour"), systemImage: "chevron.left") { viewModel.cancelBrowsing() }
                     }
                 }
             }
@@ -221,13 +221,13 @@ struct ColumnSearchField: View {
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass").foregroundStyle(Color.inkSecondary)
-            TextField("Titre, auteur, sujet, ISBN", text: $text)
+            TextField(String.local("Titre, auteur, sujet, ISBN", comment: "Search field placeholder"), text: $text)
                 .focused(isFocused)
                 .submitLabel(.search)
                 .autocorrectionDisabled()
                 .onSubmit(submit)
             if !text.isEmpty {
-                Button("Effacer", systemImage: "xmark.circle.fill") { text = "" }
+                Button(.local("Effacer", comment: "Clears the search field or the recent searches"), systemImage: "xmark.circle.fill") { text = "" }
                     .labelStyle(.iconOnly)
                     .foregroundStyle(Color.inkSecondary)
                     .buttonStyle(.plain)
@@ -253,12 +253,12 @@ struct ScopeBar: View {
                     Chip(scope.title, isSelected: viewModel.scope == scope) { viewModel.select(scope: scope) }
                 }
                 Menu {
-                    Button("Toutes les médiathèques") { viewModel.select(library: nil) }
+                    Button(.local("Toutes les médiathèques")) { viewModel.select(library: nil) }
                     ForEach(Library.allCases) { library in
                         Button(library.name) { viewModel.select(library: library) }
                     }
                 } label: {
-                    Label(viewModel.library?.shortName ?? "Médiathèque", systemImage: "mappin.and.ellipse")
+                    Label(viewModel.library?.shortName ?? String.local("Médiathèque", comment: "Library filter menu, when no library is selected"), systemImage: "mappin.and.ellipse")
                         .font(.subheadline.weight(viewModel.library == nil ? .medium : .bold))
                         .padding(.horizontal, 14)
                         .frame(height: 36)
@@ -325,7 +325,7 @@ struct SearchResultRow: View {
     @ViewBuilder
     private var availabilityView: some View {
         if document.kind.isDigital {
-            StatusPill("En ligne · inclus dans l'abonnement", style: .accent)
+            StatusPill(String.local("En ligne · inclus dans l'abonnement"), style: .accent)
         } else if let availability {
             HStack(spacing: 6) {
                 StatusPill(availability.label, style: availability.isAvailable ? .success : .neutral)
@@ -354,8 +354,8 @@ struct SearchLandingView: View {
             VStack(alignment: .leading, spacing: 24) {
                 if !viewModel.recentSearches.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
-                        SectionHeader("Récentes") {
-                            Button("Effacer") { viewModel.clearRecentSearches() }.font(.subheadline.weight(.semibold))
+                        SectionHeader(String.local("Récentes", comment: "Section: recent searches")) {
+                            Button(.local("Effacer", comment: "Clears the search field or the recent searches")) { viewModel.clearRecentSearches() }.font(.subheadline.weight(.semibold))
                         }
                         VStack(spacing: 0) {
                             ForEach(viewModel.recentSearches, id: \.self) { search in
@@ -374,7 +374,7 @@ struct SearchLandingView: View {
                     }
                 }
                 VStack(alignment: .leading, spacing: 8) {
-                    SectionHeader("Explorer")
+                    SectionHeader(String.local("Explorer", comment: "Section of search shortcut tiles"))
                     LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible())], spacing: 10) {
                         ForEach(Array(ExploreShortcut.all.enumerated()), id: \.element.id) { index, shortcut in
                             ExploreTile(shortcut: shortcut, index: index) { viewModel.open(shortcut) }

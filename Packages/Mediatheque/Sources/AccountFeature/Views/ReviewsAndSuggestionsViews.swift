@@ -18,9 +18,11 @@ struct ReviewsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Picker("Avis", selection: $tab) {
-                    Text("À noter").tag(Tab.toRate)
-                    Text("Publiés").tag(Tab.published)
+                Picker(selection: $tab) {
+                    Text(.local("À noter")).tag(Tab.toRate)
+                    Text(.local("Publiés")).tag(Tab.published)
+                } label: {
+                    Text(.local("Avis"))
                 }
                 .pickerStyle(.segmented)
                 switch tab {
@@ -32,7 +34,7 @@ struct ReviewsView: View {
             .padding(.bottom, 24)
         }
         .background(Color.surfaceGrouped)
-        .navigationTitle("Mes avis")
+        .navigationTitle(Text(.local("Mes avis")))
         .task { await viewModel.load() }
         .refreshable { await viewModel.load() }
         .sheet(item: $draft) { draft in
@@ -55,12 +57,12 @@ struct ReviewsView: View {
         case let .loaded(records) where records.isEmpty:
             EmptyStateView(
                 systemImage: "star.bubble",
-                title: "Rien à noter pour l'instant",
-                message: "Vos documents empruntés apparaîtront ici pour que vous puissiez les noter.",
+                title: .local("Rien à noter pour l'instant"),
+                message: .local("Vos documents empruntés apparaîtront ici pour que vous puissiez les noter."),
                 tint: .brandYellow
             )
         case let .loaded(records):
-            Text("Vos derniers emprunts. Une note suffit, le texte est facultatif.")
+            Text(.local("Vos derniers emprunts. Une note suffit, le texte est facultatif."))
                 .font(.subheadline)
                 .foregroundStyle(Color.inkSecondary)
             VStack(spacing: 0) {
@@ -83,10 +85,10 @@ struct ReviewsView: View {
         case let .loaded(reviews) where reviews.isEmpty:
             EmptyStateView(
                 systemImage: "heart.text.square",
-                title: "Partagez vos coups de cœur",
-                message: "Vos avis aident les autres lecteurs à choisir. Ils sont publiés après validation par la médiathèque.",
+                title: .local("Partagez vos coups de cœur"),
+                message: .local("Vos avis aident les autres lecteurs à choisir. Ils sont publiés après validation par la médiathèque."),
                 tint: .brandMagenta,
-                primary: ("Noter mes derniers prêts", { tab = .toRate })
+                primary: (String.local("Noter mes derniers prêts"), { tab = .toRate })
             )
         case let .loaded(reviews):
             VStack(spacing: 0) {
@@ -154,7 +156,7 @@ struct StarRatingInput: View {
                         .foregroundStyle(value <= rating ? Color.brandYellow : Color.inkSecondary.opacity(0.5))
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("\(value) étoile\(value > 1 ? "s" : "") sur 5")
+                .accessibilityLabel(Text(.local("\(value) étoiles sur 5")))
                 .accessibilityAddTraits(value == rating ? .isSelected : [])
             }
         }
@@ -173,7 +175,7 @@ struct StarsView: View {
             }
         }
         .accessibilityElement()
-        .accessibilityLabel("\(rating) étoile\(rating > 1 ? "s" : "") sur 5")
+        .accessibilityLabel(Text(.local("\(rating) étoiles sur 5")))
     }
 }
 
@@ -213,23 +215,23 @@ struct ReviewSheet: View {
                         .padding(.vertical, 4)
                 }
                 Section {
-                    TextField("Titre (facultatif)", text: $title)
-                    TextField("Votre avis (facultatif)", text: $text, axis: .vertical)
+                    TextField(text: $title) { Text(.local("Titre (facultatif)")) }
+                    TextField(text: $text, axis: .vertical) { Text(.local("Votre avis (facultatif)")) }
                         .lineLimit(4...10)
                 } footer: {
-                    Text("Votre avis est publié sous votre pseudo, après validation par la médiathèque.")
+                    Text(.local("Votre avis est publié sous votre pseudo, après validation par la médiathèque."))
                 }
             }
             .scrollDismissesKeyboard(.immediately)
-            .navigationTitle("Donner mon avis")
+            .navigationTitle(Text(.local("Donner mon avis")))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Annuler") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button(.local("Annuler")) { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     if isSubmitting {
                         ProgressView()
                     } else {
-                        Button("Envoyer") {
+                        Button(.local("Envoyer")) {
                             Task { if await submit(rating, title, text) { dismiss() } }
                         }
                         .disabled(rating == 0)
@@ -254,11 +256,11 @@ struct SuggestionsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text("Un document manque au catalogue ? Proposez-le : la médiathèque étudie chaque suggestion.")
+                Text(.local("Un document manque au catalogue ? Proposez-le : la médiathèque étudie chaque suggestion."))
                     .font(.subheadline)
                     .foregroundStyle(Color.inkSecondary)
                 form
-                SectionHeader("Envoyées")
+                SectionHeader(.local("Envoyées"))
                 sent
             }
             .padding(.horizontal, 16)
@@ -266,7 +268,7 @@ struct SuggestionsView: View {
         }
         .dismissesKeyboardOnTap()
         .background(Color.surfaceGrouped)
-        .navigationTitle("Mes suggestions")
+        .navigationTitle(Text(.local("Mes suggestions")))
         .scrollDismissesKeyboard(.interactively)
         .task { await viewModel.load() }
         .refreshable { await viewModel.load() }
@@ -274,7 +276,7 @@ struct SuggestionsView: View {
         .sensoryFeedback(trigger: viewModel.feedback) { _, event in event.map(\.sensoryFeedback) }
         #if canImport(VisionKit) && os(iOS)
         .fullScreenCover(isPresented: $showsScanner) {
-            CardScannerView(prompt: "Visez le code-barres au dos du livre", detectedTitle: "ISBN détecté") { value in
+            CardScannerView(prompt: .local("Visez le code-barres au dos du livre"), detectedTitle: .local("ISBN détecté")) { value in
                 viewModel.draft.isbn = value
             }
         }
@@ -284,26 +286,28 @@ struct SuggestionsView: View {
     private var form: some View {
         @Bindable var model = viewModel
         return VStack(alignment: .leading, spacing: 12) {
-            Picker("Type de document", selection: $model.draft.kind) {
+            Picker(selection: $model.draft.kind) {
                 ForEach(SuggestionKind.allCases) { Text($0.label).tag($0) }
+            } label: {
+                Text(.local("Type de document"))
             }
             .pickerStyle(.menu)
             .tint(.brandViolet)
 
-            field("Titre", text: $model.draft.title, field: .title, required: true)
-            field("Auteur", text: $model.draft.author, field: .author, required: true)
+            field(.local("Titre"), text: $model.draft.title, field: .title, required: true)
+            field(.local("Auteur"), text: $model.draft.author, field: .author, required: true)
             HStack {
-                field("ISBN ou code-barres", text: $model.draft.isbn, field: .isbn, required: false)
+                field(.local("ISBN ou code-barres"), text: $model.draft.isbn, field: .isbn, required: false)
                     .keyboardType(.numbersAndPunctuation)
                 #if canImport(VisionKit) && os(iOS)
                 if CardScannerView.isAvailable {
-                    Button("Scanner l'ISBN", systemImage: "barcode.viewfinder") { showsScanner = true }
+                    Button(.local("Scanner l'ISBN"), systemImage: "barcode.viewfinder") { showsScanner = true }
                         .labelStyle(.iconOnly)
                         .buttonStyle(.glass)
                 }
                 #endif
             }
-            TextField("Commentaire (facultatif)", text: $model.draft.comment, axis: .vertical)
+            TextField(text: $model.draft.comment, axis: .vertical) { Text(.local("Commentaire (facultatif)")) }
                 .lineLimit(2...5)
                 .focused($focused, equals: .comment)
                 .padding(12)
@@ -313,7 +317,7 @@ struct SuggestionsView: View {
                 focused = nil
                 Task { await model.send() }
             } label: {
-                Text("Envoyer la suggestion").frame(maxWidth: .infinity)
+                Text(.local("Envoyer la suggestion")).frame(maxWidth: .infinity)
             }
             .buttonStyle(.prominent(size: .large, isLoading: model.isSending))
             .disabled(!model.draft.isValid || model.isSending)
@@ -327,7 +331,7 @@ struct SuggestionsView: View {
             .submitLabel(.next)
             .padding(12)
             .background(Color.surfaceGrouped, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .accessibilityLabel(required ? "\(label), obligatoire" : label)
+            .accessibilityLabel(required ? String.local("\(label), obligatoire") : label)
     }
 
     @ViewBuilder
@@ -336,11 +340,11 @@ struct SuggestionsView: View {
         case .idle, .loading:
             SkeletonRow().cardStyle()
         case .failed:
-            Text("La liste de vos suggestions n'a pas pu être chargée.")
+            Text(.local("La liste de vos suggestions n'a pas pu être chargée."))
                 .font(.subheadline)
                 .foregroundStyle(Color.inkSecondary)
         case let .loaded(suggestions) where suggestions.isEmpty:
-            Text("Vos suggestions envoyées apparaîtront ici.")
+            Text(.local("Vos suggestions envoyées apparaîtront ici."))
                 .font(.subheadline)
                 .foregroundStyle(Color.inkSecondary)
         case let .loaded(suggestions):

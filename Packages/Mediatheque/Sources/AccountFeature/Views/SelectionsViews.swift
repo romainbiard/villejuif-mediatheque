@@ -22,23 +22,23 @@ struct SelectionsView: View {
             .padding(.bottom, 24)
         }
         .background(Color.surfaceGrouped)
-        .navigationTitle("Mes sélections")
+        .navigationTitle(Text(.local("Mes sélections")))
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Nouvelle sélection", systemImage: "plus") { showsCreate = true }
+                Button(.local("Nouvelle sélection"), systemImage: "plus") { showsCreate = true }
                     .disabled(viewModel.isCreating || viewModel.state.value == nil)
             }
         }
-        .alert("Nouvelle sélection", isPresented: $showsCreate) {
-            TextField("Nom de la sélection", text: $newName)
-            Button("Créer") {
+        .alert(Text(.local("Nouvelle sélection")), isPresented: $showsCreate) {
+            TextField(text: $newName) { Text(.local("Nom de la sélection")) }
+            Button(.local("Créer")) {
                 let name = newName
                 newName = ""
                 Task { await viewModel.create(named: name) }
             }
-            Button("Annuler", role: .cancel) { newName = "" }
+            Button(.local("Annuler"), role: .cancel) { newName = "" }
         } message: {
-            Text("Par exemple « Vacances » ou « Idées cadeaux ».")
+            Text(.local("Par exemple « Vacances » ou « Idées cadeaux »."))
         }
         .task { await viewModel.load() }
         .refreshable { await viewModel.load() }
@@ -62,7 +62,7 @@ struct SelectionsView: View {
             if selections.allSatisfy({ $0.count == 0 }) {
                 HStack(alignment: .top, spacing: 12) {
                     Image(systemName: "heart.fill").font(.title3).foregroundStyle(Color.brandMagenta)
-                    Text("Touchez le cœur sur la fiche d'un document pour l'ajouter à « Mes préférés ».")
+                    Text(.local("Touchez le cœur sur la fiche d'un document pour l'ajouter à « Mes préférés »."))
                         .font(.subheadline)
                         .foregroundStyle(Color.inkSecondary)
                 }
@@ -118,7 +118,7 @@ struct SelectionTile: View {
     }
 
     private var subtitle: String {
-        let count = selection.count == 0 ? "Vide" : "\(selection.count) document\(selection.count > 1 ? "s" : "")"
+        let count = selection.count == 0 ? String.local("Vide") : String.local("\(selection.count) documents")
         guard let updatedAt = selection.updatedAt, selection.count > 0 else { return count }
         return "\(count) · \(updatedAt.formatted(.dateTime.day().month(.abbreviated)))"
     }
@@ -166,8 +166,8 @@ struct SelectionDetailView: View {
                 ScrollView {
                     EmptyStateView(
                         systemImage: "heart",
-                        title: "Sélection vide",
-                        message: "Ajoutez des documents depuis leur fiche, avec le cœur ou le menu Partager.",
+                        title: .local("Sélection vide"),
+                        message: .local("Ajoutez des documents depuis leur fiche, avec le cœur ou le menu Partager."),
                         tint: .brandMagenta
                     )
                     .padding(16)
@@ -181,12 +181,12 @@ struct SelectionDetailView: View {
                         .listRowBackground(Color.surfaceCard)
                         .disabled(viewModel.removing.contains(notice.id))
                         .swipeActions {
-                            Button("Retirer", systemImage: "trash", role: .destructive) {
+                            Button(.local("Retirer"), systemImage: "trash", role: .destructive) {
                                 Task { await viewModel.remove(notice) }
                             }
                         }
                         .contextMenu {
-                            Button("Retirer de la sélection", systemImage: "trash", role: .destructive) {
+                            Button(.local("Retirer de la sélection"), systemImage: "trash", role: .destructive) {
                                 Task { await viewModel.remove(notice) }
                             }
                         }
@@ -236,9 +236,9 @@ struct ProfileErrorState: View {
     var body: some View {
         EmptyStateView(
             systemImage: error == .offline ? "wifi.slash" : "exclamationmark.triangle",
-            title: error == .offline ? "Pas de connexion" : "Le site de la médiathèque ne répond pas",
-            message: "Vérifiez votre connexion, puis réessayez.",
-            primary: ("Réessayer", { Task { await retry() } })
+            title: error == .offline ? String.local("Pas de connexion") : String.local("Le site de la médiathèque ne répond pas"),
+            message: .local("Vérifiez votre connexion, puis réessayez."),
+            primary: (String.local("Réessayer"), { Task { await retry() } })
         )
     }
 }

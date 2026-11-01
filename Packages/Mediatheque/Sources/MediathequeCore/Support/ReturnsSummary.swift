@@ -10,43 +10,45 @@ public enum ReturnsSummary {
     /// Without a snapshot (never signed in, or signed out), prompts to sign in.
     public static func sentence(for snapshot: AccountSnapshot?, now: Date, calendar: Calendar) -> String {
         guard let snapshot else {
-            return "Connectez-vous dans l'app Ma médiathèque pour suivre vos prêts."
+            return .local("Connectez-vous dans l'app Ma médiathèque pour suivre vos prêts.")
         }
         let loans = snapshot.upcomingLoans
         guard let first = loans.first else {
-            return "Vous n'avez aucun prêt en cours."
+            return .local("Vous n'avez aucun prêt en cours.")
         }
 
         let late = loans.filter { if case .late = $0.dueState(now: now, calendar: calendar) { true } else { false } }
         if !late.isEmpty {
-            let titles = late.count == 1 ? "« \(late[0].title) » est" : "\(late.count) documents sont"
-            return "\(titles) en retard. \(nextAfter(late, in: loans, now: now, calendar: calendar))"
+            let lateText: String = late.count == 1
+                ? .local("« \(late[0].title) » est en retard.")
+                : .local("\(late.count) documents sont en retard.")
+            return "\(lateText) \(nextAfter(late, in: loans, now: now, calendar: calendar))"
                 .trimmingCharacters(in: .whitespaces)
         }
 
         let sameDay = loans.filter { calendar.isDate($0.dueDate, inSameDayAs: first.dueDate) }
-        let what = sameDay.count == 1 ? "« \(first.title) »" : "\(sameDay.count) documents"
-        let more = loans.count > sameDay.count
-            ? " Puis \(loans.count - sameDay.count) autre\(loans.count - sameDay.count > 1 ? "s" : "") plus tard."
-            : ""
-        return "Vous devez rendre \(what) \(when(first.dueDate, now: now, calendar: calendar)).\(more)"
+        let what: String = sameDay.count == 1 ? .local("« \(first.title) »") : .local("\(sameDay.count) documents")
+        let others = loans.count - sameDay.count
+        let more = others > 0 ? " " + String.local("Puis \(others) autres plus tard.") : ""
+        let whenText = when(first.dueDate, now: now, calendar: calendar)
+        return String.local("Vous devez rendre \(what) \(whenText).") + more
     }
 
     /// "aujourd'hui", "demain", "dans 3 jours, le jeudi 5 novembre"…
     static func when(_ date: Date, now: Date, calendar: Calendar) -> String {
         let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: now), to: calendar.startOfDay(for: date)).day ?? 0
-        let french = Locale(identifier: "fr_FR")
-        let full = date.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(french))
+        let full = date.formatted(.dateTime.weekday(.wide).day().month(.wide))
         switch days {
-        case 0: return "aujourd'hui"
-        case 1: return "demain, le \(full)"
-        default: return "dans \(days) jours, le \(full)"
+        case 0: return .local("aujourd'hui")
+        case 1: return .local("demain, le \(full)")
+        default: return .local("dans \(days) jours, le \(full)")
         }
     }
 
     private static func nextAfter(_ late: [Loan], in loans: [Loan], now: Date, calendar: Calendar) -> String {
         let lateIDs = Set(late.map(\.id))
         guard let next = loans.first(where: { !lateIDs.contains($0.id) }) else { return "" }
-        return "Prochain retour : « \(next.title) », \(when(next.dueDate, now: now, calendar: calendar))."
+        let whenText = when(next.dueDate, now: now, calendar: calendar)
+        return .local("Prochain retour : « \(next.title) », \(whenText).")
     }
 }

@@ -34,10 +34,10 @@ struct HoldSheet: View {
             }
             .padding(16)
             .background(Color.surfaceGrouped)
-            .navigationTitle("Réserver")
+            .navigationTitle(Text(.local("Réserver", comment: "Sheet title: place a hold on the item")))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Fermer") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button(.local("Fermer")) { dismiss() } }
             }
         }
         .presentationDetents([.medium, .large])
@@ -49,9 +49,9 @@ struct HoldSheet: View {
     private var content: some View {
         switch viewModel.step {
         case .preparing:
-            ProgressView("Recherche des lieux de retrait…").frame(maxWidth: .infinity).padding(.top, 20)
+            ProgressView { Text(.local("Recherche des lieux de retrait…")) }.frame(maxWidth: .infinity).padding(.top, 20)
         case let .choosing(request), let .submitting(request):
-            Text("Où voulez-vous le retirer ?").font(.headline)
+            Text(.local("Où voulez-vous le retirer ?")).font(.headline)
             VStack(spacing: 0) {
                 ForEach(request.pickupLibraries) { library in
                     Button { viewModel.pickup = library } label: {
@@ -59,7 +59,7 @@ struct HoldSheet: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(library.name).font(.body.weight(.semibold)).foregroundStyle(Color.ink)
                                 if library == request.defaultPickup {
-                                    Text("Votre médiathèque").font(.footnote).foregroundStyle(Color.inkSecondary)
+                                    Text(.local("Votre médiathèque", comment: "The patron's home library")).font(.footnote).foregroundStyle(Color.inkSecondary)
                                 }
                             }
                             Spacer()
@@ -81,7 +81,7 @@ struct HoldSheet: View {
             Button {
                 Task { await viewModel.submit() }
             } label: {
-                Text("Confirmer la réservation").frame(maxWidth: .infinity)
+                Text(.local("Confirmer la réservation")).frame(maxWidth: .infinity)
             }
             .buttonStyle(.prominent(isLoading: viewModel.isSubmitting))
             .disabled(viewModel.pickup == nil || viewModel.isSubmitting)
@@ -92,11 +92,11 @@ struct HoldSheet: View {
                     .foregroundStyle(.white)
                     .frame(width: 72, height: 72)
                     .background(Color.statusSuccess, in: Circle())
-                Text("Réservation enregistrée").font(.title2.weight(.heavy))
-                Text("Retrait à \(pickup.shortName). \(message.components(separatedBy: "\n").dropFirst().joined(separator: " "))")
+                Text(.local("Réservation enregistrée")).font(.title2.weight(.heavy))
+                Text(.local("Retrait à \(pickup.shortName). \(message.components(separatedBy: "\n").dropFirst().joined(separator: " "))", comment: "Pickup library, then the website's confirmation message (in French)"))
                     .multilineTextAlignment(.center)
                     .foregroundStyle(Color.inkSecondary)
-                Button("Fermer") { dismiss() }
+                Button(.local("Fermer")) { dismiss() }
                     .buttonStyle(.prominent(size: .large))
             }
             .frame(maxWidth: .infinity)
@@ -104,10 +104,10 @@ struct HoldSheet: View {
         case let .failed(message):
             EmptyStateView(
                 systemImage: "exclamationmark.triangle",
-                title: "Réservation impossible",
+                title: String.local("Réservation impossible"),
                 message: message,
                 tint: .statusDanger,
-                primary: ("Réessayer", { Task { await viewModel.prepare() } })
+                primary: (String.local("Réessayer"), { Task { await viewModel.prepare() } })
             )
         }
     }

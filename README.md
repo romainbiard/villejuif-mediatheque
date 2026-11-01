@@ -157,10 +157,10 @@ Sans compte, la recherche, l'agenda, les infos pratiques et la présentation du 
 Plus de 120 tests, sur des fixtures JSON, HTML et iCal tirées du portail réel et anonymisées.
 
 ```bash
-cd Packages/Mediatheque && xcodebuild test -scheme Mediatheque-Package -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -skipMacroValidation
+cd Packages/Mediatheque && xcodebuild test -scheme Mediatheque-Package -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -testLanguage fr -testRegion FR -skipMacroValidation
 ```
 
-Remplacez le simulateur par l'un de ceux installés sur votre Mac (`xcrun simctl list devices`).
+Remplacez le simulateur par l'un de ceux installés sur votre Mac (`xcrun simctl list devices`). Les tests vérifient des textes en français : `-testLanguage fr` les rend indépendants de la langue du simulateur.
 
 ## Confidentialité
 

@@ -41,7 +41,7 @@ public struct EventDetailView: View {
                 Button {
                     openURL(viewModel.iCalURL)
                 } label: {
-                    Label("Ajouter au calendrier", systemImage: "calendar.badge.plus").frame(maxWidth: .infinity)
+                    Label(.local("Ajouter au calendrier"), systemImage: "calendar.badge.plus").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.prominent(size: .large))
 

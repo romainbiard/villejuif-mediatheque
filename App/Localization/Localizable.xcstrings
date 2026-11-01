@@ -1,0 +1,226 @@
+{
+  "sourceLanguage": "fr",
+  "strings": {
+    "Affiche les prochaines animations des médiathèques.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows upcoming events at the libraries."
+          }
+        }
+      }
+    },
+    "Affiche votre carte avec son code-barres, luminosité au maximum.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows your card and its barcode, at full brightness."
+          }
+        }
+      }
+    },
+    "Agenda": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Events"
+          }
+        }
+      },
+      "comment": "Tab title: library events"
+    },
+    "Aller à": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Go"
+          }
+        }
+      },
+      "comment": "Menu bar menu with tab shortcuts"
+    },
+    "Chercher": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search"
+          }
+        }
+      },
+      "comment": "Short shortcut title"
+    },
+    "Chercher ${query} dans le catalogue": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search the catalog for ${query}"
+          }
+        }
+      },
+      "comment": "Shortcut summary; ${query} is the search terms"
+    },
+    "Chercher dans le catalogue": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search the Catalog"
+          }
+        }
+      },
+      "comment": "Shortcut title"
+    },
+    "Compte": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Account"
+          }
+        }
+      },
+      "comment": "Tab title"
+    },
+    "Dit quand rendre vos prochains documents, d'après la dernière synchronisation.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tells you when your next items are due, based on the last sync."
+          }
+        }
+      }
+    },
+    "Infos": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Info"
+          }
+        }
+      },
+      "comment": "Tab title: practical information"
+    },
+    "Lance une recherche dans le catalogue des médiathèques de Villejuif.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Searches the catalog of the Villejuif libraries."
+          }
+        }
+      }
+    },
+    "Ma carte": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My Card"
+          }
+        }
+      },
+      "comment": "Short shortcut title"
+    },
+    "Ma médiathèque": {
+      "comment": "App name",
+      "shouldTranslate": false
+    },
+    "Mon compte": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My account"
+          }
+        }
+      },
+      "comment": "Sidebar section on iPad"
+    },
+    "Montrer ma carte d'abonné": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show My Library Card"
+          }
+        }
+      },
+      "comment": "Shortcut title"
+    },
+    "Numérique": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Digital"
+          }
+        }
+      },
+      "comment": "Tab title: digital library"
+    },
+    "Ouvrir l'agenda": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Events"
+          }
+        }
+      },
+      "comment": "Shortcut title"
+    },
+    "Prochains retours": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upcoming Returns"
+          }
+        }
+      },
+      "comment": "Shortcut title"
+    },
+    "Que cherchez-vous ?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What are you looking for?"
+          }
+        }
+      },
+      "comment": "Siri asks for the search terms"
+    },
+    "Recherche": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search"
+          }
+        }
+      },
+      "comment": "Tab title: catalog search; also the search parameter of the Siri shortcut"
+    },
+    "Rechercher dans le catalogue": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search the Catalog"
+          }
+        }
+      },
+      "comment": "Menu bar command (⌘F)"
+    }
+  },
+  "version": "1.0"
+}

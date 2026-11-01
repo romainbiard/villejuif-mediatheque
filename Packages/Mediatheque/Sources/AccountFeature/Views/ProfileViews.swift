@@ -18,33 +18,33 @@ struct InformationView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 VStack(alignment: .leading, spacing: 8) {
-                    SectionHeader("Abonnement")
+                    SectionHeader(.local("Abonnement"))
                     VStack(spacing: 0) {
-                        InfoRow(label: "Numéro de carte", value: patron.cardNumber, monospaced: true)
+                        InfoRow(label: .local("Numéro de carte"), value: patron.cardNumber, monospaced: true)
                         Divider().padding(.leading, 14)
-                        InfoRow(label: "Valable jusqu'au", value: patron.cardExpiry?.formatted(.dateTime.day().month(.wide).year()) ?? "—")
+                        InfoRow(label: .local("Valable jusqu'au"), value: patron.cardExpiry?.formatted(.dateTime.day().month(.wide).year()) ?? "—")
                         Divider().padding(.leading, 14)
-                        InfoRow(label: "Médiathèque d'inscription", value: patron.homeLibrary?.name ?? "—")
+                        InfoRow(label: .local("Médiathèque d'inscription"), value: patron.homeLibrary?.name ?? "—")
                     }
                     .cardStyle(padding: 0)
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
-                    SectionHeader("Coordonnées") {
+                    SectionHeader(.local("Coordonnées")) {
                         if viewModel.contact.value != nil {
-                            Button("Modifier") { editsContact = true }.font(.subheadline.weight(.semibold))
+                            Button(.local("Modifier")) { editsContact = true }.font(.subheadline.weight(.semibold))
                         }
                     }
                     contact
-                    Text("Le nom et l'adresse se changent à l'accueil d'une médiathèque, avec un justificatif.")
+                    Text(.local("Le nom et l'adresse se changent à l'accueil d'une médiathèque, avec un justificatif."))
                         .font(.footnote)
                         .foregroundStyle(Color.inkSecondary)
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
-                    SectionHeader("Sécurité")
+                    SectionHeader(.local("Sécurité"))
                     Button { changesPassword = true } label: {
-                        MenuRow(title: "Changer le mot de passe", systemImage: "key.fill", tint: .brandVioletDeep) { EmptyView() }
+                        MenuRow(title: .local("Changer le mot de passe"), systemImage: "key.fill", tint: .brandVioletDeep) { EmptyView() }
                     }
                     .buttonStyle(.plain)
                     .cardStyle(padding: 0)
@@ -54,7 +54,7 @@ struct InformationView: View {
             .padding(.bottom, 24)
         }
         .background(Color.surfaceGrouped)
-        .navigationTitle("Mes informations")
+        .navigationTitle(Text(.local("Mes informations")))
         .task { await viewModel.load() }
         .refreshable { await viewModel.load() }
         .sheet(isPresented: $editsContact) {
@@ -73,18 +73,18 @@ struct InformationView: View {
     private var contact: some View {
         let details = viewModel.contact.value
         VStack(spacing: 0) {
-            InfoRow(label: "Nom", value: patron.displayName)
+            InfoRow(label: .local("Nom"), value: patron.displayName)
             Divider().padding(.leading, 14)
-            InfoRow(label: "Pseudo", value: (details?.nickname ?? patron.nickname ?? "").isEmpty ? "—" : (details?.nickname ?? patron.nickname ?? ""))
+            InfoRow(label: .local("Pseudo"), value: (details?.nickname ?? patron.nickname ?? "").isEmpty ? "—" : (details?.nickname ?? patron.nickname ?? ""))
             Divider().padding(.leading, 14)
-            InfoRow(label: "E-mail", value: details?.email ?? patron.email ?? "—")
+            InfoRow(label: .local("E-mail"), value: details?.email ?? patron.email ?? "—")
             Divider().padding(.leading, 14)
-            InfoRow(label: "Téléphone", value: details?.phone ?? patron.phone ?? "—")
+            InfoRow(label: .local("Téléphone"), value: details?.phone ?? patron.phone ?? "—")
             Divider().padding(.leading, 14)
-            InfoRow(label: "Adresse", value: patron.postalAddress ?? "—")
+            InfoRow(label: .local("Adresse"), value: patron.postalAddress ?? "—")
             if let details {
                 Divider().padding(.leading, 14)
-                InfoRow(label: "Me contacter par", value: details.channel.label)
+                InfoRow(label: .local("Me contacter par"), value: details.channel.label)
             }
         }
         .redacted(reason: viewModel.contact.isLoading ? .placeholder : [])
@@ -131,39 +131,43 @@ struct ContactEditSheet: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Pseudo", text: $details.nickname)
+                    TextField(text: $details.nickname) { Text(.local("Pseudo")) }
                         .textContentType(.nickname)
                 } footer: {
-                    Text("Affiché avec vos avis.")
+                    Text(.local("Affiché avec vos avis."))
                 }
-                Section("Coordonnées") {
-                    TextField("E-mail", text: $details.email)
+                Section {
+                    TextField(text: $details.email) { Text(.local("E-mail")) }
                         .textContentType(.emailAddress)
                         .keyboardType(.emailAddress)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
-                    TextField("Téléphone", text: $details.phone)
+                    TextField(text: $details.phone) { Text(.local("Téléphone")) }
                         .textContentType(.telephoneNumber)
                         .keyboardType(.phonePad)
+                } header: {
+                    Text(.local("Coordonnées"))
                 }
                 Section {
-                    Picker("Me contacter par", selection: $details.channel) {
+                    Picker(selection: $details.channel) {
                         ForEach(SendingChannel.allCases) { Text($0.label).tag($0) }
+                    } label: {
+                        Text(.local("Me contacter par"))
                     }
                 } footer: {
-                    Text("Pour les avis de réservation disponible et les rappels de la médiathèque.")
+                    Text(.local("Pour les avis de réservation disponible et les rappels de la médiathèque."))
                 }
             }
             .scrollDismissesKeyboard(.immediately)
-            .navigationTitle("Coordonnées")
+            .navigationTitle(Text(.local("Coordonnées")))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Annuler") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button(.local("Annuler")) { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     if isSaving {
                         ProgressView()
                     } else {
-                        Button("Enregistrer") { Task { if await save(details) { dismiss() } } }
+                        Button(.local("Enregistrer")) { Task { if await save(details) { dismiss() } } }
                     }
                 }
             }
@@ -183,28 +187,28 @@ struct PasswordSheet: View {
         NavigationStack {
             Form {
                 Section {
-                    SecureField("Nouveau mot de passe", text: $password)
+                    SecureField(text: $password) { Text(.local("Nouveau mot de passe")) }
                         .textContentType(.newPassword)
-                    SecureField("Confirmer", text: $confirmation)
+                    SecureField(text: $confirmation) { Text(.local("Confirmer")) }
                         .textContentType(.newPassword)
                 } footer: {
                     if !confirmation.isEmpty, password != confirmation {
-                        Text("Les deux mots de passe ne correspondent pas.").foregroundStyle(Color.statusDanger)
+                        Text(.local("Les deux mots de passe ne correspondent pas.")).foregroundStyle(Color.statusDanger)
                     } else {
-                        Text("L'app mettra à jour le mot de passe enregistré sur cet appareil.")
+                        Text(.local("L'app mettra à jour le mot de passe enregistré sur cet appareil."))
                     }
                 }
             }
             .scrollDismissesKeyboard(.immediately)
-            .navigationTitle("Mot de passe")
+            .navigationTitle(Text(.local("Mot de passe")))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Annuler") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button(.local("Annuler")) { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     if isSaving {
                         ProgressView()
                     } else {
-                        Button("Valider") { Task { if await change(password, confirmation) { dismiss() } } }
+                        Button(.local("Valider")) { Task { if await change(password, confirmation) { dismiss() } } }
                             .disabled(InformationViewModel.passwordProblem(password, confirmation: confirmation) != nil)
                     }
                 }
@@ -235,20 +239,20 @@ struct ProfileSettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                group("Médiathèques préférées", footer: "Mises en avant dans la recherche et l'agenda.") {
+                group(.local("Médiathèques préférées"), footer: .local("Mises en avant dans la recherche et l'agenda.")) {
                     libraries
                 }
-                group("Notifications", footer: nil) {
-                    SettingToggleRow(title: "Rappels de retour", detail: "3 jours avant, puis le jour même", systemImage: "bell.badge", tint: .statusDanger, isOn: reminderBinding($loanReminders))
+                group(.local("Notifications"), footer: nil) {
+                    SettingToggleRow(title: .local("Rappels de retour"), detail: .local("3 jours avant, puis le jour même"), systemImage: "bell.badge", tint: .statusDanger, isOn: reminderBinding($loanReminders))
                     Divider().padding(.leading, 62)
-                    SettingToggleRow(title: "Réservations disponibles", detail: "Quand un document vous attend", systemImage: "shippingbox", tint: .statusSuccess, isOn: reminderBinding($holdAlerts))
+                    SettingToggleRow(title: .local("Réservations disponibles"), detail: .local("Quand un document vous attend"), systemImage: "shippingbox", tint: .statusSuccess, isOn: reminderBinding($holdAlerts))
                     Divider().padding(.leading, 62)
-                    SettingToggleRow(title: "Agenda de la semaine", detail: "Les animations, le lundi matin", systemImage: "calendar", tint: .brandVioletDeep, isOn: reminderBinding($agendaDigest))
+                    SettingToggleRow(title: .local("Agenda de la semaine"), detail: .local("Les animations, le lundi matin"), systemImage: "calendar", tint: .brandVioletDeep, isOn: reminderBinding($agendaDigest))
                 }
-                group("Lettre d'information", footer: "L'actualité du réseau des médiathèques, par e-mail.") {
+                group(.local("Lettre d'information"), footer: .local("L'actualité du réseau des médiathèques, par e-mail.")) {
                     SettingToggleRow(
-                        title: "Recevoir la lettre",
-                        detail: patron.email ?? "Adresse e-mail à renseigner",
+                        title: .local("Recevoir la lettre"),
+                        detail: patron.email ?? .local("Adresse e-mail à renseigner"),
                         systemImage: "envelope.open",
                         tint: .brandVioletDeep,
                         isOn: Binding(get: { viewModel.newsletter }, set: { isOn in Task { await viewModel.setNewsletter(isOn) } }),
@@ -256,20 +260,20 @@ struct ProfileSettingsView: View {
                     )
                 }
                 if let biometricKind = viewModel.biometricKind {
-                    group("Sécurité", footer: "Le compte s'ouvre après validation, même si l'app reste connectée.") {
+                    group(.local("Sécurité"), footer: .local("Le compte s'ouvre après validation, même si l'app reste connectée.")) {
                         SettingToggleRow(
-                            title: "Verrouiller avec \(biometricKind)",
-                            detail: "Protège l'accès à votre compte",
+                            title: .local("Verrouiller avec \(biometricKind)"),
+                            detail: .local("Protège l'accès à votre compte"),
                             systemImage: "faceid",
                             tint: .brandViolet,
                             isOn: $faceID
                         )
                     }
                 }
-                Button("Se déconnecter", role: .destructive) { confirmsLogout = true }
+                Button(.local("Se déconnecter"), role: .destructive) { confirmsLogout = true }
                     // Attached to the button: on iOS 26 the confirmation is a popover pointing at its view.
-                    .confirmationDialog("Se déconnecter de votre compte ?", isPresented: $confirmsLogout, titleVisibility: .visible) {
-                        Button("Se déconnecter", role: .destructive) { Task { await session.logout() } }
+                    .confirmationDialog(Text(.local("Se déconnecter de votre compte ?")), isPresented: $confirmsLogout, titleVisibility: .visible) {
+                        Button(.local("Se déconnecter"), role: .destructive) { Task { await session.logout() } }
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.top, 4)
@@ -278,7 +282,7 @@ struct ProfileSettingsView: View {
             .padding(.bottom, 24)
         }
         .background(Color.surfaceGrouped)
-        .navigationTitle("Mes configurations")
+        .navigationTitle(Text(.local("Mes configurations")))
         .task { await viewModel.load() }
         .overlay(alignment: .bottom) { MessageToast(message: viewModel.message) { viewModel.dismissMessage() } }
         .sensoryFeedback(trigger: viewModel.feedback) { _, event in event.map(\.sensoryFeedback) }
@@ -291,7 +295,7 @@ struct ProfileSettingsView: View {
         ForEach(Library.allCases) { library in
             SettingToggleRow(
                 title: library.name,
-                detail: library == patron.homeLibrary ? "Votre médiathèque d'inscription" : nil,
+                detail: library == patron.homeLibrary ? String.local("Votre médiathèque d'inscription") : nil,
                 systemImage: "building.columns",
                 tint: .brandViolet,
                 isOn: Binding(get: { bookmarks.contains(library) }, set: { isOn in Task { await viewModel.setBookmarked(library, isOn) } }),

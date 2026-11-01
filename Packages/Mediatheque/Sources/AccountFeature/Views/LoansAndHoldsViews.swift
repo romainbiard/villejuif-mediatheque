@@ -18,11 +18,11 @@ struct LoansView: View {
             .padding(.bottom, 24)
         }
         .background(Color.surfaceGrouped)
-        .navigationTitle("Mes prêts")
+        .navigationTitle(Text(.local("Mes prêts")))
         .toolbar {
             if let loans = viewModel.state.value, loans.count > 1 {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Tout prolonger") { Task { await viewModel.renewAll() } }
+                    Button(.local("Tout prolonger")) { Task { await viewModel.renewAll() } }
                         .disabled(!viewModel.renewing.isEmpty)
                 }
             }
@@ -41,15 +41,15 @@ struct LoansView: View {
         case let .failed(error):
             EmptyStateView(
                 systemImage: error == .offline ? "wifi.slash" : "exclamationmark.triangle",
-                title: error == .offline ? "Pas de connexion" : "Le site de la médiathèque ne répond pas",
-                message: "Vérifiez votre connexion, puis réessayez.",
-                primary: ("Réessayer", { Task { await viewModel.load() } })
+                title: error == .offline ? String.local("Pas de connexion") : String.local("Le site de la médiathèque ne répond pas"),
+                message: .local("Vérifiez votre connexion, puis réessayez."),
+                primary: (String.local("Réessayer"), { Task { await viewModel.load() } })
             )
         case let .loaded(loans) where loans.isEmpty:
             EmptyStateView(
                 systemImage: "books.vertical",
-                title: "Rien à rendre pour l'instant",
-                message: "Vos emprunts apparaîtront ici avec leur date de retour."
+                title: .local("Rien à rendre pour l'instant"),
+                message: .local("Vos emprunts apparaîtront ici avec leur date de retour.")
             )
         case .loaded:
             ForEach(viewModel.sections) { section in
@@ -97,11 +97,11 @@ struct LoanRow: View {
         let date = loan.dueDate.formatted(.dateTime.day().month(.abbreviated))
         switch viewModel.dueState(of: loan) {
         case let .late(days):
-            StatusPill("En retard de \(days) jour\(days > 1 ? "s" : "")", style: .danger)
+            StatusPill(.local("En retard de \(days) jours"), style: .danger)
         case let .dueSoon(days):
-            StatusPill(days == 0 ? "À rendre aujourd'hui" : "À rendre le \(date)", style: .warning)
+            StatusPill(days == 0 ? String.local("À rendre aujourd'hui") : String.local("À rendre le \(date)"), style: .warning)
         case .onTime:
-            StatusPill("À rendre le \(date)", style: .success)
+            StatusPill(.local("À rendre le \(date)"), style: .success)
         }
     }
 
@@ -110,9 +110,9 @@ struct LoanRow: View {
         if viewModel.renewing.contains(loan.id) {
             ProgressView()
         } else if viewModel.refused.contains(loan.id) {
-            Text("Non\nprolongeable").font(.caption).multilineTextAlignment(.trailing).foregroundStyle(Color.inkSecondary)
+            Text(.local("Non\nprolongeable")).font(.caption).multilineTextAlignment(.trailing).foregroundStyle(Color.inkSecondary)
         } else {
-            Button("Prolonger") { Task { await viewModel.renew(loan) } }
+            Button(.local("Prolonger")) { Task { await viewModel.renew(loan) } }
                 .buttonStyle(.glass)
                 .tint(.brandVioletDeep)
                 .font(.subheadline.weight(.bold))
@@ -133,18 +133,18 @@ struct HoldsView: View {
             .padding(.bottom, 24)
         }
         .background(Color.surfaceGrouped)
-        .navigationTitle("Mes réservations")
+        .navigationTitle(Text(.local("Mes réservations")))
         .task { await viewModel.load() }
         .refreshable { await viewModel.load() }
         .confirmationDialog(
-            "Annuler la réservation de « \(pendingCancel?.title ?? "") » ?",
+            Text(.local("Annuler la réservation de « \(pendingCancel?.title ?? "") » ?")),
             isPresented: Binding(get: { pendingCancel != nil }, set: { if !$0 { pendingCancel = nil } }),
             titleVisibility: .visible
         ) {
-            Button("Annuler la réservation", role: .destructive) {
+            Button(.local("Annuler la réservation"), role: .destructive) {
                 if let hold = pendingCancel { Task { await viewModel.cancel(hold) } }
             }
-            Button("Garder", role: .cancel) {}
+            Button(.local("Garder"), role: .cancel) {}
         }
         .overlay(alignment: .bottom) { MessageToast(message: viewModel.message) {} }
         .sensoryFeedback(trigger: viewModel.feedback) { _, event in event.map(\.sensoryFeedback) }
@@ -158,20 +158,20 @@ struct HoldsView: View {
         case let .failed(error):
             EmptyStateView(
                 systemImage: error == .offline ? "wifi.slash" : "exclamationmark.triangle",
-                title: error == .offline ? "Pas de connexion" : "Le site de la médiathèque ne répond pas",
-                message: "Vérifiez votre connexion, puis réessayez.",
-                primary: ("Réessayer", { Task { await viewModel.load() } })
+                title: error == .offline ? String.local("Pas de connexion") : String.local("Le site de la médiathèque ne répond pas"),
+                message: .local("Vérifiez votre connexion, puis réessayez."),
+                primary: (String.local("Réessayer"), { Task { await viewModel.load() } })
             )
         case let .loaded(holds) where holds.isEmpty:
             EmptyStateView(
                 systemImage: "bookmark",
-                title: "Aucune réservation",
-                message: "Un document est emprunté ? Réservez-le depuis sa fiche et choisissez où le retirer.",
+                title: .local("Aucune réservation"),
+                message: .local("Un document est emprunté ? Réservez-le depuis sa fiche et choisissez où le retirer."),
                 tint: .statusSuccess
             )
         case .loaded:
             if !viewModel.ready.isEmpty {
-                sectionTitle("Prêtes à retirer", color: .statusSuccess)
+                sectionTitle(.local("Prêtes à retirer"), color: .statusSuccess)
                 ForEach(viewModel.ready) { hold in
                     HoldRow(hold: hold, isCancelling: viewModel.cancelling.contains(hold.id)) { pendingCancel = hold }
                         .cardStyle(padding: 0)
@@ -179,7 +179,7 @@ struct HoldsView: View {
                 }
             }
             if !viewModel.waiting.isEmpty {
-                sectionTitle("En attente", color: .inkSecondary)
+                sectionTitle(.local("En attente"), color: .inkSecondary)
                 VStack(spacing: 0) {
                     ForEach(viewModel.waiting) { hold in
                         HoldRow(hold: hold, isCancelling: viewModel.cancelling.contains(hold.id)) { pendingCancel = hold }
@@ -204,7 +204,7 @@ struct HoldRow: View {
     /// "Pas avant le 14 nov." rather than the site's raw text when a date is given.
     private var statusText: String {
         guard !hold.isReadyForPickup, let date = hold.expectedDate else { return hold.statusText }
-        return "Pas avant le \(date.formatted(.dateTime.day().month(.abbreviated)))"
+        return .local("Pas avant le \(date.formatted(.dateTime.day().month(.abbreviated)))")
     }
 
     var body: some View {
@@ -212,13 +212,13 @@ struct HoldRow: View {
             CoverImage(url: hold.coverURL, title: hold.title, seed: hold.recordID ?? 0).frame(width: 48, height: 70)
             VStack(alignment: .leading, spacing: 4) {
                 Text(hold.title).font(.headline).lineLimit(2)
-                Text("Retrait à \(hold.pickupLibrary?.shortName ?? hold.pickupLibraryName)")
+                Text(.local("Retrait à \(hold.pickupLibrary?.shortName ?? hold.pickupLibraryName)"))
                     .font(.subheadline)
                     .foregroundStyle(Color.inkSecondary)
                 HStack(spacing: 6) {
                     StatusPill(statusText, style: hold.isReadyForPickup ? .success : .accent)
                     if let rank = hold.rank, !hold.isReadyForPickup {
-                        StatusPill("Rang \(rank)", style: .neutral)
+                        StatusPill(.local("Rang \(rank)"), style: .neutral)
                     }
                 }
             }
@@ -227,11 +227,11 @@ struct HoldRow: View {
                 ProgressView()
             } else {
                 Menu {
-                    Button("Annuler la réservation", systemImage: "xmark.circle", role: .destructive, action: cancel)
+                    Button(.local("Annuler la réservation"), systemImage: "xmark.circle", role: .destructive, action: cancel)
                 } label: {
                     Image(systemName: "ellipsis.circle").font(.title3).foregroundStyle(Color.inkSecondary)
                 }
-                .accessibilityLabel("Actions pour \(hold.title)")
+                .accessibilityLabel(Text(.local("Actions pour \(hold.title)")))
             }
         }
         .padding(12)

@@ -25,7 +25,7 @@ public struct InfoView: View {
                 .padding(.bottom, 24)
             }
             .background(Color.surfaceGrouped)
-            .navigationTitle("Infos pratiques")
+            .navigationTitle(Text(.local("Infos pratiques", comment: "Screen title: addresses and opening hours of the libraries")))
             .task { await viewModel.load() }
             .refreshable { await viewModel.load(.reload) }
         }
@@ -45,7 +45,7 @@ public struct InfoView: View {
         .mapStyle(.standard(pointsOfInterest: .excludingAll))
         .frame(height: 220)
         .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
-        .accessibilityLabel("Carte des 3 médiathèques")
+        .accessibilityLabel(Text(.local("Carte des 3 médiathèques")))
     }
 
     @ViewBuilder
@@ -56,9 +56,9 @@ public struct InfoView: View {
         case let .failed(error):
             EmptyStateView(
                 systemImage: error == .offline ? "wifi.slash" : "exclamationmark.triangle",
-                title: "Horaires indisponibles",
-                message: "Vérifiez votre connexion, puis réessayez.",
-                primary: ("Réessayer", { Task { await viewModel.load() } })
+                title: String.local("Horaires indisponibles"),
+                message: String.local("Vérifiez votre connexion, puis réessayez."),
+                primary: (String.local("Réessayer"), { Task { await viewModel.load() } })
             )
         case let .loaded(libraries):
             ForEach(libraries) { library in
@@ -82,14 +82,14 @@ struct LibraryCard: View {
             StatusPill(viewModel.statusText(of: library), style: viewModel.isOpen(library) ? .success : .danger)
 
             HStack(spacing: 8) {
-                action("Itinéraire", systemImage: "arrow.triangle.turn.up.right.diamond", prominent: true) {
+                action(.local("Itinéraire"), systemImage: "arrow.triangle.turn.up.right.diamond", prominent: true) {
                     openURL(directionsURL)
                 }
                 if let phone = library.phone, let url = URL(string: "tel:\(phone.filter(\.isNumber))") {
-                    action("Appeler", systemImage: "phone") { openURL(url) }
+                    action(.local("Appeler"), systemImage: "phone") { openURL(url) }
                 }
                 if let contact = library.contactURL {
-                    action("Écrire", systemImage: "envelope") { openURL(contact) }
+                    action(.local("Écrire", comment: "Button: contact the library by message"), systemImage: "envelope") { openURL(contact) }
                 }
             }
 
@@ -118,7 +118,7 @@ struct LibraryCard: View {
         return URL(string: "https://maps.apple.com/?daddr=\(address)")!
     }
 
-    private func action(_ title: String, systemImage: String, prominent: Bool = false, perform: @escaping () -> Void) -> some View {
+    private func action(_ title: LocalizedStringResource, systemImage: String, prominent: Bool = false, perform: @escaping () -> Void) -> some View {
         Button(action: perform) {
             VStack(spacing: 4) {
                 Image(systemName: systemImage).font(.body.weight(.semibold))

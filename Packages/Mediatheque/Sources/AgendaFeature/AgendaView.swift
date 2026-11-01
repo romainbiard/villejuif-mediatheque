@@ -39,14 +39,14 @@ public struct AgendaView: View {
                 }
             }
             .background(Color.surfaceGrouped)
-            .navigationTitle("Agenda")
+            .navigationTitle(Text(.local("Agenda", comment: "Screen title: the libraries' events")))
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         showsFilters = true
                     } label: {
                         Label(
-                            viewModel.filters.isEmpty ? "Filtres" : "Filtres · \(viewModel.filters.count)",
+                            viewModel.filters.isEmpty ? LocalizedStringResource.local("Filtres") : .local("Filtres · \(viewModel.filters.count)", comment: "Button; number of active filters"),
                             systemImage: "line.3.horizontal.decrease"
                         )
                         .labelStyle(.titleAndIcon)
@@ -80,7 +80,7 @@ public struct AgendaView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     if viewModel.filters.period == .all {
-                        Text(viewModel.selectedDay.formatted(.dateTime.weekday(.wide).day().month(.wide)).capitalized(with: Locale(identifier: "fr_FR")))
+                        Text(viewModel.selectedDay.formatted(EventFormatting.dayTitle))
                             .font(.title2.weight(.heavy))
                         regularDayContent
                     } else {
@@ -107,7 +107,7 @@ public struct AgendaView: View {
                 EventGrid(events: events)
             }
             if !viewModel.ongoingEvents.isEmpty {
-                SectionHeader("En ce moment")
+                SectionHeader(String.local("En ce moment", comment: "Section: ongoing exhibitions and long events"))
                 EventGrid(events: viewModel.ongoingEvents)
             }
         }
@@ -123,11 +123,11 @@ public struct AgendaView: View {
                 periodContent
             }
             ForEach(viewModel.periodDays) { periodDay in
-                SectionHeader(periodDay.day.formatted(.dateTime.weekday(.wide).day().month(.wide)).capitalized(with: Locale(identifier: "fr_FR")))
+                SectionHeader(periodDay.day.formatted(EventFormatting.dayTitle))
                 EventGrid(events: periodDay.events)
             }
             if !viewModel.periodOngoingEvents.isEmpty {
-                SectionHeader("Pendant cette période")
+                SectionHeader(String.local("Pendant cette période"))
                 EventGrid(events: viewModel.periodOngoingEvents)
             }
         }
@@ -142,23 +142,23 @@ public struct AgendaView: View {
         case let .failed(error):
             EmptyStateView(
                 systemImage: error == .offline ? "wifi.slash" : "exclamationmark.triangle",
-                title: error == .offline ? "Pas de connexion" : "L'agenda ne répond pas",
-                message: "Vérifiez votre connexion, puis réessayez.",
-                primary: ("Réessayer", { Task { await viewModel.load() } })
+                title: error == .offline ? String.local("Pas de connexion") : String.local("L'agenda ne répond pas"),
+                message: String.local("Vérifiez votre connexion, puis réessayez."),
+                primary: (String.local("Réessayer"), { Task { await viewModel.load() } })
             )
         case .loaded:
             let events = viewModel.eventsOfSelectedDay
             if let featured = events.first {
                 NavigationLink(value: featured) { FeaturedEventCard(event: featured) }.buttonStyle(.plain)
                 if events.count > 1 {
-                    SectionHeader("Ce jour-là")
+                    SectionHeader(String.local("Ce jour-là", comment: "Section: other events on the selected day"))
                     EventList(events: Array(events.dropFirst()))
                 }
             } else {
                 emptyDay
             }
             if !viewModel.ongoingEvents.isEmpty {
-                SectionHeader("En ce moment")
+                SectionHeader(String.local("En ce moment", comment: "Section: ongoing exhibitions and long events"))
                 EventList(events: viewModel.ongoingEvents)
             }
         }
@@ -176,19 +176,19 @@ public struct AgendaView: View {
             if days.isEmpty && viewModel.periodOngoingEvents.isEmpty {
                 EmptyStateView(
                     systemImage: "calendar.badge.exclamationmark",
-                    title: "Rien de prévu sur cette période",
-                    message: "Aucune animation ne correspond. Essayez une autre période ou retirez des filtres.",
+                    title: String.local("Rien de prévu sur cette période"),
+                    message: String.local("Aucune animation ne correspond. Essayez une autre période ou retirez des filtres."),
                     tint: .brandMagenta,
-                    primary: ("Voir tout l'agenda", { viewModel.clearPeriod() }),
-                    secondary: viewModel.filters.count > 1 ? ("Retirer tous les filtres", { viewModel.clearFilters() }) : nil
+                    primary: (String.local("Voir tout l'agenda"), { viewModel.clearPeriod() }),
+                    secondary: viewModel.filters.count > 1 ? (String.local("Retirer tous les filtres"), { viewModel.clearFilters() }) : nil
                 )
             }
             ForEach(days) { periodDay in
-                SectionHeader(periodDay.day.formatted(.dateTime.weekday(.wide).day().month(.wide)).capitalized(with: Locale(identifier: "fr_FR")))
+                SectionHeader(periodDay.day.formatted(EventFormatting.dayTitle))
                 EventList(events: periodDay.events)
             }
             if !viewModel.periodOngoingEvents.isEmpty {
-                SectionHeader("Pendant cette période")
+                SectionHeader(String.local("Pendant cette période"))
                 EventList(events: viewModel.periodOngoingEvents)
             }
         }
@@ -197,15 +197,15 @@ public struct AgendaView: View {
     private var emptyDay: some View {
         EmptyStateView(
             systemImage: "calendar",
-            title: "Pas d'événement ce jour-là",
+            title: String.local("Pas d'événement ce jour-là"),
             message: viewModel.isLibraryClosingDay(viewModel.selectedDay)
-                ? "Les médiathèques sont fermées ce jour-là. Essayez un autre jour."
-                : "Essayez un autre jour, ou élargissez vos filtres.",
+                ? String.local("Les médiathèques sont fermées ce jour-là. Essayez un autre jour.")
+                : String.local("Essayez un autre jour, ou élargissez vos filtres."),
             tint: .brandMagenta,
             primary: viewModel.nextDayWithEvents.map { day in
-                ("Voir le \(day.formatted(.dateTime.weekday(.wide).day().month(.wide)))", { viewModel.select(day: day) })
+                (String.local("Voir le \(day.formatted(.dateTime.weekday(.wide).day().month(.wide)))", comment: "Button; %@ is a day, e.g. Saturday, November 7"), { viewModel.select(day: day) })
             },
-            secondary: viewModel.filters.isEmpty ? nil : ("Retirer les filtres", { viewModel.clearFilters() })
+            secondary: viewModel.filters.isEmpty ? nil : (String.local("Retirer les filtres"), { viewModel.clearFilters() })
         )
     }
 }
@@ -230,7 +230,7 @@ struct PeriodHeader: View {
                 }
             }
             Spacer(minLength: 0)
-            Button("Revenir aux jours", systemImage: "xmark") { viewModel.clearPeriod() }
+            Button(.local("Revenir aux jours", comment: "Leaves the period view and goes back to the day picker"), systemImage: "xmark") { viewModel.clearPeriod() }
                 .labelStyle(.iconOnly)
                 .buttonStyle(.glass)
         }
@@ -290,17 +290,21 @@ struct MonthCalendar: View {
     let viewModel: AgendaViewModel
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 2), count: 7)
-    private static let weekdays = ["L", "M", "M", "J", "V", "S", "D"]
+    /// Narrow weekday names in the user's language, Monday first.
+    private static var weekdays: [String] {
+        let symbols = Calendar.current.veryShortStandaloneWeekdaySymbols
+        return Array(symbols.dropFirst()) + symbols.prefix(1)
+    }
 
     var body: some View {
         VStack(spacing: 10) {
             HStack {
-                Text(viewModel.displayedMonth.formatted(.dateTime.month(.wide).year()).capitalized(with: Locale(identifier: "fr_FR")))
+                Text(viewModel.displayedMonth.formatted(EventFormatting.monthTitle))
                     .font(.headline)
                 Spacer()
-                Button("Mois précédent", systemImage: "chevron.left") { viewModel.showPreviousMonth() }
+                Button(.local("Mois précédent"), systemImage: "chevron.left") { viewModel.showPreviousMonth() }
                     .disabled(!viewModel.canShowPreviousMonth)
-                Button("Mois suivant", systemImage: "chevron.right") { viewModel.showNextMonth() }
+                Button(.local("Mois suivant"), systemImage: "chevron.right") { viewModel.showNextMonth() }
             }
             .labelStyle(.iconOnly)
             .buttonStyle(.borderless)
@@ -352,12 +356,12 @@ struct QuickPeriods: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            SectionHeader("Quand")
+            SectionHeader(String.local("Quand", comment: "Agenda period filters"))
             VStack(spacing: 0) {
                 ForEach(AgendaPeriod.allCases) { period in
                     Button { viewModel.filters.period = period } label: {
                         HStack {
-                            Text(period == .all ? "Jour par jour" : period.label).foregroundStyle(Color.ink)
+                            Text(period == .all ? String.local("Jour par jour") : period.label).foregroundStyle(Color.ink)
                             Spacer()
                             if viewModel.filters.period == period {
                                 Image(systemName: "checkmark").font(.subheadline.weight(.semibold)).foregroundStyle(Color.brandViolet)
@@ -472,14 +476,24 @@ struct EventList: View {
 }
 
 enum EventFormatting {
-    /// French-style times ("10:30") even when the device region uses 12-hour time, like the rest of the app.
-    static let time = Date.FormatStyle(date: .omitted, time: .shortened).locale(Locale(identifier: "fr_FR"))
+    /// Times in the user's format ("10:30", "10:30 AM").
+    static let time = Date.FormatStyle.dateTime.hour().minute()
+
+    /// "Samedi 7 novembre", "Saturday, November 7": capitalized at the start of a title.
+    static let dayTitle = sentenceCase(.dateTime.weekday(.wide).day().month(.wide))
+    static let monthTitle = sentenceCase(.dateTime.month(.wide).year())
+
+    private static func sentenceCase(_ style: Date.FormatStyle) -> Date.FormatStyle {
+        var style = style
+        style.capitalizationContext = .beginningOfSentence
+        return style
+    }
 
     static func schedule(_ event: Event) -> String {
         guard let start = event.start else { return event.place ?? "" }
         var parts: [String]
         if event.isAllDay {
-            parts = event.end.map { ["Jusqu'au \($0.formatted(.dateTime.day().month(.wide)))"] } ?? []
+            parts = event.end.map { [String.local("Jusqu'au \($0.formatted(.dateTime.day().month(.wide)))", comment: "Last day of an exhibition")] } ?? []
         } else {
             let time = start.formatted(Self.time)
             parts = [event.end.map { "\(time) – \($0.formatted(Self.time))" } ?? time]

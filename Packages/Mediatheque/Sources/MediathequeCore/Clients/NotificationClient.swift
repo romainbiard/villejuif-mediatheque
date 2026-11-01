@@ -59,8 +59,8 @@ extension NotificationClient: DependencyKey {
             center.removePendingNotificationRequests(withIdentifiers: [agendaDigestID])
             guard enabled else { return }
             let content = UNMutableNotificationContent()
-            content.title = "Cette semaine dans vos médiathèques"
-            content.body = "Lectures, ateliers, projections : découvrez les animations à venir dans l'agenda."
+            content.title = .local("Cette semaine dans vos médiathèques")
+            content.body = .local("Lectures, ateliers, projections : découvrez les animations à venir dans l'agenda.")
             content.threadIdentifier = "agenda"
             let trigger = UNCalendarNotificationTrigger(dateMatching: DateComponents(hour: 9, minute: 0, weekday: 2), repeats: true)
             try? await center.add(UNNotificationRequest(identifier: agendaDigestID, content: content, trigger: trigger))

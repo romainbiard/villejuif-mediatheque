@@ -46,7 +46,7 @@ public final class HoldViewModel {
             }
             step = .choosing(request)
         } catch HoldError.notHoldable {
-            step = .failed("Ce document ne peut pas être réservé pour le moment.")
+            step = .failed(.local("Ce document ne peut pas être réservé pour le moment."))
         } catch {
             step = .failed(Self.message(for: error))
         }
@@ -70,9 +70,9 @@ public final class HoldViewModel {
 
     static func message(for error: any Error) -> String {
         switch LoadError(error) {
-        case .offline: "Réservation impossible hors ligne."
-        case .notLoggedIn: "Connectez-vous dans l'onglet Compte pour réserver."
-        default: "La réservation n'a pas abouti. Réessayez dans un instant."
+        case .offline: .local("Réservation impossible hors ligne.")
+        case .notLoggedIn: .local("Connectez-vous dans l'onglet Compte pour réserver.")
+        default: .local("La réservation n'a pas abouti. Réessayez dans un instant.")
         }
     }
 }

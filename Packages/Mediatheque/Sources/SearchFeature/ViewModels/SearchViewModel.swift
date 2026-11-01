@@ -16,13 +16,13 @@ public enum SearchScope: String, CaseIterable, Identifiable, Sendable {
 
     public var title: String {
         switch self {
-        case .all: "Tout"
-        case .books: "Livres"
-        case .dvd: "DVD"
-        case .cd: "CD"
-        case .audiobooks: "Livres audio"
-        case .ebooks: "E-books"
-        case .onlineFilms: "Films en ligne"
+        case .all: .local("Tout", comment: "Search filter: all kinds of items")
+        case .books: .local("Livres")
+        case .dvd: .local("DVD")
+        case .cd: .local("CD")
+        case .audiobooks: .local("Livres audio")
+        case .ebooks: .local("E-books")
+        case .onlineFilms: .local("Films en ligne")
         }
     }
 
@@ -48,12 +48,12 @@ public struct ExploreShortcut: Identifiable, Hashable, Sendable {
     public let sort: SearchQuery.Sort
 
     public static let all: [ExploreShortcut] = [
-        ExploreShortcut(id: "new", title: "Nouveautés", systemImage: "sparkles", scope: .books, sort: .newest),
-        ExploreShortcut(id: "films", title: "Films", systemImage: "film", scope: .dvd, sort: .newest),
-        ExploreShortcut(id: "music", title: "Musique", systemImage: "music.note", scope: .cd, sort: .newest),
-        ExploreShortcut(id: "ebooks", title: "E-books", systemImage: "ipad", scope: .ebooks, sort: .newest),
-        ExploreShortcut(id: "audio", title: "Livres audio", systemImage: "headphones", scope: .audiobooks, sort: .newest),
-        ExploreShortcut(id: "online", title: "Films en ligne", systemImage: "play.tv", scope: .onlineFilms, sort: .newest),
+        ExploreShortcut(id: "new", title: .local("Nouveautés", comment: "Search tile: newest books"), systemImage: "sparkles", scope: .books, sort: .newest),
+        ExploreShortcut(id: "films", title: .local("Films"), systemImage: "film", scope: .dvd, sort: .newest),
+        ExploreShortcut(id: "music", title: .local("Musique"), systemImage: "music.note", scope: .cd, sort: .newest),
+        ExploreShortcut(id: "ebooks", title: .local("E-books"), systemImage: "ipad", scope: .ebooks, sort: .newest),
+        ExploreShortcut(id: "audio", title: .local("Livres audio"), systemImage: "headphones", scope: .audiobooks, sort: .newest),
+        ExploreShortcut(id: "online", title: .local("Films en ligne"), systemImage: "play.tv", scope: .onlineFilms, sort: .newest),
     ]
 }
 

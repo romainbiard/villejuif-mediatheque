@@ -15,10 +15,10 @@ public enum AgendaPeriod: String, CaseIterable, Hashable, Sendable, Identifiable
 
     public var label: String {
         switch self {
-        case .all: "Tout"
-        case .weekend: "Ce week-end"
-        case .wednesdays: "Mercredis"
-        case .schoolHolidays: "Vacances scolaires"
+        case .all: .local("Tout", comment: "Agenda period filter: no date restriction")
+        case .weekend: .local("Ce week-end")
+        case .wednesdays: .local("Mercredis", comment: "Agenda period filter")
+        case .schoolHolidays: .local("Vacances scolaires")
         }
     }
 
@@ -229,22 +229,22 @@ public final class AgendaViewModel {
 
     /// Label under the title: "Samedi 31 octobre et dimanche 1er novembre", "Vacances de Noël"…
     public var periodSummary: String? {
-        let french = Locale(identifier: "fr_FR")
         let days = filters.period.days(from: now, calendar: calendar)
         switch filters.period {
         case .all:
             return nil
         case .weekend:
-            return days.map { $0.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(french)) }
-                .joined(separator: " et ")
+            let names = days.map { $0.formatted(.dateTime.weekday(.wide).day().month(.wide)) }
+            return names.count == 2 ? String.local("\(names[0]) et \(names[1])", comment: "Two days of a weekend") : names.first
         case .wednesdays:
-            return "Les \(AgendaPeriod.wednesdayWeeks) prochains mercredis"
+            return String.local("Les \(AgendaPeriod.wednesdayWeeks) prochains mercredis")
         case .schoolHolidays:
             guard let holiday = SchoolHolidays.currentOrNext(after: calendar.startOfDay(for: now)),
                   let last = calendar.date(byAdding: .day, value: -1, to: holiday.end)
             else { return nil }
-            let range = "du \(holiday.start.formatted(.dateTime.day().month(.wide).locale(french))) au \(last.formatted(.dateTime.day().month(.wide).locale(french)))"
-            return "\(holiday.name), \(range)"
+            let start = holiday.start.formatted(.dateTime.day().month(.wide))
+            let end = last.formatted(.dateTime.day().month(.wide))
+            return String.local("\(holiday.name), du \(start) au \(end)", comment: "School holidays name, first day, last day")
         }
     }
 

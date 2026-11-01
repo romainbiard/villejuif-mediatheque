@@ -84,7 +84,7 @@ public final class SessionStore {
         let hasCredentials = (try? keychain.load()) != nil
         if hasCredentials, isFaceIDEnabled {
             state = .locked
-            guard await biometrics.authenticate("Ouvrir votre compte lecteur") else { return }
+            guard await biometrics.authenticate(.local("Ouvrir votre compte lecteur")) else { return }
         }
         do {
             state = (try await auth.restore()).map(State.loggedIn) ?? .loggedOut

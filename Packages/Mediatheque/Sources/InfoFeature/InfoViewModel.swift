@@ -38,15 +38,17 @@ public final class InfoViewModel {
     public func statusText(of library: LibraryInfo) -> String {
         switch status(of: library) {
         case let .open(closesAt):
-            return "Ouvert · ferme à \(closesAt.formatted(Self.time))"
+            return String.local("Ouvert · ferme à \(closesAt.formatted(Self.time))", comment: "Library status; %@ is a time")
         case let .closed(reopensAt?):
             let sameDay = calendar.isDate(reopensAt, inSameDayAs: now)
             // Relative to `now` (injected), not to the system clock.
             let tomorrow = calendar.date(byAdding: .day, value: 1, to: now).map { calendar.isDate(reopensAt, inSameDayAs: $0) } ?? false
-            let day = sameDay ? "" : tomorrow ? "demain " : "\(reopensAt.formatted(.dateTime.weekday(.wide))) "
-            return "Fermé · ouvre \(day)à \(reopensAt.formatted(Self.time))"
+            let time = reopensAt.formatted(Self.time)
+            if sameDay { return String.local("Fermé · ouvre à \(time)", comment: "Library status; %@ is a time today") }
+            if tomorrow { return String.local("Fermé · ouvre demain à \(time)", comment: "Library status; %@ is a time") }
+            return String.local("Fermé · ouvre \(reopensAt.formatted(.dateTime.weekday(.wide))) à \(time)", comment: "Library status; weekday, time")
         case .closed(nil):
-            return "Fermé"
+            return String.local("Fermé", comment: "Library status")
         }
     }
 
@@ -61,5 +63,5 @@ public final class InfoViewModel {
         return line.lowercased().hasPrefix(weekday.lowercased())
     }
 
-    static let time = Date.FormatStyle(date: .omitted, time: .shortened).locale(Locale(identifier: "fr_FR"))
+    static let time = Date.FormatStyle.dateTime.hour().minute()
 }

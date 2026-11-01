@@ -19,9 +19,9 @@ public final class NotificationsViewModel {
 
         public var title: String {
             switch kind {
-            case .today: "Aujourd'hui"
-            case .thisWeek: "Cette semaine"
-            case .earlier: "Plus tôt"
+            case .today: .local("Aujourd'hui")
+            case .thisWeek: .local("Cette semaine")
+            case .earlier: .local("Plus tôt")
             }
         }
     }
@@ -85,18 +85,18 @@ public final class NotificationsViewModel {
             case let .renewed(_, newDueDate):
                 renewed.insert(loanID)
                 markRead(item)
-                message = "Prolongé jusqu'au \(newDueDate.formatted(.dateTime.day().month(.wide).locale(Locale(identifier: "fr_FR"))))"
+                message = String.local("Prolongé jusqu'au \(newDueDate.formatted(.dateTime.day().month(.wide)))")
                 feedback = .success
                 // New due date: reminders and history brought up to date.
                 _ = try? await withDependencies(from: self) { try await AccountSync.run(settings: .current()) }
                 load()
             case .refused, nil:
                 renewed.insert(loanID)
-                message = "Ce prêt ne peut pas être prolongé"
+                message = String.local("Ce prêt ne peut pas être prolongé")
                 feedback = .error
             }
         } catch {
-            message = LoadError(error) == .offline ? "Prolongation impossible hors ligne" : "La prolongation n'a pas abouti"
+            message = LoadError(error) == .offline ? String.local("Prolongation impossible hors ligne") : String.local("La prolongation n'a pas abouti")
             feedback = .error
         }
     }

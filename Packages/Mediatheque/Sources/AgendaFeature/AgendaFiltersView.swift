@@ -25,27 +25,27 @@ struct AgendaFiltersView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
                     periodGroup
-                    group("Lieu", values: visiblePlaces, selection: $draft.places)
+                    group(.local("Lieu", comment: "Filter group: event venue"), values: visiblePlaces, selection: $draft.places)
                     if hiddenPlaceCount > 0 {
-                        Button(showsAllPlaces ? "Moins de lieux" : "+ \(hiddenPlaceCount) autre\(hiddenPlaceCount > 1 ? "s" : "") lieu\(hiddenPlaceCount > 1 ? "x" : "")") {
+                        Button(showsAllPlaces ? LocalizedStringResource.local("Moins de lieux") : .local("+ \(hiddenPlaceCount) autres lieux", comment: "Shows the collapsed venues")) {
                             withAnimation { showsAllPlaces.toggle() }
                         }
                         .font(.subheadline.weight(.semibold))
                         .tint(.brandViolet)
                         .padding(.top, -12)
                     }
-                    group("Type d'animation", values: viewModel.availableTypes, selection: $draft.types)
-                    group("Public", values: viewModel.availableAudiences, selection: $draft.audiences)
+                    group(.local("Type d'animation"), values: viewModel.availableTypes, selection: $draft.types)
+                    group(.local("Public", comment: "Filter group: event audience"), values: viewModel.availableAudiences, selection: $draft.audiences)
                 }
                 .padding(16)
             }
             .background(Color.surfaceGrouped)
-            .navigationTitle("Filtres")
+            .navigationTitle(Text(.local("Filtres")))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Annuler") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button(.local("Annuler")) { dismiss() } }
                 ToolbarItem(placement: .destructiveAction) {
-                    Button("Réinitialiser") { draft = AgendaFilters() }.disabled(draft.isEmpty)
+                    Button(.local("Réinitialiser")) { draft = AgendaFilters() }.disabled(draft.isEmpty)
                 }
             }
             .safeAreaInset(edge: .bottom) {
@@ -54,7 +54,7 @@ struct AgendaFiltersView: View {
                     dismiss()
                 } label: {
                     let count = viewModel.upcomingCount(with: draft)
-                    Text(count == 0 ? "Aucun événement" : "Voir \(count) événement\(count > 1 ? "s" : "")")
+                    Text(count == 0 ? LocalizedStringResource.local("Aucun événement") : .local("Voir \(count) événements", comment: "Button applying the filters"))
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.prominent())
@@ -77,7 +77,7 @@ struct AgendaFiltersView: View {
 
     private var periodGroup: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Quand").font(.footnote.weight(.bold)).foregroundStyle(Color.inkSecondary).textCase(.uppercase)
+            Text(.local("Quand", comment: "Agenda period filters")).font(.footnote.weight(.bold)).foregroundStyle(Color.inkSecondary).textCase(.uppercase)
             FlowLayout(spacing: 8) {
                 ForEach(AgendaPeriod.allCases) { period in
                     let isOn = draft.period == period
@@ -91,7 +91,7 @@ struct AgendaFiltersView: View {
         }
     }
 
-    private func group(_ title: String, values: [String], selection: Binding<Set<String>>) -> some View {
+    private func group(_ title: LocalizedStringResource, values: [String], selection: Binding<Set<String>>) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(title).font(.footnote.weight(.bold)).foregroundStyle(Color.inkSecondary).textCase(.uppercase)
             FlowLayout(spacing: 8) {

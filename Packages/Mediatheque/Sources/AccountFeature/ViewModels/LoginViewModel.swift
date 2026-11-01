@@ -38,12 +38,12 @@ public final class LoginViewModel {
             feedback = .success
             session.didLogIn(patron)
         } catch AuthError.invalidCredentials {
-            errorMessage = "Numéro de carte ou mot de passe incorrect."
+            errorMessage = String.local("Numéro de carte ou mot de passe incorrect.")
             feedback = .error
         } catch {
             errorMessage = LoadError(error) == .offline
-                ? "Pas de connexion. Réessayez une fois en ligne."
-                : "Le site de la médiathèque ne répond pas. Réessayez dans un instant."
+                ? String.local("Pas de connexion. Réessayez une fois en ligne.")
+                : String.local("Le site de la médiathèque ne répond pas. Réessayez dans un instant.")
             feedback = .error
         }
     }
@@ -71,7 +71,7 @@ public final class LostPasswordViewModel {
             try await auth.requestPasswordReset(card)
             state = .sent
         } catch {
-            state = .failed("L'envoi n'a pas abouti. Réessayez, ou demandez à l'accueil d'une médiathèque.")
+            state = .failed(String.local("L'envoi n'a pas abouti. Réessayez, ou demandez à l'accueil d'une médiathèque."))
         }
     }
 }

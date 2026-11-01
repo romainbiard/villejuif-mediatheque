@@ -42,14 +42,15 @@ let package = Package(
                 "BokehAPI",
                 dependencies,
                 .product(name: "DependenciesMacros", package: "swift-dependencies"),
-            ]
+            ],
+            resources: [.process("Localization/Localizable.xcstrings")]
         ),
-        .target(name: "DesignSystem", resources: [.process("Resources")]),
-        .target(name: "SearchFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies]),
-        .target(name: "AgendaFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies]),
-        .target(name: "InfoFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies]),
-        .target(name: "AccountFeature", dependencies: ["MediathequeCore", "DesignSystem", "SearchFeature", dependencies]),
-        .target(name: "DigitalFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies]),
+        .target(name: "DesignSystem", resources: [.process("Resources"), .process("Localization/Localizable.xcstrings")]),
+        .target(name: "SearchFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies], resources: [.process("Localization/Localizable.xcstrings")]),
+        .target(name: "AgendaFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies], resources: [.process("Localization/Localizable.xcstrings")]),
+        .target(name: "InfoFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies], resources: [.process("Localization/Localizable.xcstrings")]),
+        .target(name: "AccountFeature", dependencies: ["MediathequeCore", "DesignSystem", "SearchFeature", dependencies], resources: [.process("Localization/Localizable.xcstrings")]),
+        .target(name: "DigitalFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies], resources: [.process("Localization/Localizable.xcstrings")]),
         .testTarget(
             name: "BokehAPITests",
             dependencies: ["BokehAPI"],

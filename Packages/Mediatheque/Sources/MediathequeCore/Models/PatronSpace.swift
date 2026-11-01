@@ -108,15 +108,15 @@ public enum SuggestionKind: String, CaseIterable, Hashable, Sendable, Identifiab
 
     public var label: String {
         switch self {
-        case .book: "Livre"
-        case .largePrint: "Livre en gros caractères"
-        case .audiobook: "Livre audio"
-        case .comic: "Bande dessinée"
+        case .book: .local("Livre")
+        case .largePrint: .local("Livre en gros caractères")
+        case .audiobook: .local("Livre audio")
+        case .comic: .local("Bande dessinée")
         case .cd: "CD"
         case .dvd: "DVD"
-        case .boardGame: "Jeu de société"
-        case .languageMethod: "Méthode de langue"
-        case .ebook: "Livre numérique"
+        case .boardGame: .local("Jeu de société")
+        case .languageMethod: .local("Méthode de langue")
+        case .ebook: .local("Livre numérique")
         }
     }
 }
@@ -147,10 +147,10 @@ public enum SendingChannel: String, CaseIterable, Hashable, Sendable, Identifiab
 
     public var label: String {
         switch self {
-        case .any: "Indifférent"
-        case .email: "Courriel"
+        case .any: .local("Indifférent")
+        case .email: .local("Courriel")
         case .sms: "SMS"
-        case .letter: "Courrier"
+        case .letter: .local("Courrier")
         }
     }
 }

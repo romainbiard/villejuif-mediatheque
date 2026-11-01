@@ -153,9 +153,9 @@ public final class DigitalViewModel {
             feedback = .lightImpact
         } catch {
             errorMessage = switch LoadError(error) {
-            case .notLoggedIn: "Connectez-vous dans l'onglet Compte pour accéder au numérique."
-            case .offline: "Pas de connexion. Réessayez une fois en ligne."
-            default: "\(offer.provider) n'a pas pu être ouvert. Réessayez dans un instant."
+            case .notLoggedIn: .local("Connectez-vous dans l'onglet Compte pour accéder au numérique.")
+            case .offline: .local("Pas de connexion. Réessayez une fois en ligne.")
+            default: .local("\(offer.provider) n'a pas pu être ouvert. Réessayez dans un instant.")
             }
             feedback = .error
         }

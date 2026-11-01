@@ -57,9 +57,9 @@ public final class LoansViewModel {
 
         public var title: String {
             switch kind {
-            case .late: "En retard"
-            case .thisWeek: "Cette semaine"
-            case .later: "Plus tard"
+            case .late: .local("En retard")
+            case .thisWeek: .local("Cette semaine")
+            case .later: .local("Plus tard")
             }
         }
     }
@@ -128,20 +128,20 @@ public final class LoansViewModel {
             let refusedCount = results.count - renewedCount
             switch (renewedCount, refusedCount) {
             case (_, 0):
-                message = renewedCount > 1 ? "\(renewedCount) prêts prolongés" : "Prêt prolongé"
+                message = String.local("\(renewedCount) prêts prolongés")
                 feedback = .success
             case (0, _):
-                message = refusedCount > 1 ? "Ces prêts ne peuvent pas être prolongés" : "Ce prêt ne peut pas être prolongé"
+                message = refusedCount > 1 ? String.local("Ces prêts ne peuvent pas être prolongés") : String.local("Ce prêt ne peut pas être prolongé")
                 feedback = .error
             default:
-                message = "\(renewedCount) prolongé\(renewedCount > 1 ? "s" : ""), \(refusedCount) non prolongeable\(refusedCount > 1 ? "s" : "")"
+                message = String.local("\(renewedCount) prolongés, \(refusedCount) non prolongeables")
                 feedback = .success
             }
             await load()
             // Due dates have changed: reschedule the reminders.
             _ = try? await withDependencies(from: self) { try await AccountSync.run(settings: .current()) }
         } catch {
-            message = LoadError(error) == .offline ? "Prolongation impossible hors ligne" : "La prolongation n'a pas abouti"
+            message = LoadError(error) == .offline ? String.local("Prolongation impossible hors ligne") : String.local("La prolongation n'a pas abouti")
             feedback = .error
         }
     }
@@ -181,10 +181,10 @@ public final class HoldsViewModel {
         do {
             try await account.cancelHold(hold.id)
             if case let .loaded(holds) = state { state = .loaded(holds.filter { $0.id != hold.id }) }
-            message = "Réservation annulée"
+            message = String.local("Réservation annulée")
             feedback = .lightImpact
         } catch {
-            message = "L'annulation n'a pas abouti"
+            message = String.local("L'annulation n'a pas abouti")
             feedback = .error
         }
     }

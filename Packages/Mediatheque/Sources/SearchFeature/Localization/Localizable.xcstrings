@@ -1,0 +1,696 @@
+{
+  "sourceLanguage" : "fr",
+  "strings" : {
+    "%lld réservations" : {
+      "localizations" : {
+        "fr" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld réservation"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld réservations"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld hold"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld holds"
+                }
+              }
+            }
+          }
+        }
+      },
+      "comment" : "Number of holds on a copy"
+    },
+    "%lld résultats" : {
+      "localizations" : {
+        "fr" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld résultat"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld résultats"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld result"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld results"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Année" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Year"
+          }
+        }
+      }
+    },
+    "Aucun exemplaire en rayon." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No copies on the shelf."
+          }
+        }
+      }
+    },
+    "Aucun résultat" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Results"
+          }
+        }
+      }
+    },
+    "CD" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CDs"
+          }
+        }
+      },
+      "comment" : "Search filter"
+    },
+    "Ce document ne peut pas être réservé pour le moment." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This item can't be placed on hold right now."
+          }
+        }
+      }
+    },
+    "Cette ressource est incluse dans votre abonnement. Ouvrez-la depuis l'onglet Numérique." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This resource is included in your membership. Open it from the Digital tab."
+          }
+        }
+      }
+    },
+    "Choisissez un document" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose an Item"
+          }
+        }
+      }
+    },
+    "Confirmer la réservation" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirm Hold"
+          }
+        }
+      }
+    },
+    "Connectez-vous dans l'onglet Compte pour réserver." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in from the Account tab to place a hold."
+          }
+        }
+      }
+    },
+    "Connectez-vous pour réserver" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign In to Place a Hold"
+          }
+        }
+      }
+    },
+    "DVD" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DVDs"
+          }
+        }
+      },
+      "comment" : "Search filter"
+    },
+    "Disponibilité indisponible pour le moment." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Availability isn't available right now."
+          }
+        }
+      }
+    },
+    "Disponible en ligne" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Available Online"
+          }
+        }
+      }
+    },
+    "E-books" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "E-books"
+          }
+        }
+      }
+    },
+    "Effacer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear"
+          }
+        }
+      },
+      "comment" : "Clears the search field or the recent searches"
+    },
+    "En ligne · inclus dans l'abonnement" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Online · included in membership"
+          }
+        }
+      }
+    },
+    "En prêt · retour prévu le %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On loan · due back %@"
+          }
+        }
+      },
+      "comment" : "%@ is a date"
+    },
+    "Explorer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explore"
+          }
+        }
+      },
+      "comment" : "Section of search shortcut tiles"
+    },
+    "Fermer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
+    },
+    "Films" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Movies"
+          }
+        }
+      },
+      "comment" : "Search tile: DVDs"
+    },
+    "Films en ligne" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Online Movies"
+          }
+        }
+      }
+    },
+    "Informations" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Details"
+          }
+        }
+      },
+      "comment" : "Section: item details"
+    },
+    "La réservation n'a pas abouti. Réessayez dans un instant." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The hold didn't go through. Try again in a moment."
+          }
+        }
+      }
+    },
+    "Le site de la médiathèque ne répond pas" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Library Website Isn't Responding"
+          }
+        }
+      }
+    },
+    "Les réservations sont suspendues sur votre compte. Renseignez-vous à l'accueil." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Holds are suspended on your account. Ask at the front desk."
+          }
+        }
+      }
+    },
+    "Livres" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Books"
+          }
+        }
+      }
+    },
+    "Livres audio" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audiobooks"
+          }
+        }
+      }
+    },
+    "Musique" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Music"
+          }
+        }
+      }
+    },
+    "Médiathèque" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Library"
+          }
+        }
+      },
+      "comment" : "Library filter menu, when no library is selected"
+    },
+    "Nouveautés" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Arrivals"
+          }
+        }
+      },
+      "comment" : "Search tile: newest books"
+    },
+    "OK" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "Ouvrez l'onglet Compte et connectez-vous avec votre carte d'abonné." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open the Account tab and sign in with your library card."
+          }
+        }
+      }
+    },
+    "Où le trouver" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Where to Find It"
+          }
+        }
+      }
+    },
+    "Où voulez-vous le retirer ?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Where do you want to pick it up?"
+          }
+        }
+      }
+    },
+    "Partager" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share"
+          }
+        }
+      }
+    },
+    "Pas de connexion" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Connection"
+          }
+        }
+      }
+    },
+    "Recherche" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search"
+          }
+        }
+      },
+      "comment" : "Screen title"
+    },
+    "Recherche des lieux de retrait…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finding pickup locations…"
+          }
+        }
+      }
+    },
+    "Retirer les filtres" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove Filters"
+          }
+        }
+      }
+    },
+    "Retour" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back"
+          }
+        }
+      }
+    },
+    "Retrait à %@. %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick up at %1$@. %2$@"
+          }
+        }
+      },
+      "comment" : "Pickup library, then the website's confirmation message (in French)"
+    },
+    "Récentes" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recent"
+          }
+        }
+      },
+      "comment" : "Section: recent searches"
+    },
+    "Réessayer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try Again"
+          }
+        }
+      }
+    },
+    "Réservation enregistrée" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hold Placed"
+          }
+        }
+      }
+    },
+    "Réservation impossible" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can't Place Hold"
+          }
+        }
+      }
+    },
+    "Réservation impossible hors ligne." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Holds aren't available offline."
+          }
+        }
+      }
+    },
+    "Réserver" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Place Hold"
+          }
+        }
+      },
+      "comment" : "Button and sheet title: place a hold on the item"
+    },
+    "Sa fiche s'affiche ici, avec les exemplaires disponibles dans les 3 médiathèques." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Its details appear here, with the copies available in the 3 libraries."
+          }
+        }
+      }
+    },
+    "Série" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Series"
+          }
+        }
+      }
+    },
+    "Titre, auteur, sujet, ISBN" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Title, author, subject, ISBN"
+          }
+        }
+      },
+      "comment" : "Search field placeholder"
+    },
+    "Tome %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vol. %@"
+          }
+        }
+      },
+      "comment" : "Volume number in a series"
+    },
+    "Tout" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All"
+          }
+        }
+      },
+      "comment" : "Search filter: all kinds of items"
+    },
+    "Toutes les médiathèques" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All Libraries"
+          }
+        }
+      }
+    },
+    "Type" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Type"
+          }
+        }
+      },
+      "comment" : "Item details: kind of item"
+    },
+    "Votre médiathèque" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your library"
+          }
+        }
+      },
+      "comment" : "The patron's home library"
+    },
+    "Vérifiez l'orthographe, essayez moins de mots ou cherchez dans les 3 médiathèques." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check the spelling, try fewer words, or search all 3 libraries."
+          }
+        }
+      }
+    },
+    "Vérifiez votre connexion, puis réessayez." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check your connection, then try again."
+          }
+        }
+      }
+    },
+    "tome %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "vol. %@"
+          }
+        }
+      },
+      "comment" : "Volume number, after the series name"
+    },
+    "Éditeur" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Publisher"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

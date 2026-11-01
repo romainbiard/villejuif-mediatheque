@@ -50,18 +50,18 @@ struct NotificationPrimerView: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(spacing: 8) {
-                NotificationPreview(text: "« Sway » est à rendre jeudi", time: "maintenant")
-                NotificationPreview(text: "« Murmuration » vous attend à Elsa-Triolet", time: "9:12")
+                NotificationPreview(text: .local("« Sway » est à rendre jeudi"), time: .local("maintenant"))
+                NotificationPreview(text: .local("« Murmuration » vous attend à Elsa-Triolet"), time: "9:12")
             }
             .padding(.horizontal, 16)
             .frame(maxWidth: 520, maxHeight: .infinity)
             .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 0) {
-                Text("Ne ratez plus un retour")
+                Text(.local("Ne ratez plus un retour"))
                     .font(.title.bold())
                     .foregroundStyle(Color.ink)
-                Text("Un rappel trois jours avant chaque date de retour, et une alerte dès qu'une réservation vous attend. Rien d'autre.")
+                Text(.local("Un rappel trois jours avant chaque date de retour, et une alerte dès qu'une réservation vous attend. Rien d'autre."))
                     .font(.subheadline)
                     .foregroundStyle(Color.inkSecondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -70,7 +70,7 @@ struct NotificationPrimerView: View {
                     Button {
                         Task { await viewModel.enableNotifications() }
                     } label: {
-                        Text("Activer les notifications").frame(maxWidth: .infinity)
+                        Text(.local("Activer les notifications")).frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.prominent(size: .large, isLoading: viewModel.isRequesting))
                     .disabled(viewModel.isRequesting)
@@ -78,7 +78,7 @@ struct NotificationPrimerView: View {
                     Button {
                         viewModel.skipNotifications()
                     } label: {
-                        Text("Pas maintenant").frame(maxWidth: .infinity)
+                        Text(.local("Pas maintenant")).frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.prominent(tint: .soft(.brandViolet), foreground: .brandVioletDeep, size: .large))
                     .disabled(viewModel.isRequesting)
@@ -113,7 +113,7 @@ struct NotificationPreview: View {
                 .background(Color.brandMagenta, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
-                    Text("Ma médiathèque").font(.footnote.weight(.semibold))
+                    Text(verbatim: "Ma médiathèque").font(.footnote.weight(.semibold))
                     Spacer()
                     Text(time).font(.caption).foregroundStyle(.secondary)
                 }
@@ -171,20 +171,20 @@ struct OnboardingSettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                Text("Vos réglages").font(.largeTitle.bold())
-                Text("Modifiables à tout moment dans Mes configurations.")
+                Text(.local("Vos réglages")).font(.largeTitle.bold())
+                Text(.local("Modifiables à tout moment dans Mes configurations."))
                     .font(.subheadline)
                     .foregroundStyle(Color.inkSecondary)
                     .padding(.top, 4)
 
-                SectionHeader("Notifications").padding(.top, 24).padding(.bottom, 8)
+                SectionHeader(.local("Notifications")).padding(.top, 24).padding(.bottom, 8)
                 if viewModel.notificationsAllowed {
                     SettingsCard {
-                        SettingRow("Rappels de retour", detail: "3 jours avant et le jour J",
+                        SettingRow(.local("Rappels de retour"), detail: .local("3 jours avant et le jour J"),
                                    systemImage: "calendar.badge.clock", tint: .brandMagenta, isOn: $loanReminders)
-                        SettingRow("Réservations", detail: "Dès qu'un document arrive",
+                        SettingRow(.local("Réservations"), detail: .local("Dès qu'un document arrive"),
                                    systemImage: "shippingbox.fill", tint: .statusSuccess, isOn: $holdAlerts)
-                        SettingRow("Agenda", detail: "Les animations du lundi",
+                        SettingRow(.local("Agenda"), detail: .local("Les animations du lundi"),
                                    systemImage: "calendar", tint: .brandVioletDeep, isOn: $agendaDigest)
                     }
                 } else {
@@ -192,9 +192,9 @@ struct OnboardingSettingsView: View {
                 }
 
                 if let biometricKind {
-                    SectionHeader("Sécurité").padding(.top, 24).padding(.bottom, 8)
+                    SectionHeader(.local("Sécurité")).padding(.top, 24).padding(.bottom, 8)
                     SettingsCard {
-                        SettingRow(biometricKind, detail: "Sans mot de passe",
+                        SettingRow(biometricKind, detail: .local("Sans mot de passe"),
                                    systemImage: biometricKind == "Touch ID" ? "touchid" : "faceid",
                                    tint: Color(hex: 0x1C1B22), isOn: $faceID)
                     }
@@ -211,7 +211,7 @@ struct OnboardingSettingsView: View {
             Button {
                 finish(faceID)
             } label: {
-                Text("Terminer").frame(maxWidth: .infinity)
+                Text(.local("Terminer")).frame(maxWidth: .infinity)
             }
             .buttonStyle(.prominent(size: .large, isLoading: viewModel.isFinishing))
             .disabled(viewModel.isFinishing)
@@ -231,15 +231,15 @@ struct OnboardingSettingsView: View {
                 .frame(width: 32, height: 32)
                 .background(Color.soft(.inkSecondary), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
             VStack(alignment: .leading, spacing: 6) {
-                Text("Notifications désactivées").font(.subheadline.weight(.semibold))
+                Text(.local("Notifications désactivées")).font(.subheadline.weight(.semibold))
                 Text(viewModel.notificationsDenied
-                    ? "Pour recevoir les rappels de retour, autorisez les notifications dans Réglages."
-                    : "Vous pourrez les activer plus tard dans Mes configurations.")
+                    ? String.local("Pour recevoir les rappels de retour, autorisez les notifications dans Réglages.")
+                    : String.local("Vous pourrez les activer plus tard dans Mes configurations."))
                     .font(.footnote)
                     .foregroundStyle(Color.inkSecondary)
                     .fixedSize(horizontal: false, vertical: true)
                 if viewModel.notificationsDenied {
-                    Button("Ouvrir Réglages") {
+                    Button(.local("Ouvrir Réglages")) {
                         if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
                     }
                     .font(.footnote.weight(.semibold))
@@ -318,10 +318,10 @@ struct LockedView: View {
                 .foregroundStyle(.white)
                 .frame(width: 110, height: 110)
                 .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 34, style: .continuous))
-            Text("Compte verrouillé").font(.title.weight(.heavy)).foregroundStyle(.white)
-            Button("Déverrouiller") { Task { await session.unlock() } }
+            Text(.local("Compte verrouillé")).font(.title.weight(.heavy)).foregroundStyle(.white)
+            Button(.local("Déverrouiller")) { Task { await session.unlock() } }
                 .buttonStyle(.prominent(tint: .white, foreground: .brandViolet))
-            Button("Se déconnecter") { Task { await session.logout() } }
+            Button(.local("Se déconnecter")) { Task { await session.logout() } }
                 .foregroundStyle(.white.opacity(0.85))
             Spacer()
         }

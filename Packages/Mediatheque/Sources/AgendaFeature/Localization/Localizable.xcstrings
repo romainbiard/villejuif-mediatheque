@@ -1,0 +1,536 @@
+{
+  "sourceLanguage" : "fr",
+  "strings" : {
+    "%@ et %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ and %2$@"
+          }
+        }
+      },
+      "comment" : "Two days of a weekend"
+    },
+    "%@, du %@ au %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$@ to %3$@"
+          }
+        }
+      },
+      "comment" : "School holidays name, first day, last day"
+    },
+    "+ %lld autres lieux" : {
+      "localizations" : {
+        "fr" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "+ %lld autre lieu"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "+ %lld autres lieux"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "+ %lld more place"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "+ %lld more places"
+                }
+              }
+            }
+          }
+        }
+      },
+      "comment" : "Shows the collapsed venues"
+    },
+    "Agenda" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Events"
+          }
+        }
+      },
+      "comment" : "Screen title: the libraries' events"
+    },
+    "Ajouter au calendrier" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add to Calendar"
+          }
+        }
+      }
+    },
+    "Annuler" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "Aucun événement" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Events"
+          }
+        }
+      },
+      "comment" : "Button applying the filters, when nothing matches"
+    },
+    "Aucune animation ne correspond. Essayez une autre période ou retirez des filtres." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No events match. Try another period or remove some filters."
+          }
+        }
+      }
+    },
+    "Ce jour-là" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "That Day"
+          }
+        }
+      },
+      "comment" : "Section: other events on the selected day"
+    },
+    "Ce week-end" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This Weekend"
+          }
+        }
+      },
+      "comment" : "Agenda period filter"
+    },
+    "En ce moment" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ongoing"
+          }
+        }
+      },
+      "comment" : "Section: ongoing exhibitions and long events"
+    },
+    "Essayez un autre jour, ou élargissez vos filtres." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try another day, or broaden your filters."
+          }
+        }
+      }
+    },
+    "Filtres" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filters"
+          }
+        }
+      }
+    },
+    "Filtres · %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filters · %lld"
+          }
+        }
+      },
+      "comment" : "Button; number of active filters"
+    },
+    "Jour par jour" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Day by Day"
+          }
+        }
+      },
+      "comment" : "Agenda period filter: back to the day picker"
+    },
+    "Jusqu'au %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Until %@"
+          }
+        }
+      },
+      "comment" : "Last day of an exhibition"
+    },
+    "L'agenda ne répond pas" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Events Aren't Loading"
+          }
+        }
+      }
+    },
+    "Les %lld prochains mercredis" : {
+      "localizations" : {
+        "fr" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Le prochain mercredi"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Les %lld prochains mercredis"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Next Wednesday"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Next %lld Wednesdays"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Les médiathèques sont fermées ce jour-là. Essayez un autre jour." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The libraries are closed that day. Try another day."
+          }
+        }
+      }
+    },
+    "Lieu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Place"
+          }
+        }
+      },
+      "comment" : "Filter group: event venue"
+    },
+    "Mercredis" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wednesdays"
+          }
+        }
+      },
+      "comment" : "Agenda period filter"
+    },
+    "Moins de lieux" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fewer Places"
+          }
+        }
+      }
+    },
+    "Mois précédent" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Previous Month"
+          }
+        }
+      }
+    },
+    "Mois suivant" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next Month"
+          }
+        }
+      }
+    },
+    "Pas d'événement ce jour-là" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Events That Day"
+          }
+        }
+      }
+    },
+    "Pas de connexion" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Connection"
+          }
+        }
+      }
+    },
+    "Pendant cette période" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "During This Period"
+          }
+        }
+      }
+    },
+    "Public" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audience"
+          }
+        }
+      },
+      "comment" : "Filter group: event audience"
+    },
+    "Quand" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When"
+          }
+        }
+      },
+      "comment" : "Agenda period filters"
+    },
+    "Retirer les filtres" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove Filters"
+          }
+        }
+      }
+    },
+    "Retirer tous les filtres" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove All Filters"
+          }
+        }
+      }
+    },
+    "Revenir aux jours" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back to Days"
+          }
+        }
+      },
+      "comment" : "Leaves the period view and goes back to the day picker"
+    },
+    "Rien de prévu sur cette période" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing Scheduled for This Period"
+          }
+        }
+      }
+    },
+    "Réessayer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try Again"
+          }
+        }
+      }
+    },
+    "Réinitialiser" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset"
+          }
+        }
+      }
+    },
+    "Tout" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All"
+          }
+        }
+      },
+      "comment" : "Agenda period filter: no date restriction"
+    },
+    "Type d'animation" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Event Type"
+          }
+        }
+      }
+    },
+    "Vacances scolaires" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "School Holidays"
+          }
+        }
+      },
+      "comment" : "Agenda period filter"
+    },
+    "Voir %lld événements" : {
+      "localizations" : {
+        "fr" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Voir %lld événement"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Voir %lld événements"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Show %lld Event"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Show %lld Events"
+                }
+              }
+            }
+          }
+        }
+      },
+      "comment" : "Button applying the filters"
+    },
+    "Voir le %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Go to %@"
+          }
+        }
+      },
+      "comment" : "Button; %@ is a day, e.g. Saturday, November 7"
+    },
+    "Voir tout l'agenda" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See All Events"
+          }
+        }
+      }
+    },
+    "Vérifiez votre connexion, puis réessayez." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check your connection, then try again."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

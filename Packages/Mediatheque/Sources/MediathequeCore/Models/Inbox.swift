@@ -72,20 +72,19 @@ public enum InboxPlanner {
     /// Entries derived from the account: upcoming or overdue returns, holds ready.
     public static func items(for snapshot: AccountSnapshot, daysBefore: Int, now: Date, calendar: Calendar) -> [InboxItem] {
         let today = calendar.startOfDay(for: now)
-        let french = Locale(identifier: "fr_FR")
         var items: [InboxItem] = []
 
         for loan in snapshot.loans {
             let due = calendar.startOfDay(for: loan.dueDate)
             let dueKey = Int(due.timeIntervalSince1970)
-            let dueText = due.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(french))
+            let dueText = due.formatted(.dateTime.weekday(.wide).day().month(.wide))
             switch loan.dueState(now: now, calendar: calendar) {
             case .late:
                 items.append(InboxItem(
                     id: "late-\(loan.id)-\(dueKey)",
                     kind: .loanLate,
-                    title: "« \(loan.title) » est en retard",
-                    body: "À rendre depuis le \(dueText). Rapportez-le ou essayez de le prolonger.",
+                    title: .local("« \(loan.title) » est en retard"),
+                    body: .local("À rendre depuis le \(dueText). Rapportez-le ou essayez de le prolonger."),
                     date: calendar.date(byAdding: .day, value: 1, to: due) ?? due,
                     loanID: loan.id
                 ))
@@ -95,8 +94,10 @@ public enum InboxPlanner {
                 items.append(InboxItem(
                     id: "due-\(loan.id)-\(dueKey)",
                     kind: .loanDueSoon,
-                    title: days == 0 ? "« \(loan.title) » est à rendre aujourd'hui" : "« \(loan.title) » est à rendre \(days == 1 ? "demain" : "dans \(days) jours")",
-                    body: "Retour prévu le \(dueText) à \(loan.library?.shortName ?? loan.libraryName).",
+                    title: days == 0 ? .local("« \(loan.title) » est à rendre aujourd'hui")
+                        : days == 1 ? .local("« \(loan.title) » est à rendre demain")
+                        : .local("« \(loan.title) » est à rendre dans \(days) jours"),
+                    body: .local("Retour prévu le \(dueText) à \(loan.library?.shortName ?? loan.libraryName)."),
                     date: min(max(reminderDay, today), now),
                     loanID: loan.id
                 ))
@@ -109,8 +110,8 @@ public enum InboxPlanner {
             items.append(InboxItem(
                 id: "hold-\(hold.id)",
                 kind: .holdReady,
-                title: "« \(hold.title) » vous attend",
-                body: "À retirer à \(hold.pickupLibrary?.shortName ?? hold.pickupLibraryName). \(hold.statusText)",
+                title: .local("« \(hold.title) » vous attend"),
+                body: .local("À retirer à \(hold.pickupLibrary?.shortName ?? hold.pickupLibraryName). \(hold.statusText)"),
                 date: now
             ))
         }
@@ -122,7 +123,7 @@ public enum InboxPlanner {
         InboxItem(
             id: "message-\(stableHash(text))",
             kind: .libraryMessage,
-            title: "Message de la médiathèque",
+            title: .local("Message de la médiathèque"),
             body: text.replacing(#/<[^>]+>/#, with: "").trimmingCharacters(in: .whitespacesAndNewlines),
             date: now
         )

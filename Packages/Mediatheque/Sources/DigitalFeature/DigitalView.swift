@@ -23,7 +23,7 @@ public struct DigitalView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
-                    Text("Inclus dans votre abonnement, sur tous vos appareils.")
+                    Text(.local("Inclus dans votre abonnement, sur tous vos appareils."))
                         .font(.subheadline)
                         .foregroundStyle(Color.inkSecondary)
                     banner
@@ -56,7 +56,7 @@ public struct DigitalView: View {
                 .padding(.bottom, 24)
             }
             .background(Color.surfaceGrouped)
-            .navigationTitle("Numérique")
+            .navigationTitle(.local("Numérique"))
             // The App Store sheet is shown once the sheet has closed: never present over a sheet that is going away.
             .sheet(item: $helpOffer, onDismiss: presentStoreIfNeeded) { offer in
                 HowItWorksSheet(
@@ -92,10 +92,10 @@ public struct DigitalView: View {
                 if phase == .active { Task { await viewModel.refreshInstalledApps() } }
             }
             .alert(
-                "Ouverture impossible",
+                .local("Ouverture impossible"),
                 isPresented: Binding(get: { viewModel.errorMessage != nil }, set: { if !$0 { viewModel.dismissError() } })
             ) {
-                Button("OK", role: .cancel) {}
+                Button(.local("OK"), role: .cancel) {}
             } message: {
                 Text(viewModel.errorMessage ?? "")
             }
@@ -111,8 +111,8 @@ public struct DigitalView: View {
     }
 
     private func primaryLabel(for offer: DigitalOffer, compact: Bool) -> String {
-        if viewModel.needsInstall(offer) { return compact ? "Installer" : "Installer l'app" }
-        if !compact, viewModel.access(for: offer) == .appInstalled, let app = offer.app { return "Ouvrir \(app.name)" }
+        if viewModel.needsInstall(offer) { return compact ? .local("Installer") : .local("Installer l'app") }
+        if !compact, viewModel.access(for: offer) == .appInstalled, let app = offer.app { return .local("Ouvrir \(app.name)") }
         return offer.webActionLabel
     }
 
@@ -144,8 +144,8 @@ public struct DigitalView: View {
                     .frame(width: 44, height: 44)
                     .background(Color(hex: 0x17161C), in: RoundedRectangle(cornerRadius: 11, style: .continuous))
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("\(app.name) est installée").font(.subheadline.weight(.bold))
-                    Text("Connexion avec votre carte…").font(.footnote).foregroundStyle(Color.inkSecondary)
+                    Text(.local("\(app.name) est installée")).font(.subheadline.weight(.bold))
+                    Text(.local("Connexion avec votre carte…")).font(.footnote).foregroundStyle(Color.inkSecondary)
                 }
                 Spacer(minLength: 0)
             }
@@ -165,12 +165,12 @@ public struct DigitalView: View {
     @ViewBuilder
     private var banner: some View {
         if session.patron == nil {
-            Label("Connectez-vous dans l'onglet Compte pour ouvrir ces services.", systemImage: "person.crop.circle.badge.exclamationmark")
+            Label(.local("Connectez-vous dans l'onglet Compte pour ouvrir ces services."), systemImage: "person.crop.circle.badge.exclamationmark")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Color.brandVioletDeep)
                 .cardStyle()
         } else if session.patron?.permissions.digitalResourcesForbidden == true {
-            Label("L'accès au numérique est suspendu sur votre compte. Renseignez-vous à l'accueil d'une médiathèque.", systemImage: "exclamationmark.triangle.fill")
+            Label(.local("L'accès au numérique est suspendu sur votre compte. Renseignez-vous à l'accueil d'une médiathèque."), systemImage: "exclamationmark.triangle.fill")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Color.statusDanger)
                 .cardStyle()
@@ -188,13 +188,13 @@ struct AccessLine: View {
     var body: some View {
         switch access {
         case .appInstalled:
-            Label("App installée", systemImage: "checkmark")
+            Label(.local("App installée"), systemImage: "checkmark")
                 .font(.caption.weight(.bold))
                 .foregroundStyle(onDark ? Color.brandCyan : Color(light: 0x0B6B70, dark: 0x84DADE))
                 .lineLimit(1)
-        case .inApp: plain("Se consulte dans l'app")
-        case .reader(let app): plain("À lire dans \(app)")
-        case .web: plain("Sur le web")
+        case .inApp: plain(.local("Se consulte dans l'app"))
+        case .reader(let app): plain(.local("À lire dans \(app)"))
+        case .web: plain(.local("Sur le web"))
         }
     }
 
@@ -220,14 +220,14 @@ struct ServiceMenu: View {
     var body: some View {
         Menu {
             if let connect = actions.connect {
-                Button("Connecter l'app avec ma carte", systemImage: "person.badge.key", action: connect)
+                Button(.local("Connecter l'app avec ma carte"), systemImage: "person.badge.key", action: connect)
             }
             if let web = actions.web {
-                Button("Ouvrir sur le web", systemImage: "safari", action: web)
+                Button(.local("Ouvrir sur le web"), systemImage: "safari", action: web)
             }
             Section {
-                Button("Comment ça marche", systemImage: "questionmark.circle", action: actions.howItWorks)
-                Button("Tutoriel complet (PDF)", systemImage: "doc.text", action: actions.tutorial)
+                Button(.local("Comment ça marche"), systemImage: "questionmark.circle", action: actions.howItWorks)
+                Button(.local("Tutoriel complet (PDF)"), systemImage: "doc.text", action: actions.tutorial)
             }
         } label: {
             Image(systemName: "ellipsis")
@@ -237,7 +237,7 @@ struct ServiceMenu: View {
                 .background(large ? Color(hex: 0x5714A4) : Color.brandViolet.opacity(0.12), in: Circle())
                 .contentShape(Circle())
         }
-        .accessibilityLabel("Plus d'options pour \(title)")
+        .accessibilityLabel(.local("Plus d'options pour \(title)"))
     }
 }
 
@@ -332,7 +332,7 @@ struct OfferTile: View {
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(offer.category).font(.headline).foregroundStyle(Color.ink)
-                Text("\(offer.provider) · \(offer.quota)")
+                Text(verbatim: "\(offer.provider) · \(offer.quota)")
                     .font(.footnote)
                     .foregroundStyle(Color.inkSecondary)
                     .lineLimit(2)
@@ -399,7 +399,7 @@ struct HowItWorksSheet: View {
                     VStack(alignment: .leading, spacing: 14) {
                         ForEach(Array(offer.firstUseSteps.enumerated()), id: \.offset) { index, step in
                             HStack(alignment: .top, spacing: 12) {
-                                Text("\(index + 1)")
+                                Text(verbatim: "\(index + 1)")
                                     .font(.subheadline.weight(.heavy))
                                     .foregroundStyle(.white)
                                     .frame(width: 28, height: 28)
@@ -416,7 +416,7 @@ struct HowItWorksSheet: View {
                                 Text(hint.value).font(.title2.weight(.heavy)).monospacedDigit()
                             }
                             Spacer()
-                            Button(copied ? "Copié" : "Copier", systemImage: copied ? "checkmark" : "doc.on.doc") {
+                            Button(copied ? LocalizedStringResource.local("Copié") : .local("Copier"), systemImage: copied ? "checkmark" : "doc.on.doc") {
                                 UIPasteboard.general.string = hint.value
                                 copied = true
                             }
@@ -436,7 +436,7 @@ struct HowItWorksSheet: View {
                     }
                     .buttonStyle(.prominent(size: .large))
 
-                    Button("Tutoriel complet (PDF)") { openURL(offer.tutorialURL) }
+                    Button(.local("Tutoriel complet (PDF)")) { openURL(offer.tutorialURL) }
                         .font(.body.weight(.semibold))
                         .frame(maxWidth: .infinity)
                 }
@@ -445,7 +445,7 @@ struct HowItWorksSheet: View {
             .background(Color.surfaceGrouped)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Fermer", systemImage: "xmark") { dismiss() }
+                    Button(.local("Fermer"), systemImage: "xmark") { dismiss() }
                 }
             }
         }
@@ -464,7 +464,7 @@ struct HowItWorksSheet: View {
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 1) {
                 Text(offer.category).font(.footnote.weight(.bold)).textCase(.uppercase).foregroundStyle(Color.inkSecondary)
-                Text("Comment ça marche").font(.title2.weight(.heavy))
+                Text(.local("Comment ça marche")).font(.title2.weight(.heavy))
             }
             .accessibilityElement(children: .combine)
             .accessibilityAddTraits(.isHeader)
@@ -481,15 +481,15 @@ struct HowItWorksSheet: View {
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 1) {
                 Text(app.name).font(.subheadline.weight(.bold))
-                Text("\(app.publisher) · Gratuite").font(.footnote).foregroundStyle(Color.inkSecondary)
+                Text(.local("\(app.publisher) · Gratuite")).font(.footnote).foregroundStyle(Color.inkSecondary)
             }
             Spacer(minLength: 8)
             if availability == .installed, let url = app.launchURL {
-                Button("Ouvrir") { openURL(url) }
+                Button(.local("Ouvrir")) { openURL(url) }
                     .buttonStyle(.prominent(size: .compact))
                     .fixedSize()
             } else {
-                Button("Installer", action: install)
+                Button(.local("Installer"), action: install)
                     .buttonStyle(.prominent(size: .compact))
                     .fixedSize()
             }
@@ -506,6 +506,8 @@ struct PortalSheet: View {
     @State private var isLoading = true
     @State private var handedOffToApp = false
 
+    private var appName: String { session.offer.app?.name ?? .local("l'app") }
+
     var body: some View {
         NavigationStack {
             PortalWebView(url: session.url, cookies: session.cookies, isLoading: $isLoading, handedOffToApp: $handedOffToApp)
@@ -514,8 +516,8 @@ struct PortalSheet: View {
                     if handedOffToApp {
                         VStack(spacing: 14) {
                             Image(systemName: "arrow.up.forward.app").font(.largeTitle).foregroundStyle(Color.brandViolet)
-                            Text("Ouvert dans \(session.offer.app?.name ?? "l'app")").font(.title3.weight(.bold))
-                            Button("Fermer") { dismiss() }.buttonStyle(.prominent(size: .large))
+                            Text(.local("Ouvert dans \(appName)")).font(.title3.weight(.bold))
+                            Button(.local("Fermer")) { dismiss() }.buttonStyle(.prominent(size: .large))
                         }
                         .padding(28)
                         .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 30, style: .continuous))
@@ -524,7 +526,7 @@ struct PortalSheet: View {
                 .navigationTitle(session.offer.provider)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .cancellationAction) { Button("Fermer") { dismiss() } }
+                    ToolbarItem(placement: .cancellationAction) { Button(.local("Fermer")) { dismiss() } }
                     if isLoading { ToolbarItem(placement: .topBarTrailing) { ProgressView() } }
                 }
         }

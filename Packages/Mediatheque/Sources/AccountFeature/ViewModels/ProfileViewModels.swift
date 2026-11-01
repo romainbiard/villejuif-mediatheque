@@ -34,7 +34,7 @@ public final class SelectionsViewModel {
         let name = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !name.isEmpty else { return }
         if state.value?.contains(where: { $0.name.localizedCaseInsensitiveCompare(name) == .orderedSame }) == true {
-            message = "Une sélection porte déjà ce nom"
+            message = String.local("Une sélection porte déjà ce nom")
             feedback = .error
             return
         }
@@ -43,10 +43,10 @@ public final class SelectionsViewModel {
         do {
             try await profile.createSelection(name)
             await load()
-            message = "Sélection « \(name) » créée"
+            message = String.local("Sélection « \(name) » créée")
             feedback = .success
         } catch {
-            message = ProfileMessages.failure(error, action: "La création")
+            message = ProfileMessages.failure(error, action: .creation)
             feedback = .error
         }
     }
@@ -93,10 +93,10 @@ public final class SelectionDetailViewModel {
         do {
             try await profile.removeFromSelection(selection, notice.id)
             if case let .loaded(notices) = state { state = .loaded(notices.filter { $0.id != notice.id }) }
-            message = "Retiré de « \(selection.name) »"
+            message = String.local("Retiré de « \(selection.name) »")
             feedback = .lightImpact
         } catch {
-            message = ProfileMessages.failure(error, action: "Le retrait")
+            message = ProfileMessages.failure(error, action: .removal)
             feedback = .error
         }
     }
@@ -142,12 +142,12 @@ public final class ReviewsViewModel {
         do {
             try await profile.submitReview(record, rating, title.trimmingCharacters(in: .whitespacesAndNewlines), text.trimmingCharacters(in: .whitespacesAndNewlines))
             if case let .loaded(records) = toRate { toRate = .loaded(records.filter { $0.id != record.id }) }
-            message = "Merci ! Votre avis sera publié après validation."
+            message = String.local("Merci ! Votre avis sera publié après validation.")
             feedback = .success
             if let reviews = try? await profile.reviews() { published = .loaded(reviews) }
             return true
         } catch {
-            message = ProfileMessages.failure(error, action: "L'envoi")
+            message = ProfileMessages.failure(error, action: .sending)
             feedback = .error
             return false
         }
@@ -186,12 +186,12 @@ public final class SuggestionsViewModel {
         defer { isSending = false }
         do {
             try await profile.sendSuggestion(draft)
-            message = "Suggestion envoyée. Merci !"
+            message = String.local("Suggestion envoyée. Merci !")
             feedback = .success
             draft = SuggestionDraft()
             await load()
         } catch {
-            message = ProfileMessages.failure(error, action: "L'envoi")
+            message = ProfileMessages.failure(error, action: .sending)
             feedback = .error
         }
     }
@@ -227,7 +227,7 @@ public final class InformationViewModel {
     public func save(_ details: ContactDetails) async -> Bool {
         let email = details.email.trimmingCharacters(in: .whitespaces)
         guard email.isEmpty || email.wholeMatch(of: #/[^@\s]+@[^@\s]+\.[^@\s]+/#) != nil else {
-            message = "Adresse e-mail invalide"
+            message = String.local("Adresse e-mail invalide")
             feedback = .error
             return false
         }
@@ -236,11 +236,11 @@ public final class InformationViewModel {
         do {
             try await profile.updateContactDetails(details)
             contact = .loaded(details)
-            message = "Coordonnées enregistrées"
+            message = String.local("Coordonnées enregistrées")
             feedback = .success
             return true
         } catch {
-            message = ProfileMessages.failure(error, action: "L'enregistrement")
+            message = ProfileMessages.failure(error, action: .saving)
             feedback = .error
             return false
         }
@@ -248,8 +248,8 @@ public final class InformationViewModel {
 
     /// Local validation before submitting. `nil` when the new password is acceptable.
     public static func passwordProblem(_ password: String, confirmation: String) -> String? {
-        if password.isEmpty { return "Saisissez un nouveau mot de passe" }
-        if password != confirmation { return "Les deux mots de passe ne correspondent pas" }
+        if password.isEmpty { return .local("Saisissez un nouveau mot de passe") }
+        if password != confirmation { return .local("Les deux mots de passe ne correspondent pas") }
         return nil
     }
 
@@ -268,11 +268,11 @@ public final class InformationViewModel {
             if let credentials = try? keychain.load() {
                 try? keychain.save(Credentials(cardNumber: credentials.cardNumber, password: password))
             }
-            message = "Mot de passe modifié"
+            message = String.local("Mot de passe modifié")
             feedback = .success
             return true
         } catch {
-            message = ProfileMessages.failure(error, action: "Le changement")
+            message = ProfileMessages.failure(error, action: .passwordChange)
             feedback = .error
             return false
         }
@@ -307,7 +307,7 @@ public final class ProfileSettingsViewModel {
     /// Returns `false` if iOS refuses notifications.
     public func remindersChanged(enabling: Bool) async -> Bool {
         if enabling, !(await notifications.requestAuthorization()) {
-            message = "Autorisez les notifications dans Réglages pour recevoir les rappels"
+            message = String.local("Autorisez les notifications dans Réglages pour recevoir les rappels")
             feedback = .error
             return false
         }
@@ -335,7 +335,7 @@ public final class ProfileSettingsViewModel {
             bookmarks = .loaded(current)
             feedback = .lightImpact
         } catch {
-            message = ProfileMessages.failure(error, action: "La modification")
+            message = ProfileMessages.failure(error, action: .modification)
             feedback = .error
         }
     }
@@ -349,7 +349,7 @@ public final class ProfileSettingsViewModel {
             newsletter = isOn
             feedback = .lightImpact
         } catch {
-            message = ProfileMessages.failure(error, action: "La modification")
+            message = ProfileMessages.failure(error, action: .modification)
             feedback = .error
         }
     }
@@ -361,8 +361,24 @@ public final class ProfileSettingsViewModel {
 
 enum ProfileMessages {
     /// "L'envoi n'a pas abouti", or the site's message when it rejects the form.
-    static func failure(_ error: any Error, action: String) -> String {
+    enum Action { case creation, removal, sending, saving, passwordChange, modification }
+
+    static func failure(_ error: any Error, action: Action) -> String {
         if case let ProfileError.rejected(reason) = error { return reason }
-        return LoadError(error) == .offline ? "\(action) est impossible hors ligne" : "\(action) n'a pas abouti"
+        let offline = LoadError(error) == .offline
+        switch action {
+        case .creation:
+            return offline ? String.local("La création est impossible hors ligne") : String.local("La création n'a pas abouti")
+        case .removal:
+            return offline ? String.local("Le retrait est impossible hors ligne") : String.local("Le retrait n'a pas abouti")
+        case .sending:
+            return offline ? String.local("L'envoi est impossible hors ligne") : String.local("L'envoi n'a pas abouti")
+        case .saving:
+            return offline ? String.local("L'enregistrement est impossible hors ligne") : String.local("L'enregistrement n'a pas abouti")
+        case .passwordChange:
+            return offline ? String.local("Le changement est impossible hors ligne") : String.local("Le changement n'a pas abouti")
+        case .modification:
+            return offline ? String.local("La modification est impossible hors ligne") : String.local("La modification n'a pas abouti")
+        }
     }
 }

@@ -1,0 +1,621 @@
+{
+  "sourceLanguage": "fr",
+  "strings": {
+    "%@ vous attend": {
+      "comment": "Hold ready notification title; %@ is the document title",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is ready for pickup"
+          }
+        }
+      }
+    },
+    "%@ à rendre aujourd'hui. Prolongez-le si vous n'avez pas fini.": {
+      "comment": "Return reminder notification body on the due date; %@ is a quoted title or a document count",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ due today. Renew if you're not done yet."
+          }
+        }
+      }
+    },
+    "%@ à rendre le %@. Vous pouvez prolonger depuis l'app.": {
+      "comment": "Return reminder notification body; first %@ is a quoted title or a document count, second %@ is the due date (weekday, day, month)",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ due on %@. You can renew from the app."
+          }
+        }
+      }
+    },
+    "%lld documents": {
+      "comment": "Number of borrowed documents, in return reminders and the Siri summary",
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld item"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld items"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld document"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld documents"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld documents sont en retard.": {
+      "comment": "Siri summary sentence; number of overdue loans",
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld item is overdue."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld items are overdue."
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld document est en retard."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld documents sont en retard."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Bande dessinée": {
+      "comment": "Purchase suggestion document type",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comic"
+          }
+        }
+      }
+    },
+    "Cette semaine dans vos médiathèques": {
+      "comment": "Title of the weekly agenda notification (Mondays)",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week at your libraries"
+          }
+        }
+      }
+    },
+    "Connectez-vous dans l'app Ma médiathèque pour suivre vos prêts.": {
+      "comment": "Siri / widget answer when the user is not signed in; Ma médiathèque is the app name",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in to the Ma médiathèque app to keep track of your loans."
+          }
+        }
+      }
+    },
+    "Courriel": {
+      "comment": "Preferred contact channel for library notices",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Email"
+          }
+        }
+      }
+    },
+    "Courrier": {
+      "comment": "Preferred contact channel for library notices (postal mail)",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mail"
+          }
+        }
+      }
+    },
+    "Indifférent": {
+      "comment": "Preferred contact channel for library notices",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No preference"
+          }
+        }
+      }
+    },
+    "Jeu de société": {
+      "comment": "Purchase suggestion document type",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Board game"
+          }
+        }
+      }
+    },
+    "Lectures, ateliers, projections : découvrez les animations à venir dans l'agenda.": {
+      "comment": "Body of the weekly agenda notification",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Readings, workshops, screenings: see upcoming events in Events."
+          }
+        }
+      }
+    },
+    "Livre": {
+      "comment": "Purchase suggestion document type",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Book"
+          }
+        }
+      }
+    },
+    "Livre audio": {
+      "comment": "Purchase suggestion document type",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audiobook"
+          }
+        }
+      }
+    },
+    "Livre en gros caractères": {
+      "comment": "Purchase suggestion document type",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Large-print book"
+          }
+        }
+      }
+    },
+    "Livre numérique": {
+      "comment": "Purchase suggestion document type",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "E-book"
+          }
+        }
+      }
+    },
+    "Message de la médiathèque": {
+      "comment": "Notification inbox title for a message posted by the library on the account",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Message from the library"
+          }
+        }
+      }
+    },
+    "Méthode de langue": {
+      "comment": "Purchase suggestion document type",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Language course"
+          }
+        }
+      }
+    },
+    "Ouvrir votre compte lecteur": {
+      "comment": "Face ID / passcode prompt reason when opening the account",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open your library account"
+          }
+        }
+      }
+    },
+    "Pont de l'Ascension": {
+      "comment": "School holiday period name (France, zone C), shown in the agenda",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ascension Day long weekend"
+          }
+        }
+      }
+    },
+    "Prochain retour : « %@ », %@.": {
+      "comment": "Siri summary; first %@ is the document title, second %@ is when (e.g. “today”, “in 3 days, on Thursday, November 5”)",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next return: “%@”, %@."
+          }
+        }
+      }
+    },
+    "Puis %lld autres plus tard.": {
+      "comment": "Siri summary, after the next return; number of other loans due later",
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Then %lld more later."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Then %lld more later."
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Puis %lld autre plus tard."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Puis %lld autres plus tard."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Retour prévu le %@ à %@.": {
+      "comment": "Notification inbox body; first %@ is the due date (weekday, day, month), second %@ is the library",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Due back on %@ at %@."
+          }
+        }
+      }
+    },
+    "Vacances d'hiver": {
+      "comment": "School holiday period name (France, zone C), shown in the agenda",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Winter holidays"
+          }
+        }
+      }
+    },
+    "Vacances d'été": {
+      "comment": "School holiday period name (France, zone C), shown in the agenda",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Summer holidays"
+          }
+        }
+      }
+    },
+    "Vacances de Noël": {
+      "comment": "School holiday period name (France, zone C), shown in the agenda",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Christmas holidays"
+          }
+        }
+      }
+    },
+    "Vacances de la Toussaint": {
+      "comment": "School holiday period name (France, zone C), shown in the agenda",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All Saints' holidays"
+          }
+        }
+      }
+    },
+    "Vacances de printemps": {
+      "comment": "School holiday period name (France, zone C), shown in the agenda",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spring holidays"
+          }
+        }
+      }
+    },
+    "Vous devez rendre %@ %@.": {
+      "comment": "Siri summary; first %@ is a quoted title or a document count, second %@ is when (e.g. “today”, “tomorrow, Monday, November 2”)",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You need to return %@ %@."
+          }
+        }
+      }
+    },
+    "Vous n'avez aucun prêt en cours.": {
+      "comment": "Siri / widget answer when there are no loans",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You have no current loans."
+          }
+        }
+      }
+    },
+    "aujourd'hui": {
+      "comment": "Siri summary: due date relative to today",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "today"
+          }
+        }
+      }
+    },
+    "dans %lld jours, le %@": {
+      "comment": "Siri summary: due date; %lld is a number of days (2 or more), %@ is the date (weekday, day, month)",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "in %lld days, on %@"
+          }
+        }
+      }
+    },
+    "demain, le %@": {
+      "comment": "Siri summary: due date; %@ is the date (weekday, day, month)",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "tomorrow, %@"
+          }
+        }
+      }
+    },
+    "« %@ »": {
+      "comment": "A document title in quotation marks; %@ is the title",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@”"
+          }
+        }
+      }
+    },
+    "« %@ » est en retard": {
+      "comment": "Notification inbox title; %@ is the document title",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” is overdue"
+          }
+        }
+      }
+    },
+    "« %@ » est en retard.": {
+      "comment": "Siri summary sentence; %@ is the document title",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” is overdue."
+          }
+        }
+      }
+    },
+    "« %@ » est à rendre aujourd'hui": {
+      "comment": "Notification inbox title; %@ is the document title",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” is due today"
+          }
+        }
+      }
+    },
+    "« %@ » est à rendre dans %lld jours": {
+      "comment": "Notification inbox title; %@ is the document title, %lld is a number of days (always 2 or more)",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” is due in %lld days"
+          }
+        }
+      }
+    },
+    "« %@ » est à rendre demain": {
+      "comment": "Notification inbox title; %@ is the document title",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” is due tomorrow"
+          }
+        }
+      }
+    },
+    "« %@ » vous attend": {
+      "comment": "Notification inbox title for a hold; %@ is the document title",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” is ready for pickup"
+          }
+        }
+      }
+    },
+    "À rendre aujourd'hui": {
+      "comment": "Title of the return reminder notification on the due date",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Due today"
+          }
+        }
+      }
+    },
+    "À rendre dans %lld jours": {
+      "comment": "Title of the return reminder notification sent a few days before the due date",
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Due in %lld day"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Due in %lld days"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "À rendre dans %lld jour"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "À rendre dans %lld jours"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "À rendre depuis le %@. Rapportez-le ou essayez de le prolonger.": {
+      "comment": "Notification inbox body for an overdue loan; %@ is the due date (weekday, day, month)",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It was due on %@. Return it or try renewing it."
+          }
+        }
+      }
+    },
+    "À retirer à %@. %@": {
+      "comment": "Hold ready notification / inbox body; first %@ is the library, second %@ is the status text from the library website (French)",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ready for pickup at %@. %@"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

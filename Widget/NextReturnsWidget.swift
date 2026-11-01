@@ -74,9 +74,9 @@ struct NextReturnsView: View {
                 Text(inlineText)
             case .accessoryRectangular:
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("Ma médiathèque").font(.caption2.weight(.bold))
+                    Text(verbatim: "Ma médiathèque").font(.caption2.weight(.bold))
                     ForEach(loans.prefix(2)) { loan in
-                        Text("\(loan.title) · \(dueText(loan))").font(.caption2).lineLimit(1)
+                        Text(verbatim: "\(loan.title) · \(dueText(loan))").font(.caption2).lineLimit(1)
                     }
                 }
             default:
@@ -108,7 +108,7 @@ struct NextReturnsView: View {
         }
     }
 
-    private func empty(_ message: String) -> some View {
+    private func empty(_ message: LocalizedStringResource) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Image(systemName: "books.vertical.fill").foregroundStyle(violet)
             Text(message).font(.caption).foregroundStyle(.secondary)
@@ -116,16 +116,16 @@ struct NextReturnsView: View {
     }
 
     private var inlineText: String {
-        guard let loan = loans.first else { return "\(readyHolds.count) réservation à retirer" }
+        guard let loan = loans.first else { return String(localized: "\(readyHolds.count) réservations à retirer") }
         return "\(loan.title) · \(dueText(loan))"
     }
 
     private func dueText(_ loan: Loan) -> String {
         switch loan.dueState(now: entry.date, calendar: .paris) {
-        case let .late(days): "en retard de \(days) j"
-        case .dueSoon(0): "aujourd'hui"
-        case .dueSoon(1): "demain"
-        case let .dueSoon(days), let .onTime(days): "dans \(days) jours"
+        case let .late(days): String(localized: "en retard de \(days) j", comment: "Short: a loan is overdue by N days")
+        case .dueSoon(0): String(localized: "aujourd'hui", comment: "A loan is due today")
+        case .dueSoon(1): String(localized: "demain", comment: "A loan is due tomorrow")
+        case let .dueSoon(days), let .onTime(days): String(localized: "dans \(days) jours", comment: "A loan is due in N days")
         }
     }
 

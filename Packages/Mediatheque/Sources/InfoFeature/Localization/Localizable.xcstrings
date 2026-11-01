@@ -1,0 +1,144 @@
+{
+  "sourceLanguage" : "fr",
+  "strings" : {
+    "Appeler" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call"
+          }
+        }
+      },
+      "comment" : "Button: call the library"
+    },
+    "Carte des 3 médiathèques" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Map of the 3 libraries"
+          }
+        }
+      }
+    },
+    "Fermé" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Closed"
+          }
+        }
+      },
+      "comment" : "Library status"
+    },
+    "Fermé · ouvre %@ à %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Closed · opens %1$@ at %2$@"
+          }
+        }
+      },
+      "comment" : "Library status; weekday, time"
+    },
+    "Fermé · ouvre demain à %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Closed · opens tomorrow at %@"
+          }
+        }
+      },
+      "comment" : "Library status; %@ is a time"
+    },
+    "Fermé · ouvre à %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Closed · opens at %@"
+          }
+        }
+      },
+      "comment" : "Library status; %@ is a time today"
+    },
+    "Horaires indisponibles" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opening Hours Unavailable"
+          }
+        }
+      }
+    },
+    "Infos pratiques" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Info"
+          }
+        }
+      },
+      "comment" : "Screen title: addresses and opening hours of the libraries"
+    },
+    "Itinéraire" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Directions"
+          }
+        }
+      }
+    },
+    "Ouvert · ferme à %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open · closes at %@"
+          }
+        }
+      },
+      "comment" : "Library status; %@ is a time"
+    },
+    "Réessayer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try Again"
+          }
+        }
+      }
+    },
+    "Vérifiez votre connexion, puis réessayez." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check your connection, then try again."
+          }
+        }
+      }
+    },
+    "Écrire" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message"
+          }
+        }
+      },
+      "comment" : "Button: contact the library by message"
+    }
+  },
+  "version" : "1.0"
+}

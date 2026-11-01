@@ -21,11 +21,11 @@ enum AppTab: Hashable {
 
     var title: String {
         switch self {
-        case .account: "Compte"
-        case .agenda: "Agenda"
-        case .digital: "Numérique"
-        case .info: "Infos"
-        case .search: "Recherche"
+        case .account: String(localized: "Compte", comment: "Tab title")
+        case .agenda: String(localized: "Agenda", comment: "Tab title: library events")
+        case .digital: String(localized: "Numérique", comment: "Tab title: digital library")
+        case .info: String(localized: "Infos", comment: "Tab title: practical information")
+        case .search: String(localized: "Recherche", comment: "Tab title: catalog search")
         case let .accountSection(section): section.title
         }
     }
