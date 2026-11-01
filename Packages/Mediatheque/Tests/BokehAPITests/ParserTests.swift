@@ -23,6 +23,14 @@ struct ParserTests {
         #expect(start == DateComponents(year: 2026, month: 11, day: 4, hour: 16, minute: 0))
     }
 
+    @Test func explicitCredentialRefusal() throws {
+        #expect(try HTMLParsers.loginRejected(in: Fixture.string("login-rejected.html")))
+        // A blank sign-in form or any other page is not a refusal.
+        #expect(try !HTMLParsers.loginRejected(in: Fixture.string("login.html")))
+        #expect(try !HTMLParsers.loginRejected(in: "<html><body><p>Service indisponible</p></body></html>"))
+        #expect(try !HTMLParsers.loginRejected(in: #"<ul class="errors element_error_messages"><li class="element_error_message">Une valeur est requise.</li></ul>"#))
+    }
+
     @Test func iCalUnfoldsContinuationLines() {
         #expect(ICalParser.unfold("A:abc\n def\nB:x") == ["A:abcdef", "B:x"])
     }

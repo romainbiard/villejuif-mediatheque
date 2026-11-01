@@ -7,8 +7,12 @@ import Dependencies
 import Foundation
 
 public enum AuthError: Error, Equatable, Sendable {
+    /// The portal said so explicitly ("L'identifiant ou le mot de passe est invalide.").
     case invalidCredentials
     case notLoggedIn
+    /// The form went through but no session opened, without the portal refusing the credentials:
+    /// a temporary failure, never a reason to forget the stored password.
+    case sessionNotOpened
 }
 
 /// Opens the web session through the form and reopens it automatically when it expires.
@@ -69,18 +73,30 @@ public actor SessionManager {
         let task = Task { try await openSession(credentials) }
         loginTask = task
         defer { loginTask = nil }
-        return try await task.value
+        do {
+            return try await task.value
+        } catch AuthError.invalidCredentials {
+            // The portal explicitly refused the stored password (changed on the website): forget it,
+            // so background refreshes stop signing in with it. The patron signs in again.
+            try? keychain.delete()
+            throw AuthError.invalidCredentials
+        }
     }
 
     private func openSession(_ credentials: Credentials) async throws -> Patron {
         let loginPage = try await http.string(for: .loginPage)
         let token = try HTMLParsers.csrfToken(in: loginPage)
-        _ = try await http.data(for: .login(cardNumber: credentials.cardNumber, password: credentials.password, csrfToken: token))
+        let response = try await http.string(for: .login(cardNumber: credentials.cardNumber, password: credentials.password, csrfToken: token))
+        // Only the portal's explicit message is a refusal. No answer, a timeout or a server error
+        // throws before this point and keeps the stored password.
+        if (try? HTMLParsers.loginRejected(in: response)) == true {
+            throw AuthError.invalidCredentials
+        }
         do {
             let account = try await http.decode(AccountResponseDTO.self, from: .account).account
             return Patron(dto: account)
         } catch BokehError.unauthorized {
-            throw AuthError.invalidCredentials
+            throw AuthError.sessionNotOpened
         }
     }
 }

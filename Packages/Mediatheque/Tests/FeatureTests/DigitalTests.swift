@@ -18,6 +18,26 @@ struct DigitalTests {
         #expect(!PortalWebView.isProviderAppLink(URL(string: "https://vod.mediatheque-numerique.com/")!))
     }
 
+    @Test func onlyPartnerAppsLeaveTheWebView() {
+        let open = { (url: String, mainFrame: Bool, tapped: Bool) in
+            PortalWebView.mayOpenExternally(URL(string: url)!, isMainFrame: mainFrame, userTapped: tapped)
+        }
+        // Partner apps: from the main frame, even without a tap (the portal's redirect to the app).
+        #expect(open("arte-mednum://login?token=x", true, false))
+        #expect(open("cafeyn://home", true, false))
+        // Never from an iframe.
+        #expect(!open("arte-mednum://login", false, true))
+        // Other apps and system schemes are dropped, tapped or not.
+        #expect(!open("sms:+33600000000&body=hello", true, true))
+        #expect(!open("facetime:someone@example.org", true, true))
+        #expect(!open("itms-apps://apps.apple.com/app/id1", true, true))
+        #expect(!open("otherapp://do-something", true, false))
+        // mailto and tel only after a tap on a link.
+        #expect(open("mailto:contact@example.org", true, true))
+        #expect(!open("mailto:contact@example.org", true, false))
+        #expect(!open("tel:0100000000", true, false))
+    }
+
     @Test func openingResolvesTheSSOTarget() async {
         let viewModel = withDependencies {
             $0.digitalClient.target = { service in

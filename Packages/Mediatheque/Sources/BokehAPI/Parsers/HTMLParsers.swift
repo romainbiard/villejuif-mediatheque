@@ -69,6 +69,17 @@ public enum HTMLParsers {
         return token
     }
 
+    /// True only when the page carries the portal's explicit refusal of the credentials, shown under
+    /// the card number field after the sign-in form: "L'identifiant ou le mot de passe est invalide."
+    /// Anything else (other page, other error) is not a refusal: the stored password must survive it.
+    public static func loginRejected(in html: String) throws -> Bool {
+        let document = try SwiftSoup.parse(html)
+        return try document.select("li.element_error_message, ul.element_error_messages li").array().contains { item in
+            let text = try item.text().lowercased().replacingOccurrences(of: "\u{2019}", with: "'")
+            return text.contains("identifiant ou le mot de passe est invalide")
+        }
+    }
+
     /// True if the page shows a sign-in form in the main content (sign-in failed).
     public static func isLoggedIn(_ html: String) throws -> Bool {
         let document = try SwiftSoup.parse(html)

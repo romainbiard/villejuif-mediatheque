@@ -71,12 +71,14 @@ struct NextReturnsView: View {
         } else {
             switch family {
             case .accessoryInline:
-                Text(inlineText)
+                Text(inlineText).privacySensitive()
             case .accessoryRectangular:
                 VStack(alignment: .leading, spacing: 1) {
                     Text(verbatim: "Ma médiathèque").font(.caption2.weight(.bold))
                     ForEach(loans.prefix(2)) { loan in
                         Text(verbatim: "\(loan.title) · \(dueText(loan))").font(.caption2).lineLimit(1)
+                            // Titles are redacted on the Lock Screen while the iPhone is locked.
+                            .privacySensitive()
                     }
                 }
             default:
@@ -97,10 +99,11 @@ struct NextReturnsView: View {
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(success)
                     .lineLimit(1)
+                    .privacySensitive()
             }
             ForEach(loans.prefix(family == .systemSmall ? 2 : 3)) { loan in
                 VStack(alignment: .leading, spacing: 1) {
-                    Text(loan.title).font(.subheadline.weight(.semibold)).lineLimit(1)
+                    Text(loan.title).font(.subheadline.weight(.semibold)).lineLimit(1).privacySensitive()
                     Text(dueText(loan)).font(.caption.weight(.semibold)).foregroundStyle(color(loan))
                 }
             }

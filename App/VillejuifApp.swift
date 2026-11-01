@@ -32,7 +32,15 @@ struct VillejuifApp: App {
         }
         .commands { AppCommands() }
         .onChange(of: scenePhase) { _, phase in
-            if phase == .background { Self.scheduleRefresh() }
+            switch phase {
+            case .background:
+                Self.scheduleRefresh()
+                session.didEnterBackground()
+            case .active:
+                Task { await session.didBecomeActive() }
+            default:
+                break
+            }
         }
         // Background wake-up: snapshot for the widget, reminders, holds that have arrived.
         // `SessionManager` restores the session from the keychain when needed.

@@ -44,6 +44,9 @@ public enum LoadError: Error, Equatable, Sendable {
             self = .siteUnavailable
         case AuthError.notLoggedIn, AuthError.invalidCredentials:
             self = .notLoggedIn
+        case AuthError.sessionNotOpened:
+            // Temporary: never shown as signed out (that would sign the patron out and wipe the keychain).
+            self = .siteUnavailable
         default:
             self = .other(String(describing: error))
         }

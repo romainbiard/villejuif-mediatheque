@@ -60,7 +60,15 @@ public final class SessionStore {
 
     public private(set) var state: State = .restoring
 
+    /// With Face ID on, the account locks again after this long in the background.
+    nonisolated public static let relockDelay: TimeInterval = 120
+
+    @ObservationIgnored private var backgroundedAt: Date?
+    /// Account kept while locked again after the background: Face ID reopens it without signing in.
+    @ObservationIgnored private var lockedPatron: Patron?
+
     @ObservationIgnored @Dependency(\.authClient) private var auth
+    @ObservationIgnored @Dependency(\.date) private var date
     @ObservationIgnored @Dependency(\.biometricClient) private var biometrics
     @ObservationIgnored @Dependency(\.keychainClient) private var keychain
     @ObservationIgnored private let defaults: UserDefaults
@@ -103,15 +111,40 @@ public final class SessionStore {
         if case .loggedIn = state { state = .loggedIn(patron) }
     }
 
-    /// Retries after Face ID was denied or cancelled.
+    public func didEnterBackground() {
+        if case .loggedIn = state { backgroundedAt = date.now }
+    }
+
+    /// Back in the foreground: past `relockDelay` with Face ID on, the account locks and asks for Face ID.
+    public func didBecomeActive() async {
+        guard let backgroundedAt else { return }
+        self.backgroundedAt = nil
+        guard isFaceIDEnabled, case let .loggedIn(patron) = state,
+              date.now.timeIntervalSince(backgroundedAt) >= Self.relockDelay
+        else { return }
+        lockedPatron = patron
+        state = .locked
+        await unlock()
+    }
+
+    /// Asks for Face ID: at launch after a denial or cancellation, or after a relock.
     public func unlock() async {
         guard state == .locked else { return }
+        if let patron = lockedPatron {
+            if await biometrics.authenticate(.local("Ouvrir votre compte lecteur")) {
+                lockedPatron = nil
+                state = .loggedIn(patron)
+            }
+            return
+        }
         state = .restoring
         await restore()
         if state == .restoring { state = .locked }
     }
 
     public func logout() async {
+        lockedPatron = nil
+        backgroundedAt = nil
         await auth.logout()
         await AccountSync.reset()
         isFaceIDEnabled = false

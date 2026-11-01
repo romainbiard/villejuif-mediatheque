@@ -71,7 +71,9 @@ struct AccountSyncTests {
 
         #expect(saved.value?.loans.count == 3)
         #expect(scheduled.value.count == 4)
-        #expect(delivered.value.map(\.title) == ["Murmuration vous attend"])
+        // Generic title: the document's title stays in the body, hidden on the Lock Screen with previews.
+        #expect(delivered.value.map(\.title) == ["Une réservation vous attend"])
+        #expect(delivered.value.first?.body.contains("« Murmuration »") == true)
         // On 30/10: Le Petit Prince overdue, Sway due on 5/11 (D-6, outside the window), Murmuration arrived.
         #expect(inbox.value?.items.map(\.kind).sorted { $0.rawValue < $1.rawValue } == [.holdReady, .loanLate])
     }
@@ -130,5 +132,79 @@ struct FaceIDTests {
         let session = makeSession(authenticates: false, defaults: defaults)
         await session.restore()
         #expect(session.patron == SampleData.patron)
+    }
+}
+
+@MainActor
+struct RelockTests {
+    /// Signed-in session with Face ID on, a controllable clock and Face ID answer.
+    func makeSession(
+        faceID: Bool = true,
+        authenticates: LockIsolated<Bool>,
+        now: LockIsolated<Date>,
+        restores: LockIsolated<Int>
+    ) async -> SessionStore {
+        let defaults = UserDefaults(suiteName: "tests.\(UUID().uuidString)")!
+        let session = withDependencies {
+            $0.keychainClient.load = { Credentials(cardNumber: "0012345", password: "x") }
+            $0.biometricClient.authenticate = { _ in authenticates.value }
+            $0.authClient.restore = {
+                restores.withValue { $0 += 1 }
+                return SampleData.patron
+            }
+            $0.date = DateGenerator { now.value }
+        } operation: {
+            SessionStore(defaults: defaults)
+        }
+        session.isFaceIDEnabled = faceID
+        await session.restore()
+        return session
+    }
+
+    @Test func locksAgainAfterTwoMinutesInTheBackground() async {
+        let authenticates = LockIsolated(true)
+        let now = LockIsolated(Date(timeIntervalSince1970: 1_000_000))
+        let restores = LockIsolated(0)
+        let session = await makeSession(authenticates: authenticates, now: now, restores: restores)
+        #expect(session.patron == SampleData.patron)
+
+        session.didEnterBackground()
+        now.setValue(now.value.addingTimeInterval(SessionStore.relockDelay + 1))
+        authenticates.setValue(false)
+        await session.didBecomeActive()
+        #expect(session.state == .locked)
+
+        // Face ID passed: the same account opens again, without signing in to the portal.
+        authenticates.setValue(true)
+        await session.unlock()
+        #expect(session.patron == SampleData.patron)
+        #expect(restores.value == 1)
+    }
+
+    @Test func shortTripToTheBackgroundKeepsTheAccountOpen() async {
+        let now = LockIsolated(Date(timeIntervalSince1970: 1_000_000))
+        let session = await makeSession(authenticates: LockIsolated(true), now: now, restores: LockIsolated(0))
+        session.didEnterBackground()
+        now.setValue(now.value.addingTimeInterval(SessionStore.relockDelay - 10))
+        await session.didBecomeActive()
+        #expect(session.patron == SampleData.patron)
+    }
+
+    @Test func withoutFaceIDNothingLocks() async {
+        let now = LockIsolated(Date(timeIntervalSince1970: 1_000_000))
+        let session = await makeSession(faceID: false, authenticates: LockIsolated(false), now: now, restores: LockIsolated(0))
+        session.didEnterBackground()
+        now.setValue(now.value.addingTimeInterval(3600))
+        await session.didBecomeActive()
+        #expect(session.patron == SampleData.patron)
+    }
+}
+
+struct CredentialRefusalTests {
+    @Test func onlyThePortalsExplicitMessageIsARefusal() {
+        #expect(LoadError(AuthError.invalidCredentials) == .notLoggedIn)
+        // A session that did not open without that message is temporary: never "signed out".
+        #expect(LoadError(AuthError.sessionNotOpened) == .siteUnavailable)
+        #expect(LoadError(URLError(.timedOut)) == .siteUnavailable)
     }
 }

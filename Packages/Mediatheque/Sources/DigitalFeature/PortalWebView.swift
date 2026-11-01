@@ -25,6 +25,22 @@ struct PortalWebView: UIViewRepresentable {
         return false
     }
 
+    /// Custom schemes of the partner apps (Médiathèque Numérique, Cafeyn, Mozaik, Louise, IZNEO).
+    static let partnerAppSchemes = Set(DigitalCatalog.offers.compactMap { $0.app?.urlScheme?.lowercased() })
+
+    /// Whether a non-web URL met in the web view may be handed to iOS.
+    /// `UIApplication.open` launches any installed app (LSApplicationQueriesSchemes only limits
+    /// `canOpenURL`), so a provider page, an ad or an iframe could otherwise open `sms:`,
+    /// `facetime:` or another app with parameters of its choosing.
+    /// - Partner app schemes: from the main frame only (the portal's redirect to the app needs no tap).
+    /// - `mailto:` and `tel:`: only after the user tapped a link.
+    /// - Anything else, or anything from an iframe: blocked.
+    static func mayOpenExternally(_ url: URL, isMainFrame: Bool, userTapped: Bool) -> Bool {
+        guard let scheme = url.scheme?.lowercased(), isMainFrame else { return false }
+        if partnerAppSchemes.contains(scheme) { return true }
+        return ["mailto", "tel"].contains(scheme) && userTapped
+    }
+
     func makeCoordinator() -> Coordinator { Coordinator(self) }
 
     func makeUIView(context: Context) -> WKWebView {
@@ -59,9 +75,13 @@ struct PortalWebView: UIViewRepresentable {
         func webView(_ webView: WKWebView, decidePolicyFor action: WKNavigationAction) async -> WKNavigationActionPolicy {
             guard let url = action.request.url else { return .allow }
 
-            // App-specific scheme (Médiathèque Numérique, musicMe…): hand it to iOS.
+            // Non-web scheme: only partner apps (and mailto/tel after a tap) reach iOS, the rest is dropped.
             if let scheme = url.scheme?.lowercased(), !["http", "https", "about", "blob", "data"].contains(scheme) {
-                if await UIApplication.shared.open(url) { parent.handedOffToApp = true }
+                let isMainFrame = action.targetFrame?.isMainFrame ?? false
+                if PortalWebView.mayOpenExternally(url, isMainFrame: isMainFrame, userTapped: action.navigationType == .linkActivated),
+                   await UIApplication.shared.open(url) {
+                    parent.handedOffToApp = true
+                }
                 return .cancel
             }
 

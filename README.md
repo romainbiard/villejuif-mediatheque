@@ -172,7 +172,8 @@ Remplacez le simulateur par l'un de ceux installés sur votre Mac (`xcrun simctl
 ## Confidentialité
 
 - **Aucun serveur intermédiaire, aucun traceur, aucune statistique.** Les données vont seulement de votre iPhone au portail des médiathèques.
-- Les identifiants restent dans le **trousseau iOS**, protégés par Face ID si vous l'activez.
+- Les identifiants restent dans le **trousseau iOS**, sur cet appareil seulement (ni sauvegardes, ni iCloud). Avec Face ID activé, l'app se verrouille au lancement et après deux minutes en arrière-plan.
+- Siri ne lit pas vos prêts tant que l'iPhone est verrouillé, et le widget masque les titres sur l'écran verrouillé.
 - Le cache ne contient que des **données publiques** (agenda, horaires, recherches). Les données du compte vivent dans l'App Group et sont effacées à la déconnexion.
 - Les URL de connexion aux services numériques peuvent contenir des données personnelles : elles sont résolues au moment du tap et **jamais journalisées**.
 

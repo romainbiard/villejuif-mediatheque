@@ -76,8 +76,9 @@ public enum ReminderPlanner {
     public static func holdReadyReminder(for hold: Hold) -> Reminder {
         Reminder(
             id: "hold-ready-\(hold.id)",
-            title: .local("\(hold.title) vous attend"),
-            body: .local("À retirer à \(hold.pickupLibrary?.shortName ?? hold.pickupLibraryName). \(hold.statusText)"),
+            // Generic title: the document's title only in the body, hidden on the Lock Screen when previews are.
+            title: .local("Une réservation vous attend"),
+            body: .local("« \(hold.title) » est à retirer à \(hold.pickupLibrary?.shortName ?? hold.pickupLibraryName). \(hold.statusText)"),
             fireDate: .now
         )
     }

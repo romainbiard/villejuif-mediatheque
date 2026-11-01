@@ -29,6 +29,8 @@ final class AppIntentRouter {
 struct NextReturnsIntent: AppIntent {
     static let title: LocalizedStringResource = "Prochains retours"
     static let description = IntentDescription("Dit quand rendre vos prochains documents, d'après la dernière synchronisation.")
+    /// Titles of what the patron borrows: never read out while the iPhone is locked.
+    static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
 
     func perform() async throws -> some IntentResult & ProvidesDialog & ShowsSnippetView {
         let now = Date.now
