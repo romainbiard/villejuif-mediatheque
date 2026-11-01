@@ -1,6 +1,5 @@
 name: Villejuif
 options:
-  bundleIdPrefix: com.rbiard
   deploymentTarget:
     iOS: "26.0"
   developmentLanguage: fr
@@ -13,6 +12,12 @@ settings:
     DEVELOPMENT_LANGUAGE: fr
     MARKETING_VERSION: "0.1.0"
     CURRENT_PROJECT_VERSION: "1"
+
+# Bundle identifiers, App Group and signing team: Config/Shared.xcconfig (neutral values),
+# overridden by Config/Local.xcconfig when present (ignored by git).
+configFiles:
+  Debug: Config/Shared.xcconfig
+  Release: Config/Shared.xcconfig
 
 packages:
   Mediatheque:
@@ -49,15 +54,17 @@ targets:
         # musicMe has no scheme.
         LSApplicationQueriesSchemes: [arte-mednum, cafeyn, com.toutapprendre.toutapprendre, baobabapp, izneo]
         UIBackgroundModes: [fetch]
-        BGTaskSchedulerPermittedIdentifiers: [com.rbiard.mediatheques-villejuif.refresh]
+        BGTaskSchedulerPermittedIdentifiers: [$(PRODUCT_BUNDLE_IDENTIFIER).refresh]
+        # Read by the code (SnapshotClient.appGroup): the identifier comes from the xcconfig.
+        AppGroupIdentifier: $(APP_GROUP_IDENTIFIER)
     entitlements:
       path: App/App.entitlements
       properties:
         # Shared by the app, the widget and the shortcuts: snapshot, notification inbox, settings.
-        com.apple.security.application-groups: [group.com.rbiard.mediatheques-villejuif]
+        com.apple.security.application-groups: [$(APP_GROUP_IDENTIFIER)]
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.rbiard.mediatheques-villejuif
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).mediatheques-villejuif
         # No accents: with "é", usernotificationsd doesn't link the bundle to its executable
         # (Unicode normalization) and rejects every notification request.
         PRODUCT_NAME: MaMediatheque
@@ -93,16 +100,17 @@ targets:
         CFBundleDisplayName: Ma médiathèque
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        AppGroupIdentifier: $(APP_GROUP_IDENTIFIER)
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     entitlements:
       path: Widget/Widget.entitlements
       properties:
         # Shared by the app, the widget and the shortcuts: snapshot, notification inbox, settings.
-        com.apple.security.application-groups: [group.com.rbiard.mediatheques-villejuif]
+        com.apple.security.application-groups: [$(APP_GROUP_IDENTIFIER)]
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.rbiard.mediatheques-villejuif.widget
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).mediatheques-villejuif.widget
         PRODUCT_NAME: VillejuifWidget
         TARGETED_DEVICE_FAMILY: "1,2"
         SKIP_INSTALL: YES

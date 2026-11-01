@@ -15,7 +15,10 @@ public struct SnapshotClient: Sendable {
 }
 
 extension SnapshotClient: DependencyKey {
-    public static let appGroup = "group.com.rbiard.mediatheques-villejuif"
+    /// Read from the app's or the widget's Info.plist (`AppGroupIdentifier`, set by Config/*.xcconfig).
+    /// Tests and previews have no such key: the fallback names a container that simply doesn't exist.
+    public static let appGroup = Bundle.main.object(forInfoDictionaryKey: "AppGroupIdentifier") as? String
+        ?? "group.com.example.mediatheques-villejuif"
 
     static var fileURL: URL? {
         FileManager.default

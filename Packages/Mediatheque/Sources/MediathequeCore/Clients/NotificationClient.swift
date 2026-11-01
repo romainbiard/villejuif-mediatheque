@@ -35,7 +35,7 @@ public struct NotificationClient: Sendable {
 extension NotificationClient: DependencyKey {
     static let loanPrefix = "loan-"
     static let agendaDigestID = "agenda-weekly"
-    static let logger = Logger(subsystem: "com.rbiard.mediatheques-villejuif", category: "notifications")
+    static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "mediatheques-villejuif", category: "notifications")
 
     public static let liveValue = NotificationClient(
         authorizationStatus: {

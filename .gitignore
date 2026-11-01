@@ -19,3 +19,6 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+
+# Personal identifiers and signing team (see Config/Local.xcconfig.example)
+Config/Local.xcconfig

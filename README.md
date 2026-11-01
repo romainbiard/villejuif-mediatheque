@@ -115,6 +115,7 @@ flowchart LR
 ```
 .
 ├── App/                     # point d'entrée, onglets, écran de lancement, raccourcis Siri
+├── Config/                  # identifiants et signature (xcconfig ; Local.xcconfig non versionné)
 ├── Widget/                  # widget « Prochains retours »
 ├── Packages/Mediatheque/    # Swift Package local, une target par couche
 │   ├── Sources/
@@ -148,7 +149,13 @@ git clone https://github.com/romainbiard/villejuif-mediatheque.git && cd villeju
 xcodegen generate && open Villejuif.xcodeproj
 ```
 
-Choisissez le schéma **Villejuif**, puis un simulateur ou votre iPhone. Pour l'installer sur un appareil, remplacez l'équipe de signature et le préfixe des identifiants (`com.rbiard…`, App Group compris) dans `project.yml`.
+Choisissez le schéma **Villejuif**, puis un simulateur ou votre iPhone.
+
+Les identifiants et la signature viennent de `Config/Shared.xcconfig`, avec des valeurs neutres (`com.example`) qui suffisent pour le simulateur. Pour installer l'app sur un appareil, copiez `Config/Local.xcconfig.example` en `Config/Local.xcconfig` et indiquez-y votre préfixe et votre équipe. Ce fichier est ignoré par git, et l'App Group suit le préfixe.
+
+```bash
+cp Config/Local.xcconfig.example Config/Local.xcconfig
+```
 
 Sans compte, la recherche, l'agenda, les infos pratiques et la présentation du numérique fonctionnent. Pour l'espace abonné, il faut une carte des médiathèques de Villejuif.
 

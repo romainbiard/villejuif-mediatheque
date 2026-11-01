@@ -1,0 +1,7 @@
+// Copy this file to Local.xcconfig (ignored by git) and put your own values in it.
+
+// Reverse-DNS prefix of the bundle identifiers, e.g. com.yourname
+BUNDLE_ID_PREFIX = com.example
+
+// Your Apple Developer team ID (Xcode › Settings › Accounts), needed to run on a device.
+DEVELOPMENT_TEAM =

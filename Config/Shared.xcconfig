@@ -1,0 +1,16 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
+// Identifiers and signing shared by the app and the widget.
+// Neutral defaults: enough for the simulator. For your own values (bundle prefix, team),
+// copy Local.xcconfig.example to Local.xcconfig, which git ignores.
+
+BUNDLE_ID_PREFIX = com.example
+DEVELOPMENT_TEAM =
+CODE_SIGN_STYLE = Automatic
+
+// App Group shared by the app, the widget and the shortcuts (snapshot, notification inbox, settings).
+APP_GROUP_IDENTIFIER = group.$(BUNDLE_ID_PREFIX).mediatheques-villejuif
+
+#include? "Local.xcconfig"

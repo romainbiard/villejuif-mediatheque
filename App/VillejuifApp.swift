@@ -12,7 +12,8 @@ struct VillejuifApp: App {
     @State private var showsSplash = true
     @Environment(\.scenePhase) private var scenePhase
 
-    nonisolated static let refreshTaskID = "com.rbiard.mediatheques-villejuif.refresh"
+    /// Matches `BGTaskSchedulerPermittedIdentifiers` in project.yml: the bundle identifier + ".refresh".
+    nonisolated static let refreshTaskID = (Bundle.main.bundleIdentifier ?? "mediatheques-villejuif") + ".refresh"
 
     init() {
         // Covers and posters (AsyncImage goes through URLSession.shared): the default cache,
