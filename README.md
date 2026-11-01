@@ -116,6 +116,7 @@ flowchart LR
 .
 ├── App/                     # point d'entrée, onglets, écran de lancement, raccourcis Siri
 ├── Config/                  # identifiants et signature (xcconfig ; Local.xcconfig non versionné)
+├── ci_scripts/              # Xcode Cloud : génération du projet et identifiants avant le build
 ├── Widget/                  # widget « Prochains retours »
 ├── Packages/Mediatheque/    # Swift Package local, une target par couche
 │   ├── Sources/
@@ -168,6 +169,17 @@ cd Packages/Mediatheque && xcodebuild test -scheme Mediatheque-Package -destinat
 ```
 
 Remplacez le simulateur par l'un de ceux installés sur votre Mac (`xcrun simctl list devices`). Les tests vérifient des textes en français : `-testLanguage fr` les rend indépendants de la langue du simulateur.
+
+### Xcode Cloud et TestFlight
+
+Le projet Xcode n'est pas versionné : sur Xcode Cloud, `ci_scripts/ci_post_clone.sh` installe XcodeGen, génère le projet et écrit `Config/Local.xcconfig` à partir des variables d'environnement du workflow. Le numéro de build suit `CI_BUILD_NUMBER`.
+
+| Variable | Exemple |
+|---|---|
+| `BUNDLE_ID_PREFIX` | `com.votrenom` |
+| `DEVELOPMENT_TEAM` | identifiant d'équipe Apple Developer (10 caractères) |
+
+Le schéma partagé `Villejuif` lance les tests du package (en français) et archive l'app avec son widget.
 
 ## Confidentialité
 

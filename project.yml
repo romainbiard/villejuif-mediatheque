@@ -10,11 +10,10 @@ settings:
     SWIFT_VERSION: "6.0"
     SWIFT_STRICT_CONCURRENCY: complete
     DEVELOPMENT_LANGUAGE: fr
-    MARKETING_VERSION: "0.1.0"
-    CURRENT_PROJECT_VERSION: "1"
 
-# Bundle identifiers, App Group and signing team: Config/Shared.xcconfig (neutral values),
-# overridden by Config/Local.xcconfig when present (ignored by git).
+# Bundle identifiers, App Group, signing team and version: Config/Shared.xcconfig (neutral values),
+# overridden by Config/Local.xcconfig when present (ignored by git; written by
+# ci_scripts/ci_post_clone.sh on Xcode Cloud).
 configFiles:
   Debug: Config/Shared.xcconfig
   Release: Config/Shared.xcconfig
@@ -48,6 +47,8 @@ targets:
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UISupportedInterfaceOrientations~ipad:
           [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        # HTTPS only (exempt): no export compliance question on every TestFlight build.
+        ITSAppUsesNonExemptEncryption: false
         NSCameraUsageDescription: Scanner le code-barres d'un livre ou de votre carte d'abonné.
         NSFaceIDUsageDescription: Ouvrir votre compte lecteur sans saisir votre mot de passe.
         # Digital partner apps: detect whether they are installed ("Ouvrir" or "Installer").
@@ -117,3 +118,21 @@ targets:
     dependencies:
       - package: Mediatheque
         product: MediathequeCore
+
+# Shared scheme: Xcode Cloud only sees schemes stored in xcshareddata.
+schemes:
+  Villejuif:
+    build:
+      targets:
+        Villejuif: all
+    test:
+      config: Debug
+      # The tests check French texts: same as -testLanguage fr -testRegion FR.
+      language: fr
+      region: FR
+      targets:
+        - package: Mediatheque/BokehAPITests
+        - package: Mediatheque/MediathequeCoreTests
+        - package: Mediatheque/FeatureTests
+    archive:
+      config: Release
