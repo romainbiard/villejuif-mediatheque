@@ -355,6 +355,17 @@
       },
       "comment": "Accessibility hint"
     },
+    "Afficher le mot de passe": {
+      "comment": "Toggle revealing the typed password",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show password"
+          }
+        }
+      }
+    },
     "Affiché avec vos avis.": {
       "localizations": {
         "en": {
@@ -984,12 +995,13 @@
         }
       }
     },
-    "L'app mettra à jour le mot de passe enregistré sur cet appareil.": {
+    "L'app retient le nouveau mot de passe pour vous reconnecter. Mettez-le aussi à jour dans l'app Mots de passe.": {
+      "comment": "Footer of the password change sheet",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "The app will update the password saved on this device."
+            "value": "The app remembers the new password to sign you back in. Update it in the Passwords app too."
           }
         }
       }
@@ -1720,6 +1732,17 @@
       },
       "comment": "Label above the card number"
     },
+    "OK": {
+      "comment": "Dismiss button of an alert",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        }
+      }
+    },
     "Ouvrir Réglages": {
       "localizations": {
         "en": {
@@ -1813,6 +1836,17 @@
         }
       },
       "comment": "Button"
+    },
+    "Pensez à le mettre à jour aussi dans l'app Mots de passe : le site de la médiathèque ne permet pas à l'app de le faire pour vous.": {
+      "comment": "Alert message after a password change",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remember to update it in the Passwords app too: the library website doesn't let the app do it for you."
+          }
+        }
+      }
     },
     "Pivoter le code-barres": {
       "localizations": {
@@ -2261,6 +2295,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Suggestion sent. Thank you!"
+          }
+        }
+      }
+    },
+    "Suggérer un mot de passe fort": {
+      "comment": "Button that fills both password fields with a generated password",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suggest a strong password"
           }
         }
       }

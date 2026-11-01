@@ -63,8 +63,15 @@ struct InformationView: View {
                 ContactEditSheet(details: details, isSaving: viewModel.isSaving) { await viewModel.save($0) }
             }
         }
-        .sheet(isPresented: $changesPassword) {
-            PasswordSheet(isSaving: viewModel.isSaving) { await viewModel.changePassword($0, confirmation: $1) }
+        .sheet(isPresented: $changesPassword, onDismiss: viewModel.passwordSheetDismissed) {
+            PasswordSheet(cardNumber: patron.cardNumber, isSaving: viewModel.isSaving) {
+                await viewModel.changePassword($0, confirmation: $1)
+            }
+        }
+        .alert(Text(.local("Mot de passe modifié")), isPresented: $viewModel.showsPasswordsReminder) {
+            Button(.local("OK")) {}
+        } message: {
+            Text(.local("Pensez à le mettre à jour aussi dans l'app Mots de passe : le site de la médiathèque ne permet pas à l'app de le faire pour vous."))
         }
         .overlay(alignment: .bottom) { MessageToast(message: viewModel.message) { viewModel.dismissMessage() } }
         .sensoryFeedback(trigger: viewModel.feedback) { _, event in event.map(\.sensoryFeedback) }
@@ -178,26 +185,43 @@ struct ContactEditSheet: View {
 }
 
 struct PasswordSheet: View {
+    let cardNumber: String
     let isSaving: Bool
     let change: (String, String) async -> Bool
     @State private var password = ""
     @State private var confirmation = ""
+    @State private var reveals = false
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         NavigationStack {
             Form {
                 Section {
-                    SecureField(text: $password) { Text(.local("Nouveau mot de passe")) }
-                        .textContentType(.newPassword)
-                    SecureField(text: $confirmation) { Text(.local("Confirmer")) }
-                        .textContentType(.newPassword)
+                    // Username of the account being changed, as AutoFill expects in a change-password form.
+                    TextField(text: .constant(cardNumber)) { Text(.local("Numéro de carte")) }
+                        .textContentType(.username)
+                        .monospacedDigit()
+                        .foregroundStyle(Color.inkSecondary)
+                        .disabled(true)
+                    passwordField(.local("Nouveau mot de passe"), text: $password)
+                    passwordField(.local("Confirmer"), text: $confirmation)
                 } footer: {
                     if !confirmation.isEmpty, password != confirmation {
                         Text(.local("Les deux mots de passe ne correspondent pas.")).foregroundStyle(Color.statusDanger)
                     } else {
-                        Text(.local("L'app mettra à jour le mot de passe enregistré sur cet appareil."))
+                        Text(.local("L'app retient le nouveau mot de passe pour vous reconnecter. Mettez-le aussi à jour dans l'app Mots de passe."))
                     }
+                }
+                Section {
+                    // The portal isn't associated with the app, so iOS doesn't offer its own suggestion
+                    // in the keyboard: the button asks the system generator for one.
+                    Button(.local("Suggérer un mot de passe fort"), systemImage: "key.viewfinder") {
+                        guard let suggestion = InformationViewModel.suggestedPassword() else { return }
+                        password = suggestion
+                        confirmation = suggestion
+                        reveals = true
+                    }
+                    Toggle(.local("Afficher le mot de passe"), isOn: $reveals)
                 }
             }
             .scrollDismissesKeyboard(.immediately)
@@ -215,7 +239,21 @@ struct PasswordSheet: View {
                 }
             }
         }
-        .presentationDetents([.medium])
+        .presentationDetents([.medium, .large])
+    }
+
+    @ViewBuilder
+    private func passwordField(_ title: LocalizedStringResource, text: Binding<String>) -> some View {
+        if reveals {
+            TextField(text: text) { Text(title) }
+                .textContentType(.newPassword)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .monospaced()
+        } else {
+            SecureField(text: text) { Text(title) }
+                .textContentType(.newPassword)
+        }
     }
 }
 

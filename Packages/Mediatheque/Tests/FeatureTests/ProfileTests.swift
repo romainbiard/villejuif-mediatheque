@@ -125,6 +125,27 @@ struct InformationAndSettingsTests {
         #expect(saved.value == Credentials(cardNumber: "0012345", password: "nouveau"))
     }
 
+    @Test func passwordsReminderFollowsTheSheetAfterAChange() async {
+        let viewModel = withDependencies {
+            $0.profileClient.changePassword = { _ in }
+            $0.keychainClient.load = { nil }
+        } operation: { InformationViewModel() }
+
+        viewModel.passwordSheetDismissed()
+        #expect(!viewModel.showsPasswordsReminder)
+
+        _ = await viewModel.changePassword("nouveau", confirmation: "nouveau")
+        #expect(!viewModel.showsPasswordsReminder)
+        viewModel.passwordSheetDismissed()
+        #expect(viewModel.showsPasswordsReminder)
+    }
+
+    @Test func suggestedPasswordComesFromTheSystem() throws {
+        let password = try #require(InformationViewModel.suggestedPassword())
+        #expect(password.count >= 12)
+        #expect(password != InformationViewModel.suggestedPassword())
+    }
+
     @Test func invalidEmailIsNotSent() async {
         let viewModel = withDependencies { _ in } operation: { InformationViewModel() }
         let closes = await viewModel.save(ContactDetails(nickname: "", email: "pas-un-mail", phone: "", channel: .any))
