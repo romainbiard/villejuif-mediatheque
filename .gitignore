@@ -6,3 +6,16 @@ xcuserdata/
 .DS_Store
 Villejuif.xcodeproj/
 build/
+
+# Modèle Xcode de GitHub
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+timeline.xctimeline
+playground.xcworkspace
+Carthage/Build/
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
