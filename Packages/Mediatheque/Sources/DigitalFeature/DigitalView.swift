@@ -14,6 +14,9 @@ public struct DigitalView: View {
     @State private var viewModel = DigitalViewModel()
     @State private var helpOffer: DigitalOffer?
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    /// Width of the scroll content, padding included (0 until the first layout pass).
+    @State private var contentWidth: CGFloat = 0
 
     public init() {}
 
@@ -27,33 +30,20 @@ public struct DigitalView: View {
                         .font(.subheadline)
                         .foregroundStyle(Color.inkSecondary)
                     banner
-                    if let featured = viewModel.offers.first {
-                        FeaturedOfferCard(
-                            offer: featured,
-                            access: viewModel.access(for: featured),
-                            primaryLabel: primaryLabel(for: featured, compact: false),
-                            needsInstall: viewModel.needsInstall(featured),
-                            isResolving: viewModel.resolving == featured.id,
-                            open: { Task { await viewModel.primaryAction(featured) } },
-                            menu: menuActions(for: featured)
-                        )
-                    }
-                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible())], spacing: 12) {
-                        ForEach(viewModel.offers.dropFirst()) { offer in
-                            OfferTile(
-                                offer: offer,
-                                access: viewModel.access(for: offer),
-                                primaryLabel: primaryLabel(for: offer, compact: true),
-                                needsInstall: viewModel.needsInstall(offer),
-                                isResolving: viewModel.resolving == offer.id,
-                                open: { Task { await viewModel.primaryAction(offer) } },
-                                menu: menuActions(for: offer)
-                            )
+                    if sizeClass == .regular {
+                        mosaic
+                    } else {
+                        if let featured = viewModel.offers.first { featuredCard(featured) }
+                        LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible())], spacing: 12) {
+                            ForEach(viewModel.offers.dropFirst()) { tile($0) }
                         }
                     }
                 }
-                .padding(.horizontal, 16)
+                .frame(maxWidth: sizeClass == .regular ? Self.mosaicMaxWidth : nil, alignment: .leading)
+                .padding(.horizontal, sizeClass == .regular ? 24 : 16)
                 .padding(.bottom, 24)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { contentWidth = $0 }
             }
             .background(Color.surfaceGrouped)
             .navigationTitle(.local("Numérique"))
@@ -108,6 +98,85 @@ public struct DigitalView: View {
             default: nil
             }
         }
+    }
+
+    // MARK: Layout
+
+    /// iPad: three columns from this width (the detail column of an 11-inch iPad in landscape,
+    /// next to the sidebar, is about 830 pt), two below (portrait, narrow window).
+    static let threeColumnsMinWidth: CGFloat = 700
+    static let mosaicMaxWidth: CGFloat = 1000
+
+    /// iPad mosaic: Films over two columns (the whole width on two columns), the other services
+    /// as tiles, and the last one (Eurêka and musicMe) as a horizontal banner. Every service fits
+    /// on one 11-inch screen, and buttons keep the width of their label.
+    private var mosaic: some View {
+        let columns = contentWidth >= Self.threeColumnsMinWidth ? 3 : 2
+        let offers = viewModel.offers
+        let featured = offers.first
+        let last = offers.count > 2 ? offers.last : nil
+        let tiles = Array(offers.dropFirst().dropLast(last == nil ? 0 : 1))
+        // With three columns, the first tile sits next to Films.
+        let besideFeatured = columns == 3 ? Array(tiles.prefix(1)) : []
+        let rows = Array(tiles.dropFirst(besideFeatured.count)).chunked(into: columns)
+        // Explicit widths: a `Grid` sizes its columns to the ideal width of long texts and overflows.
+        let spacing: CGFloat = 16
+        let inner = min(contentWidth - 48, Self.mosaicMaxWidth)
+        let column = max(0, (inner - spacing * CGFloat(columns - 1)) / CGFloat(columns))
+        return VStack(alignment: .leading, spacing: spacing) {
+            if let featured {
+                HStack(alignment: .top, spacing: spacing) {
+                    featuredCard(featured, fitsLabel: true)
+                        .frame(width: column * 2 + spacing)
+                    ForEach(besideFeatured) { tile($0, isPad: true).frame(width: column) }
+                }
+                // Same height for every card of the row.
+                .fixedSize(horizontal: false, vertical: true)
+            }
+            ForEach(rows.indices, id: \.self) { index in
+                HStack(alignment: .top, spacing: spacing) {
+                    ForEach(rows[index]) { tile($0, isPad: true).frame(width: column) }
+                }
+                .fixedSize(horizontal: false, vertical: true)
+            }
+            if let last {
+                OfferBanner(
+                    offer: last,
+                    access: viewModel.access(for: last),
+                    primaryLabel: primaryLabel(for: last, compact: true),
+                    needsInstall: viewModel.needsInstall(last),
+                    isResolving: viewModel.resolving == last.id,
+                    open: { Task { await viewModel.primaryAction(last) } },
+                    menu: menuActions(for: last)
+                )
+            }
+        }
+    }
+
+    private func featuredCard(_ offer: DigitalOffer, fitsLabel: Bool = false) -> some View {
+        FeaturedOfferCard(
+            offer: offer,
+            access: viewModel.access(for: offer),
+            primaryLabel: primaryLabel(for: offer, compact: false),
+            needsInstall: viewModel.needsInstall(offer),
+            isResolving: viewModel.resolving == offer.id,
+            fitsLabel: fitsLabel,
+            open: { Task { await viewModel.primaryAction(offer) } },
+            menu: menuActions(for: offer)
+        )
+    }
+
+    private func tile(_ offer: DigitalOffer, isPad: Bool = false) -> some View {
+        OfferTile(
+            offer: offer,
+            access: viewModel.access(for: offer),
+            primaryLabel: primaryLabel(for: offer, compact: true),
+            needsInstall: viewModel.needsInstall(offer),
+            isResolving: viewModel.resolving == offer.id,
+            isPad: isPad,
+            open: { Task { await viewModel.primaryAction(offer) } },
+            menu: menuActions(for: offer)
+        )
     }
 
     private func primaryLabel(for offer: DigitalOffer, compact: Bool) -> String {
@@ -175,6 +244,13 @@ public struct DigitalView: View {
                 .foregroundStyle(Color.statusDanger)
                 .cardStyle()
         }
+    }
+}
+
+private extension Array {
+    /// Rows of the mosaic: `[a, b, c, d]` in rows of 3 → `[[a, b, c], [d]]`.
+    func chunked(into size: Int) -> [[Element]] {
+        stride(from: 0, to: count, by: size).map { Array(self[$0..<Swift.min($0 + size, count)]) }
     }
 }
 
@@ -247,6 +323,8 @@ struct FeaturedOfferCard: View {
     let primaryLabel: String
     let needsInstall: Bool
     let isResolving: Bool
+    /// iPad: the button keeps the width of its label and the service description shows.
+    var fitsLabel = false
     let open: () -> Void
     let menu: ServiceMenu.Actions
 
@@ -258,7 +336,10 @@ struct FeaturedOfferCard: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(offer.category).font(.caption.weight(.bold)).textCase(.uppercase).opacity(0.8)
                 Text(offer.provider).font(.title.weight(.heavy))
-                Text(offer.quota).font(.subheadline).opacity(0.85)
+                Text(fitsLabel ? "\(offer.summary) · \(offer.quota)" : offer.quota)
+                    .font(.subheadline)
+                    .opacity(0.85)
+                    .lineLimit(fitsLabel ? 3 : nil)
                 if access == .appInstalled {
                     AccessLine(access: access, onDark: true)
                         .padding(.horizontal, 9)
@@ -280,16 +361,17 @@ struct FeaturedOfferCard: View {
                             Text(primaryLabel)
                         }
                     }
-                    .frame(maxWidth: .infinity)
+                    .frame(maxWidth: fitsLabel ? nil : .infinity)
                 }
                 .buttonStyle(.prominent(tint: .white, foreground: Color(hex: 0x1C1B22), size: .large, isLoading: isResolving))
                 .disabled(isResolving)
+                .fixedSize(horizontal: fitsLabel, vertical: false)
                 ServiceMenu(title: offer.provider, actions: menu, large: true)
             }
         }
         .foregroundStyle(.white)
         .padding(20)
-        .frame(maxWidth: .infinity, minHeight: 230, alignment: .leading)
+        .frame(maxWidth: .infinity, minHeight: 230, maxHeight: fitsLabel ? .infinity : nil, alignment: .leading)
         .background {
             // Decoration pinned to the top-right corner (not the center): it no longer slides
             // under the title when the card widens (iPad, unfolded iPhone Duo).
@@ -315,6 +397,8 @@ struct OfferTile: View {
     let primaryLabel: String
     let needsInstall: Bool
     let isResolving: Bool
+    /// iPad: description shown, access line and button on the same bottom row.
+    var isPad = false
     let open: () -> Void
     let menu: ServiceMenu.Actions
 
@@ -337,40 +421,108 @@ struct OfferTile: View {
                     .foregroundStyle(Color.inkSecondary)
                     .lineLimit(2)
                 AccessLine(access: access).padding(.top, 2)
+                if isPad {
+                    Text(offer.summary)
+                        .font(.footnote)
+                        .foregroundStyle(Color.inkSecondary)
+                        .lineLimit(3)
+                        .padding(.top, 4)
+                }
             }
             Spacer(minLength: 0)
-            Button(action: open) {
-                Group {
-                    if isResolving {
-                        ProgressView()
-                    } else if needsInstall {
-                        Label(primaryLabel, systemImage: "arrow.down")
-                    } else {
-                        Text(primaryLabel)
-                    }
+            if isPad {
+                // Button alone at the bottom, the width of its label.
+                HStack {
+                    Spacer(minLength: 0)
+                    TileButton(label: primaryLabel, access: access, needsInstall: needsInstall, isResolving: isResolving, fillsWidth: false, action: open)
                 }
-                .font(.subheadline.weight(.bold))
-                .foregroundStyle(buttonForeground)
-                .frame(maxWidth: .infinity, minHeight: 36)
-                .background(buttonBackground, in: Capsule())
-                .contentShape(Capsule())
+            } else {
+                TileButton(label: primaryLabel, access: access, needsInstall: needsInstall, isResolving: isResolving, fillsWidth: true, action: open)
             }
-            .buttonStyle(.plain)
-            .disabled(isResolving)
         }
-        .padding(14)
-        .frame(maxWidth: .infinity, minHeight: 200, alignment: .leading)
-        .background(Color.surfaceCard, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .padding(isPad ? 16 : 14)
+        .frame(maxWidth: .infinity, minHeight: 200, maxHeight: isPad ? .infinity : nil, alignment: .leading)
+        .background(Color.surfaceCard, in: RoundedRectangle(cornerRadius: isPad ? 26 : 24, style: .continuous))
+    }
+}
+
+/// Last service on iPad (Eurêka and musicMe): a horizontal banner across the whole mosaic.
+struct OfferBanner: View {
+    let offer: DigitalOffer
+    let access: ServiceAccess
+    let primaryLabel: String
+    let needsInstall: Bool
+    let isResolving: Bool
+    let open: () -> Void
+    let menu: ServiceMenu.Actions
+
+    var body: some View {
+        let colors = BrandArtwork.colors(for: offer.colorSeed)
+        HStack(spacing: 16) {
+            Image(systemName: offer.systemImage)
+                .font(.title3)
+                .foregroundStyle(BrandArtwork.foreground(for: offer.colorSeed))
+                .frame(width: 52, height: 52)
+                .background(colors.background, in: RoundedRectangle(cornerRadius: 15, style: .continuous))
+            VStack(alignment: .leading, spacing: 2) {
+                Text(offer.category).font(.headline).foregroundStyle(Color.ink)
+                Text(verbatim: "\(offer.provider) · \(offer.summary)")
+                    .font(.footnote)
+                    .foregroundStyle(Color.inkSecondary)
+                    .lineLimit(2)
+            }
+            Spacer(minLength: 8)
+            AccessLine(access: access)
+            TileButton(label: primaryLabel, access: access, needsInstall: needsInstall, isResolving: isResolving, fillsWidth: false, action: open)
+            ServiceMenu(title: offer.category, actions: menu)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.surfaceCard, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+    }
+}
+
+/// Button of a service tile: filled when the app is present, light purple to install, neutral for the web.
+struct TileButton: View {
+    let label: String
+    let access: ServiceAccess
+    let needsInstall: Bool
+    let isResolving: Bool
+    /// iPhone: across the tile; iPad: the width of the label.
+    let fillsWidth: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Group {
+                if isResolving {
+                    ProgressView()
+                } else if needsInstall {
+                    Label(label, systemImage: "arrow.down")
+                } else {
+                    Text(label)
+                }
+            }
+            .font(.subheadline.weight(.bold))
+            .foregroundStyle(foreground)
+            .padding(.horizontal, fillsWidth ? 0 : 18)
+            .frame(maxWidth: fillsWidth ? .infinity : nil, minHeight: 36)
+            .background(background, in: Capsule())
+            .contentShape(Capsule())
+        }
+        .buttonStyle(.plain)
+        .disabled(isResolving)
+        .fixedSize(horizontal: !fillsWidth, vertical: false)
     }
 
-    /// Filled when the app is present, light purple to install, neutral for the web.
-    private var buttonBackground: Color {
+    private var background: Color {
         if access == .appInstalled { return .brandVioletDeep }
         if needsInstall { return .brandViolet.opacity(0.14) }
         return Color.surfaceGrouped
     }
 
-    private var buttonForeground: Color {
+    private var foreground: Color {
         if access == .appInstalled { return Color(light: 0xFFFFFF, dark: 0x1C1B22) }
         if needsInstall { return .brandVioletDeep }
         return .ink
