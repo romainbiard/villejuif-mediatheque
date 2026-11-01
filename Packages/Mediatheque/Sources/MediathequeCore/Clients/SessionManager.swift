@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import BokehAPI
 import Dependencies
 import Foundation
@@ -7,8 +11,8 @@ public enum AuthError: Error, Equatable, Sendable {
     case notLoggedIn
 }
 
-/// Ouvre la session web par le formulaire et la rouvre seule quand elle expire.
-/// La session expire vite : chaque appel authentifié passe par `perform`.
+/// Opens the web session through the form and reopens it automatically when it expires.
+/// The session expires quickly: every authenticated call goes through `perform`.
 public actor SessionManager {
     private let http: HTTPClient
     private let keychain: KeychainClient
@@ -19,7 +23,7 @@ public actor SessionManager {
         self.keychain = keychain
     }
 
-    /// Connexion explicite (écran Connexion). Les identifiants ne sont gardés qu'en cas de succès.
+    /// Explicit sign-in (Sign-in screen). Credentials are only kept on success.
     @discardableResult
     public func login(_ credentials: Credentials) async throws -> Patron {
         let patron = try await openSession(credentials)
@@ -27,14 +31,14 @@ public actor SessionManager {
         return patron
     }
 
-    /// Rouvre la session avec les identifiants du trousseau, `nil` s'il n'y en a pas.
+    /// Reopens the session with the keychain credentials, `nil` if there are none.
     public func restore() async throws -> Patron? {
         guard let credentials = try keychain.load() else { return nil }
         return try await reopen(with: credentials)
     }
 
-    /// Demande d'e-mail de réinitialisation. Le formulaire refuse un envoi
-    /// moins de 2 s après son affichage (`minimum_time`), d'où l'attente.
+    /// Requests a password reset email. The form rejects a submission
+    /// less than 2 s after it is displayed (`minimum_time`), hence the wait.
     public func requestPasswordReset(cardNumber: String) async throws {
         let page = try await http.string(for: .lostPasswordPage)
         let token = try HTMLParsers.csrfToken(in: page)
@@ -48,7 +52,7 @@ public actor SessionManager {
         try? keychain.delete()
     }
 
-    /// Exécute `operation` ; si la session a expiré, se reconnecte une fois et rejoue.
+    /// Runs `operation`; if the session has expired, signs in again once and retries.
     public func perform<T: Sendable>(_ operation: @Sendable () async throws -> T) async throws -> T {
         do {
             return try await operation()
@@ -59,7 +63,7 @@ public actor SessionManager {
         }
     }
 
-    /// Une seule connexion à la fois, même si plusieurs écrans détectent l'expiration ensemble.
+    /// Only one sign-in at a time, even if several screens detect the expiry together.
     private func reopen(with credentials: Credentials) async throws -> Patron {
         if let loginTask { return try await loginTask.value }
         let task = Task { try await openSession(credentials) }

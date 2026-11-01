@@ -32,8 +32,8 @@ targets:
         CFBundleDisplayName: Ma médiathèque
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
-        # Écran de lancement système : blason blanc sur le magenta de la charte, centré sur tout l'écran.
-        # SplashOverlay reprend exactement cette image au démarrage, puis s'efface vers l'app.
+        # System launch screen: white crest on the brand magenta, centered on the whole screen.
+        # SplashOverlay reuses exactly this image at startup, then fades into the app.
         UILaunchScreen:
           UIColorName: LaunchBackground
           UIImageName: LaunchCrest
@@ -45,21 +45,21 @@ targets:
           [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         NSCameraUsageDescription: Scanner le code-barres d'un livre ou de votre carte d'abonné.
         NSFaceIDUsageDescription: Ouvrir votre compte lecteur sans saisir votre mot de passe.
-        # Apps des partenaires du numérique : savoir si elles sont installées (« Ouvrir » ou « Installer »).
-        # musicMe n'a pas de scheme.
+        # Digital partner apps: detect whether they are installed ("Ouvrir" or "Installer").
+        # musicMe has no scheme.
         LSApplicationQueriesSchemes: [arte-mednum, cafeyn, com.toutapprendre.toutapprendre, baobabapp, izneo]
         UIBackgroundModes: [fetch]
         BGTaskSchedulerPermittedIdentifiers: [com.rbiard.mediatheques-villejuif.refresh]
     entitlements:
       path: App/App.entitlements
       properties:
-        # Partagé par l'app, le widget et les raccourcis : snapshot, boîte de notifications, réglages.
+        # Shared by the app, the widget and the shortcuts: snapshot, notification inbox, settings.
         com.apple.security.application-groups: [group.com.rbiard.mediatheques-villejuif]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.rbiard.mediatheques-villejuif
-        # Sans accents : avec « é », usernotificationsd ne relie pas le bundle à son exécutable
-        # (normalisation Unicode) et refuse toute demande de notifications.
+        # No accents: with "é", usernotificationsd doesn't link the bundle to its executable
+        # (Unicode normalization) and rejects every notification request.
         PRODUCT_NAME: MaMediatheque
         TARGETED_DEVICE_FAMILY: "1,2"
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
@@ -98,7 +98,7 @@ targets:
     entitlements:
       path: Widget/Widget.entitlements
       properties:
-        # Partagé par l'app, le widget et les raccourcis : snapshot, boîte de notifications, réglages.
+        # Shared by the app, the widget and the shortcuts: snapshot, notification inbox, settings.
         com.apple.security.application-groups: [group.com.rbiard.mediatheques-villejuif]
     settings:
       base:

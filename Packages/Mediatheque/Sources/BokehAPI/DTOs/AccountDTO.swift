@@ -1,6 +1,10 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
-/// `GET /api/user/account`, accessible avec le seul cookie de session.
+/// `GET /api/user/account`, accessible with the session cookie alone.
 public struct AccountResponseDTO: Decodable, Sendable {
     public let account: AccountDTO
 }
@@ -84,8 +88,8 @@ public struct AccountDTO: Decodable, Sendable {
     }
 
     public struct Preferences: Decodable, Sendable {
-        /// Lettres d'information souscrites. Le format d'un élément n'a jamais été vu (liste vide) :
-        /// on ne lit que leur nombre.
+        /// Subscribed newsletters. The format of an item has never been seen (empty list):
+        /// we only read how many there are.
         public let newsletters: [Opaque]
         public let sendingChannel: String?
         enum CodingKeys: String, CodingKey {
@@ -94,13 +98,13 @@ public struct AccountDTO: Decodable, Sendable {
         }
     }
 
-    /// Carte rattachée au compte. Son `id` est l'identifiant abonné des routes `/abonne/...`.
+    /// Card linked to the account. Its `id` is the patron identifier for the `/abonne/...` routes.
     public struct LinkedCard: Decodable, Sendable {
         public let id: Int
         public let label: String?
     }
 
-    /// Valeur JSON quelconque, ignorée.
+    /// Any JSON value, ignored.
     public struct Opaque: Decodable, Sendable {
         public init(from decoder: any Decoder) throws {}
     }
@@ -123,7 +127,7 @@ public struct AccountDTO: Decodable, Sendable {
     }
 }
 
-/// `GET /api/user/loans` et `/api/user/loans/history`.
+/// `GET /api/user/loans` and `/api/user/loans/history`.
 public struct LoansResponseDTO: Decodable, Sendable {
     public let loans: [LoanDTO]
 }
@@ -134,7 +138,7 @@ public struct RecordRefDTO: Decodable, Sendable {
 }
 
 public struct LoanDTO: Decodable, Sendable {
-    /// `{idAbonné}_{idPrêt}`, réutilisable tel quel pour `prolongerPret`.
+    /// `{idAbonné}_{idPrêt}`, reusable as is for `prolongerPret`.
     public let id: String
     public let title: String
     public let author: String
@@ -148,7 +152,7 @@ public struct LoanDTO: Decodable, Sendable {
     }
 }
 
-/// `GET /api/user/holds`. Le rang n'y figure pas (seulement dans le HTML du compte).
+/// `GET /api/user/holds`. The queue position isn't included (only in the account HTML).
 public struct HoldsResponseDTO: Decodable, Sendable {
     public let holds: [HoldDTO]
 }
@@ -157,14 +161,14 @@ public struct HoldDTO: Decodable, Sendable {
     public let id: String
     public let title: String
     public let author: String
-    /// Texte libre, par exemple « Pas disponible avant le 14/11/2026 ».
+    /// Free text, e.g. "Pas disponible avant le 14/11/2026".
     public let status: String
-    /// Lieu de retrait.
+    /// Pickup location.
     public let library: String
     public let record: RecordRefDTO?
 }
 
-/// Réponse JSON des popups AJAX (réservation…).
+/// JSON response from AJAX popups (holds…).
 public struct PopupDTO: Decodable, Sendable {
     public let result: String
     public let title: String?

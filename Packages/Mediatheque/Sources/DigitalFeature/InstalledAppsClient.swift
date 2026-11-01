@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import DependenciesMacros
 import Foundation
@@ -5,12 +9,12 @@ import Foundation
 import UIKit
 #endif
 
-/// Savoir si l'app d'un partenaire est installée, par son scheme.
-/// iOS ne répond que pour les schemes listés dans `LSApplicationQueriesSchemes` (project.yml).
+/// Tells whether a partner's app is installed, by its scheme.
+/// iOS only answers for schemes listed in `LSApplicationQueriesSchemes` (project.yml).
 @DependencyClient
 public struct InstalledAppsClient: Sendable {
     public var isInstalled: @MainActor @Sendable (_ urlScheme: String) -> Bool = { _ in false }
-    /// Ouvre l'app ; `false` seulement si iOS a refusé (le repli web prend alors le relais).
+    /// Opens the app; `false` only if iOS refused (the web fallback then takes over).
     public var open: @MainActor @Sendable (_ url: URL) async -> Bool = { _ in false }
 }
 
@@ -26,10 +30,10 @@ extension InstalledAppsClient: DependencyKey {
         },
         open: { url in
             #if canImport(UIKit)
-            // `UIApplication.open` directement : l'`openURL` de SwiftUI hors de toute vue répond
-            // « échec » au retour dans l'app, et déclenchait à tort le repli web.
+            // `UIApplication.open` directly: SwiftUI's `openURL` outside any view reports
+            // "failure" on returning to the app, and wrongly triggered the web fallback.
             let opened = await UIApplication.shared.open(url)
-            // Partie en arrière-plan pendant l'essai : l'app s'est bien ouverte.
+            // Went to the background during the attempt: the app did open.
             return opened || UIApplication.shared.applicationState != .active
             #else
             return false

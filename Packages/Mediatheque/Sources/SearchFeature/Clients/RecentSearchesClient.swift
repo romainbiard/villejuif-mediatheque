@@ -1,8 +1,12 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import DependenciesMacros
 import Foundation
 
-/// Recherches récentes, stockées sur l'appareil.
+/// Recent searches, stored on the device.
 @DependencyClient
 public struct RecentSearchesClient: Sendable {
     public var load: @Sendable () -> [String] = { [] }

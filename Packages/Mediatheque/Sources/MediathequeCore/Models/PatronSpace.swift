@@ -1,6 +1,10 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
-/// Une liste d'envies de l'abonné (« panier » côté Bokeh).
+/// A patron's wish list ("panier" on the Bokeh side).
 public struct Selection: Identifiable, Hashable, Sendable {
     public let id: Int
     public let basketID: Int?
@@ -18,12 +22,12 @@ public struct Selection: Identifiable, Hashable, Sendable {
         self.coverURLs = coverURLs
     }
 
-    /// Les trois sélections créées par le site pour chaque abonné.
+    /// The three selections the site creates for each patron.
     public static let defaultNames = ["Mes préférés", "Déjà lu", "À lire"]
     public var isDefault: Bool { Self.defaultNames.contains(name) }
 }
 
-/// Un document emprunté que l'abonné peut noter.
+/// A borrowed document the patron can rate.
 public struct RecordToRate: Identifiable, Hashable, Sendable {
     public let recordID: Int
     public let recordKey: String
@@ -69,7 +73,7 @@ public struct Suggestion: Identifiable, Hashable, Sendable {
     }
 }
 
-/// Suggestion d'achat à envoyer (formulaire `suggestion-achat-add`).
+/// Purchase suggestion to send (`suggestion-achat-add` form).
 public struct SuggestionDraft: Hashable, Sendable {
     public var kind: SuggestionKind = .book
     public var title = ""
@@ -79,13 +83,13 @@ public struct SuggestionDraft: Hashable, Sendable {
 
     public init() {}
 
-    /// Titre et auteur sont obligatoires côté site.
+    /// Title and author are required by the site.
     public var isValid: Bool {
         !title.trimmingCharacters(in: .whitespaces).isEmpty && !author.trimmingCharacters(in: .whitespaces).isEmpty
     }
 }
 
-/// Types proposés par le formulaire, codes `DocType` du site (les plus courants).
+/// Types offered by the form, the site's `DocType` codes (the most common ones).
 public enum SuggestionKind: String, CaseIterable, Hashable, Sendable, Identifiable {
     case book = "1"
     case largePrint = "19"
@@ -99,7 +103,7 @@ public enum SuggestionKind: String, CaseIterable, Hashable, Sendable, Identifiab
 
     public var id: String { rawValue }
 
-    /// La BD n'a pas de type propre sur le site : on l'envoie comme un livre, précisé en commentaire.
+    /// Comics have no type of their own on the site: we send them as a book, noted in the comment.
     public var docTypeCode: String { self == .comic ? SuggestionKind.book.rawValue : rawValue }
 
     public var label: String {
@@ -117,7 +121,7 @@ public enum SuggestionKind: String, CaseIterable, Hashable, Sendable, Identifiab
     }
 }
 
-/// Coordonnées modifiables en ligne (formulaire `modifier`). Le nom et l'adresse se changent à l'accueil.
+/// Contact details editable online (`modifier` form). Name and address are changed at the front desk.
 public struct ContactDetails: Hashable, Sendable {
     public var nickname: String
     public var email: String
@@ -132,7 +136,7 @@ public struct ContactDetails: Hashable, Sendable {
     }
 }
 
-/// `favoriteSendingChannel` du site.
+/// The site's `favoriteSendingChannel`.
 public enum SendingChannel: String, CaseIterable, Hashable, Sendable, Identifiable {
     case any = "0"
     case email = "1"
@@ -152,7 +156,7 @@ public enum SendingChannel: String, CaseIterable, Hashable, Sendable, Identifiab
 }
 
 public enum ProfileError: Error, Equatable, Sendable {
-    /// Le site a refusé le formulaire, avec son message.
+    /// The site rejected the form, with its message.
     case rejected(String)
     case missingPatronID
 }

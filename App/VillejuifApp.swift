@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import BackgroundTasks
 import MediathequeCore
 import SwiftUI
@@ -11,8 +15,8 @@ struct VillejuifApp: App {
     nonisolated static let refreshTaskID = "com.rbiard.mediatheques-villejuif.refresh"
 
     init() {
-        // Jaquettes et affiches (AsyncImage passe par URLSession.shared) : le cache par défaut,
-        // quelques Mo, se vide dès qu'on fait défiler une recherche. Les images restent ainsi d'un lancement à l'autre.
+        // Covers and posters (AsyncImage goes through URLSession.shared): the default cache,
+        // a few MB, empties as soon as you scroll through a search. This way images persist from one launch to the next.
         URLCache.shared = URLCache(memoryCapacity: 50 * 1024 * 1024, diskCapacity: 300 * 1024 * 1024)
     }
 
@@ -29,15 +33,15 @@ struct VillejuifApp: App {
         .onChange(of: scenePhase) { _, phase in
             if phase == .background { Self.scheduleRefresh() }
         }
-        // Réveil en tâche de fond : snapshot pour le widget, rappels, réservations arrivées.
-        // La session est rouverte au besoin avec le trousseau par `SessionManager`.
+        // Background wake-up: snapshot for the widget, reminders, holds that have arrived.
+        // `SessionManager` restores the session from the keychain when needed.
         .backgroundTask(.appRefresh(Self.refreshTaskID)) {
             Self.scheduleRefresh()
             _ = try? await AccountSync.run(settings: .current())
         }
     }
 
-    /// Une demande toutes les 6 heures environ ; iOS choisit le moment réel.
+    /// One request roughly every 6 hours; iOS picks the actual time.
     nonisolated static func scheduleRefresh() {
         let request = BGAppRefreshTaskRequest(identifier: refreshTaskID)
         request.earliestBeginDate = Date(timeIntervalSinceNow: 6 * 3600)

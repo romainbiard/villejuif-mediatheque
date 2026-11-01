@@ -1,10 +1,14 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 #if os(iOS)
 import DesignSystem
 import MediathequeCore
 import StoreKit
 import SwiftUI
 
-/// Onglet Numérique : un lanceur des apps des fournisseurs, pas une copie de leur catalogue.
+/// Digital tab: a launcher for the providers' apps, not a copy of their catalog.
 public struct DigitalView: View {
     @Environment(SessionStore.self) private var session
     @State private var viewModel = DigitalViewModel()
@@ -53,7 +57,7 @@ public struct DigitalView: View {
             }
             .background(Color.surfaceGrouped)
             .navigationTitle("Numérique")
-            // La fiche App Store part une fois la feuille refermée : on ne présente pas par-dessus une feuille qui s'en va.
+            // The App Store sheet is shown once the sheet has closed: never present over a sheet that is going away.
             .sheet(item: $helpOffer, onDismiss: presentStoreIfNeeded) { offer in
                 HowItWorksSheet(
                     offer: offer,
@@ -115,7 +119,7 @@ public struct DigitalView: View {
     private func menuActions(for offer: DigitalOffer) -> ServiceMenu.Actions {
         ServiceMenu.Actions(
             connect: viewModel.canConnectApp(offer) ? { Task { await viewModel.connectThroughPortal(offer) } } : nil,
-            // Pour une app nécessaire, le web est l'autre voie ; ailleurs, c'est déjà le bouton principal.
+            // For a required app, the web is the alternative; elsewhere, it is already the primary button.
             web: offer.app?.role == .required ? { Task { await viewModel.continueOnWeb(offer) } } : nil,
             howItWorks: { helpOffer = offer },
             tutorial: { openURL(offer.tutorialURL) }
@@ -129,7 +133,7 @@ public struct DigitalView: View {
         }
     }
 
-    /// « L'app est installée » : la connexion part toute seule au retour de l'App Store.
+    /// "L'app est installée": sign-in starts on its own when returning from the App Store.
     @ViewBuilder
     private var installedBanner: some View {
         if let id = viewModel.justInstalled, let offer = viewModel.offers.first(where: { $0.id == id }), let app = offer.app {
@@ -174,9 +178,9 @@ public struct DigitalView: View {
     }
 }
 
-// MARK: - Cartes
+// MARK: - Cards
 
-/// Ligne « où ça se consulte », sous le nom du service.
+/// "Where it is used" line, under the service name.
 struct AccessLine: View {
     let access: ServiceAccess
     var onDark = false
@@ -199,10 +203,10 @@ struct AccessLine: View {
     }
 }
 
-/// Bouton « … » d'un service : les actions secondaires, à la place de l'ancienne aide « ? ».
+/// A service's "…" button: the secondary actions, replacing the old "?" help.
 struct ServiceMenu: View {
     struct Actions {
-        /// Seulement quand l'app est installée : (re)connexion par le portail.
+        /// Only when the app is installed: (re)connection through the portal.
         var connect: (() -> Void)?
         var web: (() -> Void)?
         var howItWorks: () -> Void
@@ -246,7 +250,7 @@ struct FeaturedOfferCard: View {
     let open: () -> Void
     let menu: ServiceMenu.Actions
 
-    /// Place réservée à droite du texte pour le cercle « lecture » (104 pt + marges).
+    /// Space reserved to the right of the text for the play circle (104 pt + margins).
     static let artworkWidth: CGFloat = 116
 
     var body: some View {
@@ -263,7 +267,7 @@ struct FeaturedOfferCard: View {
                         .padding(.top, 2)
                 }
             }
-            // Le texte s'arrête avant le cercle « lecture », quelle que soit la largeur de la carte.
+            // The text stops before the play circle, whatever the card width.
             .padding(.trailing, Self.artworkWidth)
             .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 24)
@@ -287,8 +291,8 @@ struct FeaturedOfferCard: View {
         .padding(20)
         .frame(maxWidth: .infinity, minHeight: 230, alignment: .leading)
         .background {
-            // Décor accroché au coin supérieur droit (et non au centre) : il ne glisse plus
-            // sous le titre quand la carte s'élargit (iPad, iPhone Duo déplié).
+            // Decoration pinned to the top-right corner (not the center): it no longer slides
+            // under the title when the card widens (iPad, unfolded iPhone Duo).
             ZStack(alignment: .topTrailing) {
                 Color(hex: 0x17161C)
                 Circle().fill(Color.brandVioletDeep).frame(width: 260).offset(x: 110, y: -130)
@@ -359,7 +363,7 @@ struct OfferTile: View {
         .background(Color.surfaceCard, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
     }
 
-    /// Plein quand l'app est là, violet clair pour installer, neutre pour le web.
+    /// Filled when the app is present, light purple to install, neutral for the web.
     private var buttonBackground: Color {
         if access == .appInstalled { return .brandVioletDeep }
         if needsInstall { return .brandViolet.opacity(0.14) }
@@ -373,7 +377,7 @@ struct OfferTile: View {
     }
 }
 
-// MARK: - Comment ça marche
+// MARK: - How it works
 
 struct HowItWorksSheet: View {
     let offer: DigitalOffer
@@ -422,7 +426,7 @@ struct HowItWorksSheet: View {
                         .cardStyle()
                     }
 
-                    // App complémentaire (lecteur, musique, BD) : installée ou à installer, ici.
+                    // Companion app (reader, music, comics): installed or to install, here.
                     if let app = offer.app, app.role != .required {
                         companionRow(app)
                     }
@@ -494,7 +498,7 @@ struct HowItWorksSheet: View {
     }
 }
 
-// MARK: - Session chez le fournisseur
+// MARK: - Session with the provider
 
 struct PortalSheet: View {
     let session: PortalSession

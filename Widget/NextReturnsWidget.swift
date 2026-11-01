@@ -1,8 +1,12 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import MediathequeCore
 import SwiftUI
 import WidgetKit
 
-/// Widget « Prochains retours » : lit le snapshot du compte dans l'App Group.
+/// "Prochains retours" widget: reads the account snapshot from the App Group.
 @main
 struct VillejuifWidgetBundle: WidgetBundle {
     var body: some Widget {
@@ -38,7 +42,7 @@ struct Provider: TimelineProvider {
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
         let snapshot = SnapshotClient.liveValue.load()
-        // Une entrée par jour à minuit : « dans N jours » reste juste sans relancer l'app.
+        // One entry per day at midnight: "dans N jours" stays correct without relaunching the app.
         let calendar = Calendar.paris
         let today = calendar.startOfDay(for: .now)
         let entries = (0..<7).compactMap { offset in

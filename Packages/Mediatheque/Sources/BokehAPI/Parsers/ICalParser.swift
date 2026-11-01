@@ -1,6 +1,10 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
-/// Un VEVENT de `/cms/ical/id_article/{id}`.
+/// A VEVENT from `/cms/ical/id_article/{id}`.
 public struct ICalEventDTO: Sendable, Equatable {
     public var uid: String?
     public var summary: String?
@@ -16,8 +20,8 @@ public struct ICalEventDTO: Sendable, Equatable {
     public var categories: [String] = []
 }
 
-/// Parseur minimal RFC 5545 : il couvre ce que Bokeh produit
-/// (lignes repliées, `TZID=Europe/Paris`, `GEO`, `X-ALT-DESC`).
+/// Minimal RFC 5545 parser: it covers what Bokeh produces
+/// (folded lines, `TZID=Europe/Paris`, `GEO`, `X-ALT-DESC`).
 public enum ICalParser {
     public static func events(from text: String) -> [ICalEventDTO] {
         var events: [ICalEventDTO] = []
@@ -61,7 +65,7 @@ public enum ICalParser {
         }
     }
 
-    /// Recolle les lignes repliées (une ligne qui commence par une espace prolonge la précédente).
+    /// Unfolds folded lines (a line starting with a space continues the previous one).
     static func unfold(_ text: String) -> [String] {
         var lines: [String] = []
         for raw in text.replacingOccurrences(of: "\r\n", with: "\n").split(separator: "\n", omittingEmptySubsequences: false) {
@@ -101,8 +105,8 @@ public enum ICalParser {
         return formatter.date(from: value)
     }
 
-    /// `NOM;PARAM=val;…:valeur`. Bokeh produit parfois des paramètres étranges
-    /// (`ATTACH;X-BKH-=IMAGE:https://…`) : on coupe au premier `:` hors guillemets.
+    /// `NOM;PARAM=val;…:valeur`. Bokeh sometimes produces odd parameters
+    /// (`ATTACH;X-BKH-=IMAGE:https://…`): we split at the first `:` outside quotes.
     struct Property {
         let name: String
         let parameters: [String: String]

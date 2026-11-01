@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import DesignSystem
 import MediathequeCore
 import SwiftUI
@@ -197,7 +201,7 @@ struct HoldRow: View {
     let isCancelling: Bool
     let cancel: () -> Void
 
-    /// « Pas avant le 14 nov. » plutôt que le texte brut du site quand une date est donnée.
+    /// "Pas avant le 14 nov." rather than the site's raw text when a date is given.
     private var statusText: String {
         guard !hold.isReadyForPickup, let date = hold.expectedDate else { return hold.statusText }
         return "Pas avant le \(date.formatted(.dateTime.day().month(.abbreviated)))"
@@ -234,7 +238,7 @@ struct HoldRow: View {
     }
 }
 
-/// Message temporaire en verre en bas de l'écran.
+/// Temporary glass message at the bottom of the screen.
 struct MessageToast: View {
     let message: String?
     let dismiss: () -> Void

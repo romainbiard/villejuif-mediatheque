@@ -1,9 +1,13 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
-/// Réponse parlée à « Quand dois-je rendre mes livres ? » (Siri, Raccourcis, Spotlight).
-/// Lue dans le snapshot de l'appareil : pas de réseau, et rien d'autre que ce que la carte du widget montre déjà.
+/// Spoken answer to "Quand dois-je rendre mes livres ?" (Siri, Shortcuts, Spotlight).
+/// Read from the on-device snapshot: no network, and nothing beyond what the widget card already shows.
 public enum ReturnsSummary {
-    /// Sans snapshot (jamais connecté, ou déconnecté), invite à se connecter.
+    /// Without a snapshot (never signed in, or signed out), prompts to sign in.
     public static func sentence(for snapshot: AccountSnapshot?, now: Date, calendar: Calendar) -> String {
         guard let snapshot else {
             return "Connectez-vous dans l'app Ma médiathèque pour suivre vos prêts."
@@ -28,7 +32,7 @@ public enum ReturnsSummary {
         return "Vous devez rendre \(what) \(when(first.dueDate, now: now, calendar: calendar)).\(more)"
     }
 
-    /// « aujourd'hui », « demain », « dans 3 jours, le jeudi 5 novembre »…
+    /// "aujourd'hui", "demain", "dans 3 jours, le jeudi 5 novembre"…
     static func when(_ date: Date, now: Date, calendar: Calendar) -> String {
         let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: now), to: calendar.startOfDay(for: date)).day ?? 0
         let french = Locale(identifier: "fr_FR")

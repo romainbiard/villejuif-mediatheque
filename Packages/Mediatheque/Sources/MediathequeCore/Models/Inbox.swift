@@ -1,21 +1,25 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
-/// Une entrée du centre de notifications (la cloche de Mon compte).
-/// Le site n'a pas d'API de notifications : tout est déduit des prêts, des réservations
-/// et du message de la médiathèque, puis gardé sur l'appareil.
+/// An entry in the notification center (the bell in Mon compte).
+/// The site has no notifications API: everything is derived from loans, holds
+/// and the library's message, then kept on the device.
 public struct InboxItem: Identifiable, Codable, Hashable, Sendable {
     public enum Kind: String, Codable, Hashable, Sendable {
         case loanDueSoon, loanLate, holdReady, libraryMessage
     }
 
-    /// Stable d'une synchronisation à l'autre : c'est ce qui évite les doublons.
+    /// Stable from one sync to the next: this is what prevents duplicates.
     public let id: String
     public let kind: Kind
     public let title: String
     public let body: String
     public let date: Date
     public var isRead: Bool
-    /// Prêt concerné, pour « Prolonger » depuis la liste.
+    /// Related loan, for "Prolonger" from the list.
     public let loanID: Loan.ID?
 
     public init(id: String, kind: Kind, title: String, body: String, date: Date, isRead: Bool = false, loanID: Loan.ID? = nil) {
@@ -32,7 +36,7 @@ public struct InboxItem: Identifiable, Codable, Hashable, Sendable {
 public struct Inbox: Codable, Hashable, Sendable {
     public private(set) var items: [InboxItem]
 
-    /// Durée de conservation de l'historique sur l'appareil.
+    /// How long the history is kept on the device.
     public static let retentionDays = 30
 
     public init(items: [InboxItem] = []) {
@@ -41,8 +45,8 @@ public struct Inbox: Codable, Hashable, Sendable {
 
     public var unreadCount: Int { items.count { !$0.isRead } }
 
-    /// Ajoute les nouvelles entrées (non lues), garde l'état lu des anciennes et oublie celles de plus de 30 jours.
-    /// Renvoie les entrées ajoutées.
+    /// Adds new entries (unread), keeps the read state of older ones and drops those older than 30 days.
+    /// Returns the added entries.
     @discardableResult
     public mutating func merge(_ fresh: [InboxItem], now: Date, calendar: Calendar) -> [InboxItem] {
         let known = Set(items.map(\.id))
@@ -65,7 +69,7 @@ public struct Inbox: Codable, Hashable, Sendable {
 }
 
 public enum InboxPlanner {
-    /// Entrées déduites du compte : retours proches ou en retard, réservations arrivées.
+    /// Entries derived from the account: upcoming or overdue returns, holds ready.
     public static func items(for snapshot: AccountSnapshot, daysBefore: Int, now: Date, calendar: Calendar) -> [InboxItem] {
         let today = calendar.startOfDay(for: now)
         let french = Locale(identifier: "fr_FR")
@@ -86,7 +90,7 @@ public enum InboxPlanner {
                     loanID: loan.id
                 ))
             case let .dueSoon(days) where days <= daysBefore:
-                // Daté du jour où le rappel aurait dû partir, jamais dans le futur.
+                // Dated to the day the reminder should have fired, never in the future.
                 let reminderDay = calendar.date(byAdding: .day, value: -daysBefore, to: due) ?? today
                 items.append(InboxItem(
                     id: "due-\(loan.id)-\(dueKey)",
@@ -113,7 +117,7 @@ public enum InboxPlanner {
         return items
     }
 
-    /// Message affiché par la médiathèque sur le compte (`account.message`).
+    /// Message shown by the library on the account (`account.message`).
     public static func libraryMessage(_ text: String, now: Date) -> InboxItem {
         InboxItem(
             id: "message-\(stableHash(text))",
@@ -124,7 +128,7 @@ public enum InboxPlanner {
         )
     }
 
-    /// `hashValue` change à chaque lancement : on prend un hachage FNV-1a, stable.
+    /// `hashValue` changes on every launch: we use a stable FNV-1a hash.
     static func stableHash(_ text: String) -> String {
         var hash: UInt64 = 0xcbf2_9ce4_8422_2325
         for byte in text.utf8 {

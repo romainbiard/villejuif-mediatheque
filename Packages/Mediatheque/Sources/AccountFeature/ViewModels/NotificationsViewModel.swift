@@ -1,9 +1,13 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import Foundation
 import MediathequeCore
 import Observation
 
-/// Centre de notifications : l'historique local, groupé par jour, avec « Prolonger » sur les retours.
+/// Notification center: the local history, grouped by day, with "Prolonger" on returns.
 @MainActor
 @Observable
 public final class NotificationsViewModel {
@@ -24,7 +28,7 @@ public final class NotificationsViewModel {
 
     public private(set) var inbox = Inbox()
     public private(set) var renewing: Set<Loan.ID> = []
-    /// Prêts prolongés depuis cet écran : le bouton disparaît.
+    /// Loans renewed from this screen: the button disappears.
     public private(set) var renewed: Set<Loan.ID> = []
     public private(set) var message: String?
     public private(set) var feedback: FeedbackEvent?
@@ -66,7 +70,7 @@ public final class NotificationsViewModel {
         feedback = .lightImpact
     }
 
-    /// Vrai si l'entrée porte un prêt encore à prolonger.
+    /// True if the entry carries a loan that can still be renewed.
     public func canRenew(_ item: InboxItem) -> Bool {
         guard let loanID = item.loanID else { return false }
         return !renewed.contains(loanID)
@@ -83,7 +87,7 @@ public final class NotificationsViewModel {
                 markRead(item)
                 message = "Prolongé jusqu'au \(newDueDate.formatted(.dateTime.day().month(.wide).locale(Locale(identifier: "fr_FR"))))"
                 feedback = .success
-                // Nouvelle date de retour : rappels et historique à jour.
+                // New due date: reminders and history brought up to date.
                 _ = try? await withDependencies(from: self) { try await AccountSync.run(settings: .current()) }
                 load()
             case .refused, nil:

@@ -1,12 +1,16 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import DependenciesMacros
 import Foundation
 import LocalAuthentication
 
-/// Face ID / Touch ID, pour verrouiller l'accès au compte à l'ouverture de l'app.
+/// Face ID / Touch ID, to lock access to the account when the app opens.
 @DependencyClient
 public struct BiometricClient: Sendable {
-    /// Nom du capteur disponible (« Face ID », « Touch ID »), `nil` s'il n'y en a pas.
+    /// Name of the available sensor ("Face ID", "Touch ID"), `nil` if there is none.
     public var availableKind: @Sendable () -> String? = { nil }
     public var authenticate: @Sendable (_ reason: String) async -> Bool = { _ in false }
 }
@@ -24,7 +28,7 @@ extension BiometricClient: DependencyKey {
             }
         },
         authenticate: { reason in
-            // Le code de l'appareil reste possible si la biométrie échoue.
+            // The device passcode remains an option if biometrics fail.
             (try? await LAContext().evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason)) ?? false
         }
     )

@@ -1,9 +1,13 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import Foundation
 import MediathequeCore
 import Observation
 
-// MARK: - Mes sélections
+// MARK: - My selections
 
 @MainActor
 @Observable
@@ -68,7 +72,7 @@ public final class SelectionDetailViewModel {
     public func load() async {
         if state.value == nil { state = .loading }
         do {
-            // Les sélections restent courtes : on charge toutes les pages d'un coup.
+            // Selections stay short: load all pages at once.
             var notices: [Notice] = []
             var page = 1
             while true {
@@ -100,7 +104,7 @@ public final class SelectionDetailViewModel {
     public func dismissMessage() { message = nil }
 }
 
-// MARK: - Mes avis
+// MARK: - My reviews
 
 @MainActor
 @Observable
@@ -130,7 +134,7 @@ public final class ReviewsViewModel {
         }
     }
 
-    /// Envoie l'avis. Renvoie `true` si la feuille peut se fermer.
+    /// Submits the review. Returns `true` if the sheet can close.
     public func submit(_ record: RecordToRate, rating: Int, title: String, text: String) async -> Bool {
         guard (1...5).contains(rating) else { return false }
         isSubmitting = true
@@ -152,7 +156,7 @@ public final class ReviewsViewModel {
     public func dismissMessage() { message = nil }
 }
 
-// MARK: - Mes suggestions
+// MARK: - My suggestions
 
 @MainActor
 @Observable
@@ -195,7 +199,7 @@ public final class SuggestionsViewModel {
     public func dismissMessage() { message = nil }
 }
 
-// MARK: - Mes informations
+// MARK: - My information
 
 @MainActor
 @Observable
@@ -219,7 +223,7 @@ public final class InformationViewModel {
         }
     }
 
-    /// Renvoie `true` si la feuille peut se fermer.
+    /// Returns `true` if the sheet can close.
     public func save(_ details: ContactDetails) async -> Bool {
         let email = details.email.trimmingCharacters(in: .whitespaces)
         guard email.isEmpty || email.wholeMatch(of: #/[^@\s]+@[^@\s]+\.[^@\s]+/#) != nil else {
@@ -242,14 +246,14 @@ public final class InformationViewModel {
         }
     }
 
-    /// Validation locale avant l'envoi. `nil` quand le nouveau mot de passe est acceptable.
+    /// Local validation before submitting. `nil` when the new password is acceptable.
     public static func passwordProblem(_ password: String, confirmation: String) -> String? {
         if password.isEmpty { return "Saisissez un nouveau mot de passe" }
         if password != confirmation { return "Les deux mots de passe ne correspondent pas" }
         return nil
     }
 
-    /// Renvoie `true` si la feuille peut se fermer.
+    /// Returns `true` if the sheet can close.
     public func changePassword(_ password: String, confirmation: String) async -> Bool {
         if let problem = Self.passwordProblem(password, confirmation: confirmation) {
             message = problem
@@ -260,7 +264,7 @@ public final class InformationViewModel {
         defer { isSaving = false }
         do {
             try await profile.changePassword(password)
-            // La reconnexion automatique utilise le trousseau : on y met le nouveau mot de passe.
+            // Automatic re-login uses the keychain: store the new password there.
             if let credentials = try? keychain.load() {
                 try? keychain.save(Credentials(cardNumber: credentials.cardNumber, password: password))
             }
@@ -277,7 +281,7 @@ public final class InformationViewModel {
     public func dismissMessage() { message = nil }
 }
 
-// MARK: - Mes configurations
+// MARK: - My settings
 
 @MainActor
 @Observable
@@ -296,11 +300,11 @@ public final class ProfileSettingsViewModel {
         newsletter = newsletterSubscribed
     }
 
-    /// « Face ID » ou « Touch ID », `nil` si l'appareil n'en a pas.
+    /// "Face ID" or "Touch ID", `nil` if the device has neither.
     public var biometricKind: String? { biometrics.availableKind() }
 
-    /// Après un changement des rappels : autorisation demandée à l'activation, rappels reprogrammés.
-    /// Renvoie `false` si iOS refuse les notifications.
+    /// After a reminder change: authorization requested on enabling, reminders rescheduled.
+    /// Returns `false` if iOS refuses notifications.
     public func remindersChanged(enabling: Bool) async -> Bool {
         if enabling, !(await notifications.requestAuthorization()) {
             message = "Autorisez les notifications dans Réglages pour recevoir les rappels"
@@ -356,7 +360,7 @@ public final class ProfileSettingsViewModel {
 // MARK: - Messages
 
 enum ProfileMessages {
-    /// « L'envoi n'a pas abouti », ou le message du site quand il refuse le formulaire.
+    /// "L'envoi n'a pas abouti", or the site's message when it rejects the form.
     static func failure(_ error: any Error, action: String) -> String {
         if case let ProfileError.rejected(reason) = error { return reason }
         return LoadError(error) == .offline ? "\(action) est impossible hors ligne" : "\(action) n'a pas abouti"

@@ -1,14 +1,18 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
-/// Horaires habituels d'une médiathèque, lus dans « Mardi : 13h - 19h ».
+/// A library's regular opening hours, parsed from "Mardi : 13h - 19h".
 public struct OpeningHours: Hashable, Sendable, Codable {
     public struct Slot: Hashable, Sendable, Codable {
-        /// Minutes depuis minuit.
+        /// Minutes since midnight.
         public let opens: Int
         public let closes: Int
     }
 
-    /// Créneaux par jour de la semaine, au sens de `Calendar` (1 = dimanche … 7 = samedi).
+    /// Time slots per weekday, as defined by `Calendar` (1 = Sunday … 7 = Saturday).
     public let slotsByWeekday: [Int: [Slot]]
 
     public init(slotsByWeekday: [Int: [Slot]]) {
@@ -19,7 +23,7 @@ public struct OpeningHours: Hashable, Sendable, Codable {
         "dimanche": 1, "lundi": 2, "mardi": 3, "mercredi": 4, "jeudi": 5, "vendredi": 6, "samedi": 7,
     ]
 
-    /// Lignes du site : « Mardi : 13h - 19h », « Samedi : 10h - 12h30 / 14h - 18h ».
+    /// Lines from the site: "Mardi : 13h - 19h", "Samedi : 10h - 12h30 / 14h - 18h".
     public init(lines: [String]) {
         var slots: [Int: [Slot]] = [:]
         for line in lines {
@@ -43,7 +47,7 @@ public struct OpeningHours: Hashable, Sendable, Codable {
         case closed(reopensAt: Date?)
     }
 
-    /// Ouvert ou fermé à `date`, et l'heure du prochain changement.
+    /// Open or closed at `date`, and the time of the next change.
     public func status(at date: Date, calendar: Calendar) -> Status {
         let weekday = calendar.component(.weekday, from: date)
         let minutes = calendar.component(.hour, from: date) * 60 + calendar.component(.minute, from: date)
@@ -64,13 +68,13 @@ public struct OpeningHours: Hashable, Sendable, Codable {
         return .closed(reopensAt: nil)
     }
 
-    /// Jour sans aucun créneau (dimanche et lundi pour le réseau).
+    /// Day with no time slot at all (Sunday and Monday for the network).
     public func isClosedAllDay(_ date: Date, calendar: Calendar) -> Bool {
         slotsByWeekday[calendar.component(.weekday, from: date)]?.isEmpty ?? true
     }
 }
 
-/// Fiche pratique d'une médiathèque.
+/// Practical info for a library.
 public struct LibraryInfo: Identifiable, Hashable, Sendable, Codable {
     public var id: String { library?.rawValue ?? slug }
     public let library: Library?

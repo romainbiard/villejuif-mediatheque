@@ -1,9 +1,13 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import Foundation
 import MediathequeCore
 import Observation
 
-/// « Quand » : calculé dans l'app, le site n'a pas ce filtre.
+/// "Quand": computed in the app, the website has no such filter.
 public enum AgendaPeriod: String, CaseIterable, Hashable, Sendable, Identifiable {
     case all, weekend, wednesdays, schoolHolidays
 
@@ -18,10 +22,10 @@ public enum AgendaPeriod: String, CaseIterable, Hashable, Sendable, Identifiable
         }
     }
 
-    /// Mercredis gardés : les 8 prochaines semaines.
+    /// Wednesdays kept: the next 8 weeks.
     static let wednesdayWeeks = 8
 
-    /// Jours couverts, à partir d'aujourd'hui. Vide pour `.all`.
+    /// Days covered, starting today. Empty for `.all`.
     public func days(from now: Date, calendar: Calendar) -> [Date] {
         let today = calendar.startOfDay(for: now)
         func adding(_ days: Int, to date: Date) -> Date? { calendar.date(byAdding: .day, value: days, to: date) }
@@ -29,7 +33,7 @@ public enum AgendaPeriod: String, CaseIterable, Hashable, Sendable, Identifiable
         case .all:
             return []
         case .weekend:
-            // Samedi et dimanche qui viennent, ou le week-end en cours.
+            // The coming Saturday and Sunday, or the current weekend.
             let weekday = calendar.component(.weekday, from: today)
             if weekday == 1 { return [today] }
             guard let saturday = adding((7 - weekday) % 7, to: today) else { return [] }
@@ -51,7 +55,7 @@ public enum AgendaPeriod: String, CaseIterable, Hashable, Sendable, Identifiable
     }
 }
 
-/// Filtres de l'agenda, appliqués localement : une seule requête ramène tous les événements.
+/// Agenda filters, applied locally: a single request fetches all events.
 public struct AgendaFilters: Hashable, Sendable {
     public var places: Set<String> = []
     public var types: Set<String> = []
@@ -75,7 +79,7 @@ public struct AgendaFilters: Hashable, Sendable {
 public final class AgendaViewModel {
     public private(set) var state: LoadState<[Event]> = .idle
     public private(set) var selectedDay: Date
-    /// Premier jour du mois affiché par le mini-calendrier (iPad).
+    /// First day of the month shown by the mini calendar (iPad).
     public private(set) var displayedMonth: Date
     public var filters = AgendaFilters() {
         didSet { feedback = .selection }
@@ -94,7 +98,7 @@ public final class AgendaViewModel {
         displayedMonth = Calendar.paris.dateInterval(of: .month, for: now)?.start ?? now
     }
 
-    /// `.reload` pour « tirer pour rafraîchir » : on ignore le cache, sans perdre la liste en cas d'échec.
+    /// `.reload` for pull-to-refresh: bypasses the cache, without losing the list on failure.
     public func load(_ policy: CachePolicy = .useCache) async {
         if state.value == nil { state = .loading }
         do {
@@ -111,18 +115,18 @@ public final class AgendaViewModel {
         feedback = .selection
     }
 
-    // MARK: Mini-calendrier (iPad)
+    // MARK: Mini calendar (iPad)
 
-    /// Les cases du mois affiché, lundi en premier : `nil` pour les cases vides du début.
+    /// Cells of the displayed month, Monday first: `nil` for the leading empty cells.
     public var monthGrid: [Date?] {
         guard let range = calendar.range(of: .day, in: .month, for: displayedMonth) else { return [] }
-        // weekday : 1 = dimanche ; décalage pour commencer la semaine le lundi.
+        // weekday: 1 = Sunday; offset so the week starts on Monday.
         let leading = (calendar.component(.weekday, from: displayedMonth) + 5) % 7
         let days = range.compactMap { calendar.date(byAdding: .day, value: $0 - 1, to: displayedMonth) }
         return Array(repeating: nil, count: leading) + days
     }
 
-    /// On ne remonte pas avant le mois en cours : l'agenda ne montre que l'avenir.
+    /// No going back before the current month: the agenda only shows the future.
     public var canShowPreviousMonth: Bool {
         guard let current = calendar.dateInterval(of: .month, for: now)?.start else { return false }
         return displayedMonth > current
@@ -137,7 +141,7 @@ public final class AgendaViewModel {
         moveMonth(by: 1)
     }
 
-    /// Les jours passés ne se choisissent pas.
+    /// Past days cannot be selected.
     public func isSelectable(_ day: Date) -> Bool {
         day >= calendar.startOfDay(for: now)
     }
@@ -152,9 +156,9 @@ public final class AgendaViewModel {
         filters = AgendaFilters()
     }
 
-    // MARK: Données dérivées
+    // MARK: Derived data
 
-    /// Les 14 prochains jours, pour le sélecteur.
+    /// The next 14 days, for the picker.
     public var days: [Date] {
         let today = calendar.startOfDay(for: now)
         return (0..<Self.visibleDays).compactMap { calendar.date(byAdding: .day, value: $0, to: today) }
@@ -164,22 +168,22 @@ public final class AgendaViewModel {
         (state.value ?? []).filter(filters.matches)
     }
 
-    /// Événements horaires du jour choisi.
+    /// Timed events on the selected day.
     public var eventsOfSelectedDay: [Event] {
         filteredEvents.filter { !$0.isAllDay && $0.occurs(on: selectedDay, calendar: calendar) }
     }
 
-    /// Expositions, prix… qui couvrent le jour choisi.
+    /// Exhibitions, prizes… that span the selected day.
     public var ongoingEvents: [Event] {
         filteredEvents.filter { $0.isAllDay && $0.occurs(on: selectedDay, calendar: calendar) }
     }
 
-    /// Vrai si un jour du sélecteur a au moins un événement horaire (point sous la date).
+    /// True if a picker day has at least one timed event (dot under the date).
     public func hasEvents(on day: Date) -> Bool {
         filteredEvents.contains { !$0.isAllDay && $0.occurs(on: day, calendar: calendar) }
     }
 
-    /// Prochain jour avec un événement après le jour choisi, pour l'état vide.
+    /// Next day with an event after the selected day, for the empty state.
     public var nextDayWithEvents: Date? {
         filteredEvents
             .compactMap { event -> Date? in
@@ -190,7 +194,7 @@ public final class AgendaViewModel {
             .min()
     }
 
-    /// Nombre d'événements à venir avec les filtres en cours (bouton « Voir N événements »).
+    /// Number of upcoming events with the current filters ("Voir N événements" button).
     public func upcomingCount(with filters: AgendaFilters) -> Int {
         let today = calendar.startOfDay(for: now)
         let periodDays = filters.period.days(from: now, calendar: calendar)
@@ -200,16 +204,16 @@ public final class AgendaViewModel {
         }.count
     }
 
-    // MARK: Période (« Quand »)
+    // MARK: Period ("Quand")
 
-    /// Une journée de la période choisie, avec ses événements horaires.
+    /// One day of the selected period, with its timed events.
     public struct PeriodDay: Identifiable, Equatable {
         public let day: Date
         public let events: [Event]
         public var id: Date { day }
     }
 
-    /// Jours de la période qui ont au moins un événement horaire.
+    /// Days of the period that have at least one timed event.
     public var periodDays: [PeriodDay] {
         filters.period.days(from: now, calendar: calendar).compactMap { day in
             let events = filteredEvents.filter { !$0.isAllDay && $0.occurs(on: day, calendar: calendar) }
@@ -217,13 +221,13 @@ public final class AgendaViewModel {
         }
     }
 
-    /// Expositions et événements longs qui couvrent au moins un jour de la période.
+    /// Exhibitions and long events that span at least one day of the period.
     public var periodOngoingEvents: [Event] {
         let days = filters.period.days(from: now, calendar: calendar)
         return filteredEvents.filter { event in event.isAllDay && days.contains { event.occurs(on: $0, calendar: calendar) } }
     }
 
-    /// Libellé sous le titre : « Samedi 31 octobre et dimanche 1er novembre », « Vacances de Noël »…
+    /// Label under the title: "Samedi 31 octobre et dimanche 1er novembre", "Vacances de Noël"…
     public var periodSummary: String? {
         let french = Locale(identifier: "fr_FR")
         let days = filters.period.days(from: now, calendar: calendar)
@@ -252,7 +256,7 @@ public final class AgendaViewModel {
     public var availableTypes: [String] { distinct(\.type) }
     public var availableAudiences: [String] { distinct(\.audience) }
 
-    /// Le réseau est fermé le dimanche et le lundi.
+    /// The network is closed on Sundays and Mondays.
     public func isLibraryClosingDay(_ day: Date) -> Bool {
         [1, 2].contains(calendar.component(.weekday, from: day))
     }
@@ -287,7 +291,7 @@ public final class EventDetailViewModel {
         }
     }
 
-    /// Lien iCal du site, pour l'ajout au calendrier.
+    /// The website's iCal link, for adding to the calendar.
     public var iCalURL: URL {
         URL(string: "https://mediatheque.villejuif.fr/cms/ical/id_article/\(event.id)")!
     }

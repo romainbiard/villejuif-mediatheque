@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import ConcurrencyExtras
 import Dependencies
 import DependenciesTestSupport
@@ -14,7 +18,7 @@ struct ReminderPlannerTests {
         let reminders = ReminderPlanner.loanReminders(
             for: SampleData.loans, daysBefore: 3, now: paris(2026, 10, 30, 9), calendar: .paris
         )
-        // Le Petit Prince (28/10) est déjà passé ; Sway (5/11) et Chien pourri (19/11) donnent 2 rappels chacun.
+        // Le Petit Prince (28/10) has already passed; Sway (5/11) and Chien pourri (19/11) give 2 reminders each.
         #expect(reminders.count == 4)
         #expect(reminders.first?.fireDate == paris(2026, 11, 2, 10))
         #expect(reminders.first?.body.contains("« Sway »") == true)
@@ -68,7 +72,7 @@ struct AccountSyncTests {
         #expect(saved.value?.loans.count == 3)
         #expect(scheduled.value.count == 4)
         #expect(delivered.value.map(\.title) == ["Murmuration vous attend"])
-        // Le 30/10 : Le Petit Prince en retard, Sway à rendre le 5/11 (J-6, hors fenêtre), Murmuration arrivé.
+        // On 30/10: Le Petit Prince overdue, Sway due on 5/11 (D-6, outside the window), Murmuration arrived.
         #expect(inbox.value?.items.map(\.kind).sorted { $0.rawValue < $1.rawValue } == [.holdReady, .loanLate])
     }
 

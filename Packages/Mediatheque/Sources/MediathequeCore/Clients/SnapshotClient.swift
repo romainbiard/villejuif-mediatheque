@@ -1,8 +1,12 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import DependenciesMacros
 import Foundation
 
-/// Lecture et écriture du snapshot dans le conteneur de l'App Group (partagé avec le widget).
+/// Reads and writes the snapshot in the App Group container (shared with the widget).
 @DependencyClient
 public struct SnapshotClient: Sendable {
     public var load: @Sendable () -> AccountSnapshot? = { nil }
@@ -26,7 +30,7 @@ extension SnapshotClient: DependencyKey {
         },
         save: { snapshot in
             guard let url = fileURL, let data = try? JSONEncoder().encode(snapshot) else { return }
-            // Protégé tant que l'appareil n'a pas été déverrouillé une première fois.
+            // Protected until the device has been unlocked once.
             try? data.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
         },
         clear: {

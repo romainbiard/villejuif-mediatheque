@@ -1,8 +1,12 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import DesignSystem
 import MediathequeCore
 import SwiftUI
 
-/// Feuille « Où voulez-vous le retirer ? », puis confirmation.
+/// "Où voulez-vous le retirer ?" sheet, then confirmation.
 struct HoldSheet: View {
     @State private var viewModel: HoldViewModel
     @Environment(\.dismiss) private var dismiss

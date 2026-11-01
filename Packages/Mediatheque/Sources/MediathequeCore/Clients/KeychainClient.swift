@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import DependenciesMacros
 import Foundation
@@ -13,7 +17,7 @@ public struct Credentials: Hashable, Sendable, Codable {
     }
 }
 
-/// Identifiants de l'abonné dans le trousseau, pour se reconnecter seul quand la session expire.
+/// Patron credentials in the keychain, to sign back in automatically when the session expires.
 @DependencyClient
 public struct KeychainClient: Sendable {
     public var load: @Sendable () throws -> Credentials?

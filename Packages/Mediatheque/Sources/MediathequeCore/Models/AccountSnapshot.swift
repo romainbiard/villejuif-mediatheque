@@ -1,7 +1,11 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
-/// Dernier état connu du compte, partagé avec le widget par l'App Group.
-/// C'est la seule persistance de l'app : un fichier JSON, pas de base de données.
+/// Last known state of the account, shared with the widget through the App Group.
+/// This is the app's only persistence: a JSON file, no database.
 public struct AccountSnapshot: Codable, Hashable, Sendable {
     public var loans: [Loan]
     public var holds: [Hold]
@@ -13,19 +17,19 @@ public struct AccountSnapshot: Codable, Hashable, Sendable {
         self.updatedAt = updatedAt
     }
 
-    /// Prochains retours, du plus urgent au plus lointain.
+    /// Upcoming returns, most urgent first.
     public var upcomingLoans: [Loan] {
         loans.sorted { $0.dueDate < $1.dueDate }
     }
 
-    /// Réservations devenues disponibles depuis `previous` (pour la notification « vous attend »).
+    /// Holds that became available since `previous` (for the "vous attend" notification).
     public func newlyReadyHolds(since previous: AccountSnapshot?) -> [Hold] {
         let wasReady = Set(previous?.holds.filter(\.isReadyForPickup).map(\.id) ?? [])
         return holds.filter { $0.isReadyForPickup && !wasReady.contains($0.id) }
     }
 }
 
-/// Rappel local à programmer.
+/// Local reminder to schedule.
 public struct Reminder: Hashable, Sendable {
     public let id: String
     public let title: String
@@ -34,12 +38,12 @@ public struct Reminder: Hashable, Sendable {
 }
 
 public enum ReminderPlanner {
-    /// Heure d'envoi des rappels de retour.
+    /// Time at which due-date reminders are sent.
     static let hour = 10
 
-    /// Un rappel `daysBefore` jours avant chaque retour, et un le jour même. Seuls les rappels futurs sont gardés.
+    /// One reminder `daysBefore` days before each due date, and one on the day itself. Only future reminders are kept.
     public static func loanReminders(for loans: [Loan], daysBefore: Int, now: Date, calendar: Calendar) -> [Reminder] {
-        // Les prêts qui tombent le même jour partagent un seul rappel.
+        // Loans due on the same day share a single reminder.
         let byDay = Dictionary(grouping: loans) { calendar.startOfDay(for: $0.dueDate) }
         return byDay.flatMap { day, loans -> [Reminder] in
             let titles = loans.map(\.title)

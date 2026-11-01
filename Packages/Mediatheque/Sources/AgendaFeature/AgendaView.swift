@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import DesignSystem
 import MediathequeCore
 import SwiftUI
@@ -8,7 +12,7 @@ public struct AgendaView: View {
     @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var contentWidth: CGFloat = .infinity
 
-    /// Mini-calendrier (320 pt), au moins deux cartes de 240 pt, marges.
+    /// Mini calendar (320 pt), at least two 240 pt cards, margins.
     static let columnsMinWidth: CGFloat = 900
 
     public init() {}
@@ -60,7 +64,7 @@ public struct AgendaView: View {
         .sensoryFeedback(.selection, trigger: viewModel.selectedDay)
     }
 
-    /// iPad : mini-calendrier et filtres rapides à gauche, grille de cartes à droite.
+    /// iPad: mini calendar and quick filters on the left, card grid on the right.
     private var regularLayout: some View {
         HStack(alignment: .top, spacing: 24) {
             ScrollView {
@@ -206,9 +210,9 @@ public struct AgendaView: View {
     }
 }
 
-// MARK: - Période
+// MARK: - Period
 
-/// Remplace le sélecteur de jours quand un filtre « Quand » est actif.
+/// Replaces the day picker when a "Quand" filter is active.
 struct PeriodHeader: View {
     let viewModel: AgendaViewModel
 
@@ -244,7 +248,7 @@ struct PeriodHeader: View {
     }
 }
 
-// MARK: - Sélecteur de jours
+// MARK: - Day picker
 
 struct DayStrip: View {
     let viewModel: AgendaViewModel
@@ -281,7 +285,7 @@ struct DayStrip: View {
 
 // MARK: - iPad
 
-/// Mini-calendrier du mois : points sous les jours avec un événement, jours de fermeture grisés.
+/// Month mini calendar: dots under days with an event, closed days greyed out.
 struct MonthCalendar: View {
     let viewModel: AgendaViewModel
 
@@ -342,7 +346,7 @@ struct MonthCalendar: View {
     }
 }
 
-/// Raccourcis « Quand » sous le mini-calendrier.
+/// "Quand" shortcuts under the mini calendar.
 struct QuickPeriods: View {
     let viewModel: AgendaViewModel
 
@@ -374,7 +378,7 @@ struct QuickPeriods: View {
     }
 }
 
-/// Grille de cartes d'événements, l'affiche en fond et un bandeau en verre.
+/// Grid of event cards, with the poster as background and a glass banner.
 struct EventGrid: View {
     let events: [Event]
 
@@ -389,7 +393,7 @@ struct EventGrid: View {
     }
 }
 
-// MARK: - Cartes
+// MARK: - Cards
 
 struct FeaturedEventCard: View {
     let event: Event
@@ -398,7 +402,7 @@ struct FeaturedEventCard: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            // L'affiche remplit la carte sans en imposer la largeur (grille de l'iPad).
+            // The poster fills the card without dictating its width (iPad grid).
             Color.clear.overlay { EventArtwork(event: event) }
             VStack(alignment: .leading, spacing: 6) {
                 HStack(spacing: 6) {
@@ -468,7 +472,7 @@ struct EventList: View {
 }
 
 enum EventFormatting {
-    /// Heures à la française (« 10:30 ») même si la région de l'appareil est en 12 h, comme le reste de l'app.
+    /// French-style times ("10:30") even when the device region uses 12-hour time, like the rest of the app.
     static let time = Date.FormatStyle(date: .omitted, time: .shortened).locale(Locale(identifier: "fr_FR"))
 
     static func schedule(_ event: Event) -> String {

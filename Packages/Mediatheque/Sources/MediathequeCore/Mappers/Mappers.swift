@@ -1,8 +1,12 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import BokehAPI
 import Foundation
 
-// Seul endroit qui connaît les bizarreries de Bokeh : auteurs « Nom|Prénom »,
-// dates « 0000-00-00 », jaquettes vides, statuts en texte libre.
+// The only place that knows Bokeh's quirks: "Nom|Prénom" authors,
+// "0000-00-00" dates, empty covers, free-text statuses.
 
 extension Notice {
     init?(dto: RecordDTO) {
@@ -29,14 +33,14 @@ extension Notice {
         )
     }
 
-    /// « Rowling|Joanne Kathleen » → « Joanne Kathleen Rowling » ; « Froment  jean » est laissé tel quel.
+    /// "Rowling|Joanne Kathleen" → "Joanne Kathleen Rowling"; "Froment  jean" is left as is.
     static func displayName(fromCreator creator: String) -> String {
         let parts = creator.split(separator: "|", maxSplits: 1).map { $0.trimmingCharacters(in: .whitespaces) }
         guard parts.count == 2 else { return creator.trimmingCharacters(in: .whitespaces) }
         return "\(parts[1]) \(parts[0])"
     }
 
-    /// « Gallimard jeunesse (Paris) » → « Gallimard jeunesse ».
+    /// "Gallimard jeunesse (Paris)" → "Gallimard jeunesse".
     static func stripPlace(_ publisher: String) -> String {
         publisher.replacing(/\s*\([^)]*\)\s*$/, with: "")
     }
@@ -54,7 +58,7 @@ extension LiveCopy {
         let normalized = label.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
         let status: CopyStatus
         if normalized.contains("bientot") {
-            // « Bientôt disponible » : rendu mais pas encore remis en rayon.
+            // "Bientôt disponible": returned but not yet back on the shelf.
             status = .other(label)
         } else if normalized.contains("pret") {
             status = .onLoan(dueDate: dto.dueDateText.flatMap(BokehDates.firstDate))
@@ -78,7 +82,7 @@ extension LiveCopy {
         )
     }
 
-    /// « Déjà 2 réservations » → 2, « Déjà une réservation » → 1.
+    /// "Déjà 2 réservations" → 2, "Déjà une réservation" → 1.
     static func holdCount(from text: String?) -> Int {
         guard let text else { return 0 }
         if let match = text.firstMatch(of: /(\d+)/) { return Int(match.1) ?? 0 }
@@ -158,7 +162,7 @@ extension Hold {
         )
     }
 
-    /// Bokeh colle la série et le titre (« Astérix n° 39Astérix et le griffon »).
+    /// Bokeh glues the series and the title together ("Astérix n° 39Astérix et le griffon").
     static func cleanTitle(_ title: String) -> String {
         title.replacing(/^(.+? n° \d+)(?=\p{Lu})/) { "\($0.1) · " }
     }

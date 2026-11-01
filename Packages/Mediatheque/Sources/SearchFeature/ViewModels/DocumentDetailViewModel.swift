@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import Foundation
 import MediathequeCore
@@ -28,7 +32,7 @@ public final class DocumentDetailViewModel {
         }
     }
 
-    /// Exemplaires regroupés par médiathèque, disponibles d'abord.
+    /// Copies grouped by library, available ones first.
     public var copiesByLibrary: [(name: String, copies: [LiveCopy])] {
         let grouped = Dictionary(grouping: copies.value ?? [], by: \.libraryName)
         return grouped
@@ -40,7 +44,7 @@ public final class DocumentDetailViewModel {
             }
     }
 
-    /// Vrai si au moins un exemplaire est réservable (lien de retrait présent).
+    /// True if at least one copy can be placed on hold (pickup link present).
     public var isHoldable: Bool {
         copies.value?.contains { $0.pickupPath != nil } ?? false
     }

@@ -1,7 +1,11 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
-/// Transport vers le portail. Il porte la session web (cookie `PHPSESSID`),
-/// qui suffit à l'API JSON `/api/user/*` comme aux pages du compte.
+/// Transport to the portal. It carries the web session (`PHPSESSID` cookie),
+/// which is enough for the `/api/user/*` JSON API as well as the account pages.
 public actor HTTPClient {
     public static let villejuifBaseURL = URL(string: "https://mediatheque.villejuif.fr")!
 
@@ -11,8 +15,8 @@ public actor HTTPClient {
 
     public init(baseURL: URL = HTTPClient.villejuifBaseURL, userAgent: String = HTTPClient.defaultUserAgent) {
         self.baseURL = baseURL
-        // On garde le stockage en mémoire de la configuration éphémère :
-        // une instance `HTTPCookieStorage()` créée à la main ne retient aucun cookie.
+        // We keep the in-memory storage of the ephemeral configuration:
+        // a hand-made `HTTPCookieStorage()` instance doesn't retain any cookie.
         let configuration = URLSessionConfiguration.ephemeral
         let cookieStorage = configuration.httpCookieStorage!
         configuration.httpCookieAcceptPolicy = .always
@@ -27,7 +31,7 @@ public actor HTTPClient {
 
     public static let defaultUserAgent = "MediathequesVillejuif-iOS/1.0"
 
-    // MARK: Requêtes
+    // MARK: Requests
 
     public func data(for endpoint: Endpoint) async throws -> Data {
         let (data, response) = try await session.data(for: request(for: endpoint))
@@ -35,7 +39,7 @@ public actor HTTPClient {
             throw BokehError.unexpectedFormat("réponse non HTTP")
         }
         if http.url?.path.hasPrefix("/auth/login") == true, endpoint.pathSegments.first != "auth" {
-            // Une page protégée nous a renvoyés vers la connexion.
+            // A protected page redirected us to sign-in.
             throw BokehError.unauthorized
         }
         guard (200..<400).contains(http.statusCode) else {
@@ -63,7 +67,7 @@ public actor HTTPClient {
 
     // MARK: Session
 
-    /// Cookies de la session web, à injecter dans un `WKWebView` pour le SSO numérique.
+    /// Web session cookies, to inject into a `WKWebView` for digital SSO.
     public func sessionCookies() -> [HTTPCookie] {
         cookieStorage.cookies(for: baseURL) ?? []
     }

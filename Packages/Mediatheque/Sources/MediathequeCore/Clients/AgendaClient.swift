@@ -1,10 +1,14 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import BokehAPI
 import Dependencies
 import DependenciesMacros
 import Foundation
 
-/// Agenda : la liste vient du HTML du calendrier (l'API `/api/agenda` n'a pas les dates),
-/// le détail de l'iCal de chaque événement.
+/// Agenda: the list comes from the calendar HTML (the `/api/agenda` API has no dates),
+/// the details from each event's iCal.
 @DependencyClient
 public struct AgendaClient: Sendable {
     public var events: @Sendable (_ policy: CachePolicy) async throws -> [Event]
@@ -16,7 +20,7 @@ extension AgendaClient: DependencyKey {
         @Dependency(\.httpClient) var http
         return AgendaClient(
             events: { policy in
-                // Le site publie l'agenda une fois pour toutes : 30 min suffisent, et l'agenda reste lisible hors ligne.
+                // The site publishes the agenda once and for all: 30 min is enough, and the agenda stays readable offline.
                 try await DataCache.shared.value(for: "agenda-events", maxAge: 30 * 60, policy: policy) {
                     try HTMLParsers.calendarEvents(in: try await http.string(for: .calendar()))
                         .map(Event.init(dto:))
@@ -46,7 +50,7 @@ extension AgendaClient: DependencyKey {
     public static let testValue = AgendaClient()
 }
 
-/// Fiches pratiques des 3 médiathèques.
+/// Practical info for the 3 libraries.
 @DependencyClient
 public struct LibraryClient: Sendable {
     public var libraries: @Sendable (_ policy: CachePolicy) async throws -> [LibraryInfo]
@@ -57,7 +61,7 @@ extension LibraryClient: DependencyKey {
         @Dependency(\.httpClient) var http
         return LibraryClient(
             libraries: { policy in
-                // Les horaires changent rarement (vacances, travaux) : 12 h, et toujours affichables hors ligne.
+                // Opening hours rarely change (holidays, works): 12 h, and always viewable offline.
                 try await DataCache.shared.value(for: "libraries", maxAge: 12 * 3600, policy: policy) {
                     try HTMLParsers.libraries(in: try await http.string(for: .practicalInfo)).map(LibraryInfo.init(dto:))
                 }

@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import DependenciesTestSupport
 import Foundation
@@ -5,8 +9,8 @@ import Testing
 import BokehAPI
 @testable import MediathequeCore
 
-/// Appels réels au portail, sur les routes publiques uniquement.
-/// Lancer avec `LIVE_TESTS=1 swift test --filter LiveSmokeTests` pour détecter un changement de format.
+/// Real calls to the portal, on public routes only.
+/// Run with `LIVE_TESTS=1 swift test --filter LiveSmokeTests` to detect a format change.
 @Suite(
     .enabled(if: ProcessInfo.processInfo.environment["LIVE_TESTS"] == "1"),
     .dependency(\.context, .live)
@@ -30,7 +34,7 @@ struct LiveSmokeTests {
         #expect(detail.descriptionText != nil)
     }
 
-    /// Sans cookie de session, la connexion ne peut pas aboutir (bug corrigé en P3).
+    /// Without a session cookie, sign-in cannot succeed (bug fixed in P3).
     @Test func sessionCookieIsKept() async throws {
         let http = HTTPClient()
         _ = try await http.string(for: .loginPage)

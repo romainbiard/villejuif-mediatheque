@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import DependenciesTestSupport
 import Foundation
@@ -54,7 +58,7 @@ struct PartnerAppsTests {
         let cafeyn = DigitalCatalog.offers.first { $0.id == "presse" }!
         #expect(viewModel.availability(of: cafeyn.app!) == .installed)
         #expect(viewModel.availability(of: films.app!) == .notInstalled)
-        // musicMe n'a pas de scheme : on ne peut pas savoir.
+        // musicMe has no scheme: we cannot know.
         #expect(viewModel.availability(of: eureka.app!) == .unknown)
         #expect(viewModel.needsInstall(films))
         #expect(!viewModel.needsInstall(cafeyn))
@@ -73,7 +77,7 @@ struct PartnerAppsTests {
         #expect(byID["ebooks"] == .reader("Louise Reader"))
         #expect(byID["bd"] == .web)
         #expect(byID["eureka"] == .web)
-        // « Connecter l'app » seulement pour une app nécessaire déjà installée.
+        // "Connecter l'app" only for a required app that is already installed.
         #expect(viewModel.canConnectApp(films))
         #expect(!viewModel.canConnectApp(DigitalCatalog.offers.first { $0.id == "presse" }!))
     }
@@ -111,7 +115,7 @@ struct PartnerAppsTests {
         await viewModel.primaryAction(films)
         #expect(opened.value == [URL(string: "arte-mednum://")!])
         #expect(viewModel.installOffer == nil)
-        // Pas de vue web du portail : c'est l'app qui s'ouvre.
+        // No portal web view: the app itself opens.
         #expect(viewModel.session == nil)
     }
 
@@ -151,12 +155,12 @@ struct PartnerAppsTests {
         await viewModel.refreshInstalledApps()
         viewModel.getApp(for: films)
 
-        // Revenu sans avoir installé : rien ne s'ouvre.
+        // Came back without installing: nothing opens.
         await viewModel.storeDismissed()
         #expect(viewModel.session == nil)
         #expect(viewModel.justInstalled == nil)
 
-        // Installée pendant que l'abonné était dans l'App Store.
+        // Installed while the patron was in the App Store.
         viewModel.getApp(for: films)
         installed.setValue(true)
         await viewModel.storeDismissed()

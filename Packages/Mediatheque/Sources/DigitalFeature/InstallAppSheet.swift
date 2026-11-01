@@ -1,11 +1,15 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 #if os(iOS)
 import DesignSystem
 import StoreKit
 import SwiftUI
 import UIKit
 
-/// « Regardez vos films dans l'app » : présente l'app du partenaire avant la fiche App Store.
-/// Elle n'apparaît que si l'app n'est pas installée ; installée, elle s'ouvre directement.
+/// "Regardez vos films dans l'app": introduces the partner's app before the App Store sheet.
+/// It only appears if the app is not installed; when installed, the app opens directly.
 struct InstallAppSheet: View {
     let offer: DigitalOffer
     let app: ProviderApp
@@ -85,7 +89,7 @@ struct InstallAppSheet: View {
     }
 }
 
-/// Fiche App Store dans l'app (`SKStoreProductViewController`) : l'abonné installe sans quitter Ma médiathèque.
+/// In-app App Store sheet (`SKStoreProductViewController`): the patron installs without leaving Ma médiathèque.
 @MainActor
 enum AppStorePresenter {
     @MainActor
@@ -100,7 +104,7 @@ enum AppStorePresenter {
         }
     }
 
-    /// Le contrôleur ne retient pas son delegate.
+    /// The controller does not retain its delegate.
     private static var delegate: Delegate?
 
     static func present(appStoreID: String, onDismiss: @escaping () -> Void) {
@@ -114,7 +118,7 @@ enum AppStorePresenter {
         store.delegate = delegate
         store.loadProduct(withParameters: [SKStoreProductParameterITunesItemIdentifier: appStoreID]) { loaded, _ in
             guard !loaded else { return }
-            // Fiche introuvable (hors ligne, App Store indisponible) : on passe par l'app App Store.
+            // Product not found (offline, App Store unavailable): fall back to the App Store app.
             Task { @MainActor in
                 store.dismiss(animated: true)
                 if let url = URL(string: "https://apps.apple.com/fr/app/id\(appStoreID)") {

@@ -1,15 +1,19 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import Foundation
 import MediathequeCore
 import Observation
 
-/// Accueil du compte : la fiche (compteurs, carte) se rafraîchit à chaque affichage.
+/// Account home: the record (counters, card) refreshes on every appearance.
 @MainActor
 @Observable
 public final class AccountHomeViewModel {
     public private(set) var isRefreshing = false
     public private(set) var error: LoadError?
-    /// Pastille de la cloche.
+    /// Bell badge.
     public private(set) var unreadNotifications = 0
 
     @ObservationIgnored @Dependency(\.accountClient) private var account
@@ -27,7 +31,7 @@ public final class AccountHomeViewModel {
             let patron = try await account.patron()
             session.update(patron)
             error = nil
-            // Snapshot pour le widget et le hors-ligne, rappels reprogrammés, centre de notifications à jour.
+            // Snapshot for the widget and offline use, reminders rescheduled, notification center updated.
             withDependencies(from: self) { AccountSync.record(libraryMessage: patron.message) }
             _ = try? await withDependencies(from: self) { try await AccountSync.run(settings: .current()) }
         } catch {
@@ -62,7 +66,7 @@ public final class LoansViewModel {
 
     public private(set) var state: LoadState<[Loan]> = .idle
     public private(set) var renewing: Set<Loan.ID> = []
-    /// Prêts que le site a refusé de prolonger lors de cette session d'écran.
+    /// Loans the site refused to renew during this screen session.
     public private(set) var refused: Set<Loan.ID> = []
     public private(set) var message: String?
     public private(set) var feedback: FeedbackEvent?
@@ -134,7 +138,7 @@ public final class LoansViewModel {
                 feedback = .success
             }
             await load()
-            // Les dates de retour ont changé : on reprogramme les rappels.
+            // Due dates have changed: reschedule the reminders.
             _ = try? await withDependencies(from: self) { try await AccountSync.run(settings: .current()) }
         } catch {
             message = LoadError(error) == .offline ? "Prolongation impossible hors ligne" : "La prolongation n'a pas abouti"

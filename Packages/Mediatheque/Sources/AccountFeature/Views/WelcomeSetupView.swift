@@ -1,10 +1,14 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import DesignSystem
 import MediathequeCore
 import SwiftUI
 
-/// Après la première connexion : explication des notifications, alerte système sur un oui,
-/// puis réglages fins (notifications, Face ID). Tout se change ensuite dans Mes configurations.
+/// After the first sign-in: notifications explanation, system alert on a yes,
+/// then fine-grained settings (notifications, Face ID). Everything can be changed later in "Mes configurations".
 struct WelcomeSetupView: View {
     let patron: Patron
     let done: () -> Void
@@ -37,9 +41,9 @@ struct WelcomeSetupView: View {
     }
 }
 
-// MARK: - Explication (push primer)
+// MARK: - Explanation (push primer)
 
-/// Reprend la composition de la connexion : fond violet, formes de la charte, carte en bas.
+/// Reuses the sign-in layout: purple background, brand shapes, card at the bottom.
 struct NotificationPrimerView: View {
     let viewModel: OnboardingViewModel
 
@@ -93,7 +97,7 @@ struct NotificationPrimerView: View {
     }
 }
 
-/// Bannière de notification d'exemple, en verre, avec la vraie icône de l'app.
+/// Sample notification banner, in glass, with the app's real icon.
 struct NotificationPreview: View {
     let text: String
     let time: String
@@ -122,7 +126,7 @@ struct NotificationPreview: View {
     }
 }
 
-/// Formes de la charte, rejetées dans les coins pour ne jamais passer sous le contenu.
+/// Brand shapes, pushed into the corners so they never sit under the content.
 struct BrandBackdrop: View {
     var body: some View {
         GeometryReader { proxy in
@@ -144,7 +148,7 @@ struct BrandBackdrop: View {
     }
 }
 
-// MARK: - Réglages fins
+// MARK: - Fine-grained settings
 
 struct OnboardingSettingsView: View {
     let viewModel: OnboardingViewModel
@@ -218,7 +222,7 @@ struct OnboardingSettingsView: View {
         .sensoryFeedback(.impact(weight: .light), trigger: [loanReminders, holdAlerts, agendaDigest, faceID])
     }
 
-    /// Refus ou « Pas maintenant » : pas d'interrupteurs inertes, une explication et la marche à suivre.
+    /// Denied or "Pas maintenant": no inert toggles, but an explanation and the steps to follow.
     private var notificationsOff: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: "bell.slash.fill")
@@ -249,7 +253,7 @@ struct OnboardingSettingsView: View {
     }
 }
 
-/// Carte groupée façon iOS 26 : coins de 22 pt, séparateurs alignés sur le texte.
+/// iOS 26-style grouped card: 22 pt corners, separators aligned with the text.
 struct SettingsCard<Content: View>: View {
     @ViewBuilder let content: Content
 
@@ -302,7 +306,7 @@ struct SettingRow: View {
 }
 
 
-/// Face ID est activé : le compte s'ouvre après validation.
+/// Face ID is enabled: the account opens after authentication.
 struct LockedView: View {
     @Environment(SessionStore.self) private var session
 

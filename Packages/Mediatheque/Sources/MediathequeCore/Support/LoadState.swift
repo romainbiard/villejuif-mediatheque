@@ -1,6 +1,10 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
-/// État d'un chargement, exposé par les ViewModels.
+/// Loading state, exposed by the ViewModels.
 public enum LoadState<Value: Sendable>: Sendable {
     case idle
     case loading
@@ -20,7 +24,7 @@ public enum LoadState<Value: Sendable>: Sendable {
 
 extension LoadState: Equatable where Value: Equatable {}
 
-/// Erreur présentable à l'écran.
+/// Error that can be shown on screen.
 public enum LoadError: Error, Equatable, Sendable {
     case offline
     case siteUnavailable
@@ -41,7 +45,7 @@ public enum LoadError: Error, Equatable, Sendable {
     }
 }
 
-/// Retour haptique à déclencher, relié par la vue à `.sensoryFeedback`.
+/// Haptic feedback to trigger, wired by the view to `.sensoryFeedback`.
 public enum FeedbackEvent: Hashable, Sendable {
     case success
     case error

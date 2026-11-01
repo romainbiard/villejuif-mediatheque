@@ -1,10 +1,14 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import BokehAPI
 import Dependencies
 import DependenciesMacros
 import Foundation
 
-/// Espace abonné hors prêts et réservations : sélections, avis, suggestions, coordonnées, préférences.
-/// Ces sections n'existent qu'en HTML (`/abonne/...`), lues avec la session web.
+/// Patron space other than loans and holds: selections, reviews, suggestions, contact details, preferences.
+/// These sections only exist as HTML (`/abonne/...`), read with the web session.
 @DependencyClient
 public struct ProfileClient: Sendable {
     public var selections: @Sendable () async throws -> [Selection]
@@ -29,7 +33,7 @@ public struct ProfileClient: Sendable {
 }
 
 extension ProfileClient: DependencyKey {
-    /// Lettre d'information du réseau, seule proposée par le site (relevé le 31/10/2026).
+    /// The network's newsletter, the only one the site offers (checked on 31/10/2026).
     static let newsletterID = 3
 
     public static var liveValue: ProfileClient {
@@ -46,7 +50,7 @@ extension ProfileClient: DependencyKey {
             try await session.perform { try await http.string(for: .patronPage(name, patronID: try await patronID())) }
         }
 
-        /// Envoie un formulaire et remonte le premier message d'erreur affiché par le site.
+        /// Submits a form and surfaces the first error message shown by the site.
         @Sendable func submit(_ name: String, _ fields: [Endpoint.FormField]) async throws {
             try await session.perform {
                 let html = try await http.string(for: .patronForm(name, patronID: try await patronID(), fields: fields))
@@ -93,7 +97,7 @@ extension ProfileClient: DependencyKey {
                 }
             },
             sendSuggestion: { draft in
-                // Le champ « Site » est prérempli avec la médiathèque de l'abonné : on renvoie sa valeur.
+                // The "Site" field is prefilled with the patron's library: we send its value back.
                 let library = try HTMLParsers.fieldValue("Library", in: try await page("suggestion-achat-add")) ?? ""
                 let comment = draft.kind == .comic ? ["Bande dessinée", draft.comment].filter { !$0.isEmpty }.joined(separator: ". ") : draft.comment
                 try await submit("suggestion-achat-add", [

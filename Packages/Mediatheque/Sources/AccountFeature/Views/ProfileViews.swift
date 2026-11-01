@@ -1,8 +1,12 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import DesignSystem
 import MediathequeCore
 import SwiftUI
 
-// MARK: - Mes informations
+// MARK: - My information
 
 struct InformationView: View {
     let patron: Patron
@@ -210,7 +214,7 @@ struct PasswordSheet: View {
     }
 }
 
-// MARK: - Mes configurations
+// MARK: - My settings
 
 struct ProfileSettingsView: View {
     let patron: Patron
@@ -220,7 +224,7 @@ struct ProfileSettingsView: View {
     @AppStorage(ReminderSettings.Key.loanReminders, store: .shared) private var loanReminders = true
     @AppStorage(ReminderSettings.Key.holdAlerts, store: .shared) private var holdAlerts = true
     @AppStorage(ReminderSettings.Key.agendaDigest, store: .shared) private var agendaDigest = false
-    /// Même clé que `SessionStore.isFaceIDEnabled`, observée par SwiftUI.
+    /// Same key as `SessionStore.isFaceIDEnabled`, observed by SwiftUI.
     @AppStorage(ReminderSettings.Key.faceID, store: .shared) private var faceID = false
 
     init(patron: Patron) {
@@ -263,7 +267,7 @@ struct ProfileSettingsView: View {
                     }
                 }
                 Button("Se déconnecter", role: .destructive) { confirmsLogout = true }
-                    // Attaché au bouton : sur iOS 26 la confirmation est un popover qui pointe vers sa vue.
+                    // Attached to the button: on iOS 26 the confirmation is a popover pointing at its view.
                     .confirmationDialog("Se déconnecter de votre compte ?", isPresented: $confirmsLogout, titleVisibility: .visible) {
                         Button("Se déconnecter", role: .destructive) { Task { await session.logout() } }
                     }
@@ -299,7 +303,7 @@ struct ProfileSettingsView: View {
         .redacted(reason: viewModel.bookmarks.isLoading ? .placeholder : [])
     }
 
-    /// Réglage local des rappels : on reprogramme, et on revient en arrière si iOS refuse.
+    /// Local reminder setting: reschedule, and revert if iOS refuses.
     private func reminderBinding(_ storage: Binding<Bool>) -> Binding<Bool> {
         Binding(
             get: { storage.wrappedValue },

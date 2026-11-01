@@ -1,6 +1,10 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
-/// Réponse de `recherche/simple/.../format/json`, calquée sur le JSON reçu.
+/// Response from `recherche/simple/.../format/json`, modeled on the JSON received.
 public struct SearchResponseDTO: Decodable, Sendable {
     public let total: Int
     public let pageSize: Int
@@ -16,7 +20,7 @@ public struct SearchResponseDTO: Decodable, Sendable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         total = try container.decode(Int.self, forKey: .total)
         pageSize = try container.decodeIfPresent(Int.self, forKey: .pageSize) ?? 10
-        // `page` vaut 1 (nombre) en page 1, puis "2" (chaîne) ensuite.
+        // `page` is 1 (a number) on page 1, then "2" (a string) afterwards.
         page = try container.decodeLenientInt(forKey: .page) ?? 1
         records = try container.decodeIfPresent([RecordDTO].self, forKey: .records) ?? []
     }
@@ -63,7 +67,7 @@ public struct RecordDTO: Decodable, Sendable {
         items = try container.decodeIfPresent([ItemDTO].self, forKey: .items) ?? []
     }
 
-    /// Identifiant numérique de la notice, lu dans le permalien (`/id/474169`).
+    /// Numeric identifier of the record, read from the permalink (`/id/474169`).
     public var noticeID: Int? {
         permalink.split(separator: "/").last.flatMap { Int($0) }
     }
@@ -82,7 +86,7 @@ public struct ItemDTO: Decodable, Sendable {
     public let shelfMark: String
     public let activity: String
     public let libraryID: Int
-    /// Zone 995 de l'exemplaire ; `false` dans le JSON pour les ressources numériques.
+    /// Field 995 of the copy; `false` in the JSON for digital resources.
     public let zone995: [Subfield]
 
     enum CodingKeys: String, CodingKey {
@@ -112,7 +116,7 @@ public struct ItemDTO: Decodable, Sendable {
     }
 }
 
-// MARK: - Décodage tolérant (Bokeh mélange nombres et chaînes)
+// MARK: - Lenient decoding (Bokeh mixes numbers and strings)
 
 extension KeyedDecodingContainer {
     func decodeLenientInt(forKey key: Key) throws -> Int? {

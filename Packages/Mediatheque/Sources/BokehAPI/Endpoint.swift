@@ -1,7 +1,11 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
-/// Description d'une requête vers le portail. Les routes Bokeh sont des segments
-/// de chemin (`/cle/valeur`), d'où la construction par `pathSegments`.
+/// Description of a request to the portal. Bokeh routes are path
+/// segments (`/cle/valeur`), hence building them with `pathSegments`.
 public struct Endpoint: Sendable, Equatable {
     public enum Method: String, Sendable { case get = "GET", post = "POST" }
 
@@ -9,7 +13,7 @@ public struct Endpoint: Sendable, Equatable {
     public var pathSegments: [String]
     public var query: [FormField]
     public var form: [FormField]
-    /// Ajoute `X-Requested-With: XMLHttpRequest` : les popups Bokeh renvoient alors du JSON.
+    /// Adds `X-Requested-With: XMLHttpRequest`: Bokeh popups then return JSON.
     public var isAjax: Bool
 
     public init(
@@ -35,12 +39,12 @@ public struct Endpoint: Sendable, Equatable {
         }
     }
 
-    /// Clé unique d'une requête GET (chemin et paramètres), pour les caches.
+    /// Unique key for a GET request (path and parameters), for caches.
     public var cacheKey: String {
         ([encodedPath] + query.map { "\($0.name)=\($0.value)" }).joined(separator: "&")
     }
 
-    /// Chemin percent-encodé, segment par segment (les espaces deviennent `%20`).
+    /// Percent-encoded path, segment by segment (spaces become `%20`).
     var encodedPath: String {
         "/" + pathSegments
             .map { $0.addingPercentEncoding(withAllowedCharacters: .bokehPathSegment) ?? $0 }
@@ -58,7 +62,7 @@ public struct Endpoint: Sendable, Equatable {
 }
 
 extension CharacterSet {
-    /// Caractères autorisés dans un segment : on encode `/`, `*` et les espaces.
+    /// Characters allowed in a segment: we encode `/`, `*` and spaces.
     static let bokehPathSegment: CharacterSet = {
         var set = CharacterSet.urlPathAllowed
         set.remove(charactersIn: "/*")
@@ -66,11 +70,11 @@ extension CharacterSet {
     }()
 }
 
-// MARK: - Catalogue
+// MARK: - Catalog
 
 extension Endpoint {
-    /// Recherche simple au format JSON. Les facettes sont combinées (ET) par `facettes/T1-Y2`.
-    /// `*` parcourt tout le catalogue ; `sort: "date_creation desc"` donne les nouveautés.
+    /// Simple search in JSON format. Facets are combined (AND) via `facettes/T1-Y2`.
+    /// `*` browses the whole catalog; `sort: "date_creation desc"` gives new arrivals.
     public static func search(_ query: String, facets: [String] = [], sort: String = "*", page: Int = 1) -> Endpoint {
         var segments = ["recherche", "simple", "expressionRecherche", query.isEmpty ? "*" : query, "tri", sort]
         if !facets.isEmpty {
@@ -85,32 +89,32 @@ extension Endpoint {
         Endpoint(pathSegments: ["recherche", "viewnotice", "clef", key, "id", String(id), "format", "json"])
     }
 
-    /// Page HTML complète de la notice (résumé, sujets, série).
+    /// Full HTML page of the record (summary, subjects, series).
     public static func noticePage(key: String, id: Int) -> Endpoint {
         Endpoint(pathSegments: ["recherche", "viewnotice", "clef", key, "id", String(id)])
     }
 
-    /// Badge de disponibilité en temps réel (HTML).
+    /// Real-time availability badge (HTML).
     public static func availability(recordID: Int) -> Endpoint {
         Endpoint(pathSegments: ["noticeajax", "availability", "id", String(recordID)])
     }
 
-    /// Exemplaires en temps réel (HTML) : statut, cote, date de retour, réservations.
+    /// Real-time copies (HTML): status, call number, due date, holds.
     public static func copies(recordID: Int) -> Endpoint {
         Endpoint(pathSegments: ["noticeajax", "exemplaires", "id", String(recordID)])
     }
 
-    /// Autocomplétion de la recherche.
+    /// Search autocomplete.
     public static func suggest(_ prefix: String) -> Endpoint {
         Endpoint(pathSegments: ["recherche", "suggestajax"], query: [FormField("startsWith", prefix)])
     }
 }
 
-// MARK: - Agenda et infos pratiques
+// MARK: - Agenda and practical info
 
 extension Endpoint {
-    /// Page Agenda (rendue côté serveur, contrairement à `/cms/calendar/...` qui se charge en AJAX).
-    /// Les filtres sont les mêmes segments que sur le site.
+    /// Agenda page (server-rendered, unlike `/cms/calendar/...` which loads via AJAX).
+    /// The filters are the same segments as on the site.
     public static func calendar(placeID: Int? = nil, typeID: Int? = nil, audienceID: Int? = nil) -> Endpoint {
         var segments = ["accueil", "agenda"]
         if let placeID { segments += ["place", String(placeID)] }
@@ -126,7 +130,7 @@ extension Endpoint {
     public static let practicalInfo = Endpoint(pathSegments: ["accueil", "infos_pratiques"])
 }
 
-// MARK: - Authentification
+// MARK: - Authentication
 
 extension Endpoint {
     public static let loginPage = Endpoint(pathSegments: ["auth", "login"])
@@ -142,8 +146,8 @@ extension Endpoint {
 
     public static let lostPasswordPage = Endpoint(pathSegments: ["auth", "lostpass"])
 
-    /// `website` est un champ piège anti-spam qui doit rester vide ; le formulaire
-    /// doit être envoyé au moins `minimum_time` secondes après son affichage.
+    /// `website` is an anti-spam honeypot field that must stay empty; the form
+    /// must be submitted at least `minimum_time` seconds after it is displayed.
     public static func lostPassword(cardNumber: String, csrfToken: String) -> Endpoint {
         Endpoint(method: .post, pathSegments: ["auth", "lostpass"], form: [
             FormField("lost_username", cardNumber),
@@ -156,7 +160,7 @@ extension Endpoint {
     public static let logout = Endpoint(pathSegments: ["auth", "logout"])
 }
 
-// MARK: - Compte abonné (JSON, avec le cookie de session)
+// MARK: - Patron account (JSON, with the session cookie)
 
 extension Endpoint {
     public static let account = Endpoint(pathSegments: ["api", "user", "account"])
@@ -164,7 +168,7 @@ extension Endpoint {
     public static let loansHistory = Endpoint(pathSegments: ["api", "user", "loans", "history"])
     public static let holds = Endpoint(pathSegments: ["api", "user", "holds"])
 
-    /// Prolonge un ou plusieurs prêts (identifiants séparés par `;`).
+    /// Renews one or more loans (identifiers separated by `;`).
     public static func renewLoans(patronID: String, loanIDs: [String]) -> Endpoint {
         Endpoint(pathSegments: [
             "abonne", "prolongerPret", "id_profil", "1", "id", patronID,
@@ -176,7 +180,7 @@ extension Endpoint {
         Endpoint(pathSegments: ["abonne", "reservations", "id_delete", holdID])
     }
 
-    /// Page HTML des réservations : seule source du rang dans la file.
+    /// HTML holds page: the only source for the queue position.
     public static func holdsPage(patronID: String) -> Endpoint {
         Endpoint(pathSegments: ["abonne", "reservations", "id_profil", "1", "id", patronID])
     }
@@ -190,14 +194,14 @@ extension Endpoint {
     }
 }
 
-// MARK: - Réservation (popups AJAX)
+// MARK: - Holds (AJAX popups)
 
 extension Endpoint {
     public static func holdOptions(recordID: Int) -> Endpoint {
         Endpoint(pathSegments: ["recherche", "reserver", "record_id", String(recordID), "render", "popup"], isAjax: true)
     }
 
-    /// `path` est le lien `reservation-pickup-ajax/...` lu dans `holdOptions`.
+    /// `path` is the `reservation-pickup-ajax/...` link read from `holdOptions`.
     public static func pickupForm(path: String) -> Endpoint {
         Endpoint(pathSegments: path.split(separator: "/").map(String.init), isAjax: true)
     }
@@ -208,10 +212,10 @@ extension Endpoint {
     }
 }
 
-// MARK: - Médiathèque numérique
+// MARK: - Médiathèque Numérique
 
 extension Endpoint {
-    /// Page minuscule `<script>document.location.href="…"</script>` qui porte l'URL SSO.
+    /// Tiny `<script>document.location.href="…"</script>` page that carries the SSO URL.
     public static func digitalModule(_ slug: String) -> Endpoint {
         Endpoint(pathSegments: ["modules", slug])
     }
@@ -221,20 +225,20 @@ extension Endpoint {
     }
 }
 
-// MARK: - Espace abonné (pages HTML et formulaires, relevés le 31/10/2026)
+// MARK: - Patron space (HTML pages and forms, checked on 31/10/2026)
 
 extension Endpoint {
-    /// Page d'une section du compte : `/abonne/{page}/id_profil/1/id/{idAbonné}`.
+    /// Page of an account section: `/abonne/{page}/id_profil/1/id/{idAbonné}`.
     public static func patronPage(_ page: String, patronID: String) -> Endpoint {
         Endpoint(pathSegments: ["abonne", page, "id_profil", "1", "id", patronID])
     }
 
-    /// Formulaire d'une section du compte, sans jeton CSRF.
+    /// Form of an account section, without a CSRF token.
     public static func patronForm(_ page: String, patronID: String, fields: [FormField]) -> Endpoint {
         Endpoint(method: .post, pathSegments: ["abonne", page, "id_profil", "1", "id", patronID], form: fields)
     }
 
-    /// Contenu d'une sélection : c'est une recherche JSON sur le panier.
+    /// Contents of a selection: it's a JSON search on the basket.
     public static func selectionRecords(basketID: Int, page: Int = 1) -> Endpoint {
         var segments = ["recherche", "simple", "id_panier", String(basketID), "format", "json"]
         if page > 1 { segments += ["page", String(page)] }
@@ -248,7 +252,7 @@ extension Endpoint {
         ])
     }
 
-    /// Avis sur un document emprunté : note de 1 à 5, titre et texte.
+    /// Review of a borrowed document: rating from 1 to 5, title and text.
     public static func submitReview(recordID: Int, recordKey: String, rating: Int, title: String, text: String) -> Endpoint {
         Endpoint(
             method: .post,

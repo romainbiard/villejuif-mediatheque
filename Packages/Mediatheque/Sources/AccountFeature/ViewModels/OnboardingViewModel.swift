@@ -1,27 +1,31 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import Foundation
 import MediathequeCore
 import Observation
 
-/// Après la première connexion : explication des notifications (« push primer »),
-/// alerte système seulement si l'abonné accepte, puis réglages fins et Face ID.
+/// After the first sign-in: notifications explanation ("push primer"),
+/// system alert only if the patron accepts, then fine-grained settings and Face ID.
 ///
-/// iOS n'affiche son alerte qu'une fois dans la vie de l'app : on ne la déclenche
-/// qu'après un oui explicite, pour ne pas gaspiller ce seul essai.
+/// iOS shows its alert only once in the app's lifetime: we trigger it only
+/// after an explicit yes, so as not to waste that single attempt.
 @MainActor
 @Observable
 public final class OnboardingViewModel {
     public enum Step: Equatable {
-        /// État des autorisations en cours de lecture.
+        /// Authorization status being read.
         case checking
         case primer
         case settings
     }
 
     public private(set) var step: Step = .checking
-    /// Les notifications sont autorisées par iOS : les interrupteurs sont actifs.
+    /// Notifications are allowed by iOS: the toggles are enabled.
     public private(set) var notificationsAllowed = false
-    /// Refus (maintenant ou par le passé) : on renvoie vers Réglages plutôt que d'insister.
+    /// Denied (now or in the past): point to Settings rather than insisting.
     public private(set) var notificationsDenied = false
     public private(set) var isRequesting = false
     public private(set) var isFinishing = false
@@ -31,7 +35,7 @@ public final class OnboardingViewModel {
 
     public init() {}
 
-    /// Sans alerte encore demandée, on montre l'explication ; sinon on va droit aux réglages.
+    /// If no alert has been requested yet, show the explanation; otherwise go straight to the settings.
     public func start() async {
         switch await notifications.authorizationStatus() {
         case .notDetermined:
@@ -45,7 +49,7 @@ public final class OnboardingViewModel {
         }
     }
 
-    /// « Activer les notifications » : c'est seulement ici que l'alerte système apparaît.
+    /// "Activer les notifications": this is the only place where the system alert appears.
     public func enableNotifications() async {
         isRequesting = true
         defer { isRequesting = false }
@@ -56,7 +60,7 @@ public final class OnboardingViewModel {
         step = .settings
     }
 
-    /// « Pas maintenant » : l'alerte système reste disponible pour plus tard (Mes configurations).
+    /// "Pas maintenant": the system alert stays available for later ("Mes configurations").
     public func skipNotifications() {
         notificationsAllowed = false
         notificationsDenied = false
@@ -64,7 +68,7 @@ public final class OnboardingViewModel {
         step = .settings
     }
 
-    /// « Terminer » : on applique Face ID, puis on reprogramme les rappels avec les réglages choisis.
+    /// "Terminer": apply Face ID, then reschedule reminders with the chosen settings.
     public func finish(faceID: Bool, session: SessionStore) async {
         isFinishing = true
         defer { isFinishing = false }

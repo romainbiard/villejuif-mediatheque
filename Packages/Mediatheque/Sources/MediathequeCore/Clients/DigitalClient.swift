@@ -1,9 +1,13 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import BokehAPI
 import Dependencies
 import DependenciesMacros
 import Foundation
 
-/// Services numériques : chaque `/modules/{slug}` renvoie l'URL SSO du fournisseur.
+/// Digital services: each `/modules/{slug}` returns the provider's SSO URL.
 public enum DigitalService: String, CaseIterable, Sendable, Identifiable {
     case arteVod = "arte-vod"
     case cafeyn
@@ -14,8 +18,8 @@ public enum DigitalService: String, CaseIterable, Sendable, Identifiable {
 
     public var id: String { rawValue }
 
-    /// Vrai quand l'URL du fournisseur rappelle le portail : il faut alors la session web
-    /// (WKWebView avec le cookie), pas un simple Safari.
+    /// True when the provider URL calls back the portal: the web session is then required
+    /// (WKWebView with the cookie), not plain Safari.
     public var needsPortalSession: Bool {
         switch self {
         case .cafeyn, .eureka: true
@@ -26,10 +30,10 @@ public enum DigitalService: String, CaseIterable, Sendable, Identifiable {
 
 @DependencyClient
 public struct DigitalClient: Sendable {
-    /// URL SSO, à usage unique et de courte durée : à résoudre au moment du tap, jamais à l'avance.
-    /// ⚠️ Elle peut contenir des données personnelles (Arte) : ne jamais la journaliser.
+    /// SSO URL, single-use and short-lived: resolve it at tap time, never in advance.
+    /// ⚠️ It may contain personal data (Arte): never log it.
     public var target: @Sendable (_ service: DigitalService) async throws -> URL
-    /// Cookies de la session web, à injecter dans un `WKWebView`.
+    /// Web session cookies, to inject into a `WKWebView`.
     public var sessionCookies: @Sendable () async -> [HTTPCookie] = { [] }
 }
 

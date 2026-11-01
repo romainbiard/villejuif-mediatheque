@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import DependenciesMacros
 import Foundation
@@ -7,22 +11,22 @@ import UserNotifications
 import WidgetKit
 #endif
 
-/// État de l'autorisation des notifications, tel qu'iOS le rapporte.
+/// Notification authorization status, as reported by iOS.
 public enum NotificationAuthorization: Sendable, Equatable {
-    /// iOS n'a encore rien demandé : l'alerte système reste disponible (une seule fois).
+    /// iOS hasn't asked yet: the system prompt is still available (only once).
     case notDetermined
     case denied
     case authorized
 }
 
-/// Notifications locales : rappels de retour, réservations arrivées, agenda de la semaine.
+/// Local notifications: due-date reminders, holds ready, weekly agenda.
 @DependencyClient
 public struct NotificationClient: Sendable {
     public var authorizationStatus: @Sendable () async -> NotificationAuthorization = { .notDetermined }
     public var requestAuthorization: @Sendable () async -> Bool = { false }
-    /// Rappel hebdomadaire de l'agenda, le lundi à 9 h ; `false` le retire.
+    /// Weekly agenda reminder, Mondays at 9 am; `false` removes it.
     public var setAgendaDigest: @Sendable (_ enabled: Bool) async -> Void
-    /// Remplace tous les rappels de retour programmés par `reminders`.
+    /// Replaces all scheduled due-date reminders with `reminders`.
     public var replaceLoanReminders: @Sendable (_ reminders: [Reminder]) async -> Void
     public var deliver: @Sendable (_ reminder: Reminder) async -> Void
     public var removeAll: @Sendable () async -> Void
@@ -45,7 +49,7 @@ extension NotificationClient: DependencyKey {
             do {
                 return try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
             } catch {
-                // Sans ce journal, un refus d'iOS (et non de l'utilisateur) passerait inaperçu.
+                // Without this log, a refusal by iOS (rather than the user) would go unnoticed.
                 logger.error("Autorisation des notifications impossible : \(error.localizedDescription, privacy: .public)")
                 return false
             }
@@ -112,12 +116,12 @@ extension DependencyValues {
     }
 }
 
-/// Réglages des rappels, choisis après la connexion puis dans Réglages.
+/// Reminder settings, chosen after sign-in and then in Settings.
 public struct ReminderSettings: Hashable, Sendable {
     public var loanReminders: Bool
     public var daysBefore: Int
     public var holdAlerts: Bool
-    /// Désactivé par défaut : seuls les retours et les réservations sont utiles à tous.
+    /// Off by default: only returns and holds are useful to everyone.
     public var agendaDigest: Bool
 
     public init(loanReminders: Bool = true, daysBefore: Int = 3, holdAlerts: Bool = true, agendaDigest: Bool = false) {
@@ -136,7 +140,7 @@ public struct ReminderSettings: Hashable, Sendable {
         public static let onboardingDone = "account.onboardingDone"
     }
 
-    /// Lecture dans les UserDefaults partagés (l'App Group, pour la tâche de fond comme pour l'app).
+    /// Reads from the shared UserDefaults (the App Group, for the background task as well as the app).
     public static func current(_ defaults: UserDefaults = .shared) -> ReminderSettings {
         ReminderSettings(
             loanReminders: defaults.object(forKey: Key.loanReminders) as? Bool ?? true,
@@ -148,14 +152,14 @@ public struct ReminderSettings: Hashable, Sendable {
 }
 
 extension UserDefaults {
-    /// UserDefaults de l'App Group, lus par l'app, la tâche de fond et le widget.
+    /// App Group UserDefaults, read by the app, the background task and the widget.
     public static var shared: UserDefaults {
         UserDefaults(suiteName: SnapshotClient.appGroup) ?? .standard
     }
 }
 
-/// Synchronisation du compte : nouveau snapshot, rappels reprogrammés, réservations arrivées notifiées.
-/// Appelée après la connexion, à chaque ouverture du compte et par la tâche de fond.
+/// Account sync: new snapshot, rescheduled reminders, notifications for holds that are ready.
+/// Called after sign-in, each time the account is opened, and by the background task.
 public enum AccountSync {
     @discardableResult
     public static func run(settings: ReminderSettings) async throws -> AccountSnapshot {
@@ -178,7 +182,7 @@ public enum AccountSync {
         await notifications.replaceLoanReminders(reminders)
         await notifications.setAgendaDigest(settings.agendaDigest)
 
-        // Centre de notifications : on garde la trace de ce que les rappels ont annoncé.
+        // Notification center: keep a record of what the reminders announced.
         var inbox = inboxClient.load()
         inbox.merge(
             InboxPlanner.items(for: snapshot, daysBefore: settings.daysBefore, now: now, calendar: .paris),
@@ -187,7 +191,7 @@ public enum AccountSync {
         )
         inboxClient.save(inbox)
 
-        // Au tout premier snapshot, on ne notifie pas ce que l'abonné voit déjà à l'écran.
+        // On the very first snapshot, don't notify about what the patron already sees on screen.
         if settings.holdAlerts, previous != nil {
             for hold in snapshot.newlyReadyHolds(since: previous) {
                 await notifications.deliver(ReminderPlanner.holdReadyReminder(for: hold))
@@ -196,7 +200,7 @@ public enum AccountSync {
         return snapshot
     }
 
-    /// Message de la médiathèque lu sur la fiche du compte, ajouté au centre de notifications.
+    /// Library message read from the account, added to the notification center.
     public static func record(libraryMessage: String?) {
         @Dependency(\.inboxClient) var inboxClient
         @Dependency(\.date.now) var now
@@ -206,7 +210,7 @@ public enum AccountSync {
         inboxClient.save(inbox)
     }
 
-    /// À la déconnexion : plus de snapshot, de rappels ni d'historique sur l'appareil.
+    /// On sign-out: no more snapshot, reminders or history on the device.
     public static func reset() async {
         @Dependency(\.snapshotClient) var snapshots
         @Dependency(\.notificationClient) var notifications

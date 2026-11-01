@@ -1,18 +1,22 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import Foundation
 import MediathequeCore
 import Observation
 
-/// Session ouverte chez un fournisseur : l'URL SSO et les cookies du portail pour la vue web.
+/// Session opened with a provider: the SSO URL and the portal cookies for the web view.
 public struct PortalSession: Identifiable, Sendable {
     public let id = UUID()
     public let offer: DigitalOffer
-    /// ⚠️ Peut contenir des données personnelles (Arte) : ne jamais la journaliser.
+    /// ⚠️ May contain personal data (Arte): never log it.
     public let url: URL
     public let cookies: [HTTPCookie]
 }
 
-/// Fiche App Store à présenter dans l'app.
+/// App Store sheet to present in the app.
 public struct StoreProduct: Identifiable, Equatable, Sendable {
     public let id: String
 }
@@ -20,16 +24,16 @@ public struct StoreProduct: Identifiable, Equatable, Sendable {
 public enum AppAvailability: Equatable, Sendable {
     case installed
     case notInstalled
-    /// Pas de scheme connu (musicMe) : iOS ne peut pas le dire.
+    /// No known scheme (musicMe): iOS cannot tell.
     case unknown
 }
 
-/// Où se consulte un service : la ligne sous son nom, dans l'onglet.
+/// Where a service is used: the line under its name, in the tab.
 public enum ServiceAccess: Equatable, Sendable {
     case appInstalled
-    /// L'app est nécessaire mais pas encore installée.
+    /// The app is required but not installed yet.
     case inApp
-    /// Emprunt sur le web, lecture dans l'app nommée.
+    /// Borrowed on the web, read in the named app.
     case reader(String)
     case web
 }
@@ -42,13 +46,13 @@ public final class DigitalViewModel {
     public var session: PortalSession?
     public private(set) var errorMessage: String?
     public private(set) var feedback: FeedbackEvent?
-    /// Feuille « Installer l'app », avant la fiche App Store.
+    /// "Installer l'app" sheet, before the App Store sheet.
     public var installOffer: DigitalOffer?
     public var storeProduct: StoreProduct?
-    /// L'app vient d'être installée depuis Ma médiathèque : bannière « L'app est installée ».
+    /// The app was just installed from Ma médiathèque: "L'app est installée" banner.
     public private(set) var justInstalled: DigitalOffer.ID?
     private var installedSchemes: Set<String> = []
-    /// Service dont l'abonné est allé chercher l'app : on l'ouvre dès qu'elle est là.
+    /// Service whose app the patron went to get: open it as soon as it is there.
     private var pendingInstall: DigitalOffer.ID?
 
     @ObservationIgnored @Dependency(\.digitalClient) private var digital
@@ -70,18 +74,18 @@ public final class DigitalViewModel {
         }
     }
 
-    /// « Connecter l'app avec ma carte » n'a de sens que pour une app nécessaire déjà installée.
+    /// "Connecter l'app avec ma carte" only makes sense for a required app that is already installed.
     public func canConnectApp(_ offer: DigitalOffer) -> Bool {
         access(for: offer) == .appInstalled
     }
 
-    /// Vrai quand le bouton principal doit proposer l'installation plutôt que l'ouverture.
+    /// True when the primary button should offer to install rather than open.
     public func needsInstall(_ offer: DigitalOffer) -> Bool {
         guard let app = offer.app, app.role == .required else { return false }
         return availability(of: app) == .notInstalled
     }
 
-    /// À l'affichage et au retour dans l'app (App Store, Réglages) : les apps ont pu changer.
+    /// On appear and when returning to the app (App Store, Settings): apps may have changed.
     public func refreshInstalledApps() async {
         installedSchemes = Set(offers.compactMap(\.app?.urlScheme).filter { installedApps.isInstalled($0) })
         guard let pendingInstall, let offer = offers.first(where: { $0.id == pendingInstall }),
@@ -89,31 +93,31 @@ public final class DigitalViewModel {
         else { return }
         self.pendingInstall = nil
         justInstalled = offer.id
-        // Première ouverture : on passe par le portail pour que l'app reçoive la session de l'abonné.
+        // First launch: go through the portal so the app receives the patron's session.
         await open(offer)
         if session != nil { feedback = .success }
     }
 
-    /// Bouton principal d'une carte : installer l'app si elle manque, l'ouvrir si elle est là, sinon le web.
+    /// A card's primary button: install the app if missing, open it if present, otherwise the web.
     public func primaryAction(_ offer: DigitalOffer) async {
         if needsInstall(offer) {
             installOffer = offer
             feedback = .lightImpact
         } else if let app = offer.app, app.role == .required, availability(of: app) == .installed,
                   let url = app.launchURL, await installedApps.open(url) {
-            // La connexion du portail n'ouvre pas l'app (Arte) : on lance l'app elle-même, qui garde sa session.
+            // Portal sign-in does not open the app (Arte): launch the app itself, which keeps its session.
             feedback = .lightImpact
         } else {
             await open(offer)
         }
     }
 
-    /// « Connecter l'app » (aide) : la connexion par le portail, pour une première fois ou une session perdue.
+    /// "Connecter l'app" (help): sign-in through the portal, for a first time or a lost session.
     public func connectThroughPortal(_ offer: DigitalOffer) async {
         await open(offer)
     }
 
-    /// « Obtenir l'app » : fiche App Store dans l'app, sans quitter Ma médiathèque.
+    /// "Obtenir l'app": App Store sheet in the app, without leaving Ma médiathèque.
     public func getApp(for offer: DigitalOffer) {
         guard let app = offer.app else { return }
         installOffer = nil
@@ -121,7 +125,7 @@ public final class DigitalViewModel {
         storeProduct = StoreProduct(id: app.appStoreID)
     }
 
-    /// « Continuer dans le navigateur » : le service sur le web, sans l'app.
+    /// "Continuer dans le navigateur": the service on the web, without the app.
     public func continueOnWeb(_ offer: DigitalOffer) async {
         installOffer = nil
         await open(offer)
@@ -136,7 +140,7 @@ public final class DigitalViewModel {
         justInstalled = nil
     }
 
-    /// L'URL SSO est à usage unique et de courte durée : on la résout au moment du tap.
+    /// The SSO URL is single-use and short-lived: resolve it at tap time.
     public func open(_ offer: DigitalOffer) async {
         guard resolving == nil else { return }
         resolving = offer.id

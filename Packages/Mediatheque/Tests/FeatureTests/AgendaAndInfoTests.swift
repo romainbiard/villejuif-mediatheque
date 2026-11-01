@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import DependenciesTestSupport
 import Foundation
@@ -24,7 +28,7 @@ struct AgendaViewModelTests {
     }
 
     @Test func eventsOfTheDayAndOngoing() async {
-        // Samedi 31 octobre 2026.
+        // Saturday 31 October 2026.
         let viewModel = await makeViewModel(now: paris(2026, 10, 31, 9))
         #expect(viewModel.eventsOfSelectedDay.map(\.id) == [990])
         #expect(viewModel.ongoingEvents.map(\.id) == [983])
@@ -54,7 +58,7 @@ struct AgendaViewModelTests {
 
     @Test func monthCalendarStartsOnMondayAndStaysInTheFuture() async {
         let viewModel = await makeViewModel(now: paris(2026, 10, 31, 9))
-        // Le 1er octobre 2026 est un jeudi : 3 cases vides (lundi à mercredi).
+        // 1 October 2026 is a Thursday: 3 empty cells (Monday to Wednesday).
         #expect(viewModel.displayedMonth == paris(2026, 10, 1))
         #expect(viewModel.monthGrid.prefix(3).allSatisfy { $0 == nil })
         #expect(viewModel.monthGrid.count == 3 + 31)
@@ -63,7 +67,7 @@ struct AgendaViewModelTests {
         #expect(viewModel.isSelectable(paris(2026, 10, 31)))
 
         viewModel.showNextMonth()
-        // Le 1er novembre 2026 est un dimanche : 6 cases vides.
+        // 1 November 2026 is a Sunday: 6 empty cells.
         #expect(viewModel.displayedMonth == paris(2026, 11, 1))
         #expect(viewModel.monthGrid.prefix(6).allSatisfy { $0 == nil })
         #expect(viewModel.monthGrid[6] == paris(2026, 11, 1))
@@ -89,7 +93,7 @@ struct InfoViewModelTests {
     }
 
     @Test func librariesAreSortedAndStatusComputed() async throws {
-        // Vendredi 30 octobre 2026 à 20:00, après la fermeture.
+        // Friday 30 October 2026 at 20:00, after closing time.
         let viewModel = await makeViewModel(now: paris(2026, 10, 30, 20))
         let libraries = try #require(viewModel.state.value)
         #expect(libraries.map(\.library) == [.elsaTriolet, .pulpSud, .pulpNord])
@@ -98,7 +102,7 @@ struct InfoViewModelTests {
     }
 
     @Test func openStatus() async throws {
-        // Mercredi 4 novembre 2026 à 11:00.
+        // Wednesday 4 November 2026 at 11:00.
         let viewModel = await makeViewModel(now: paris(2026, 11, 4, 11))
         let elsa = try #require(viewModel.state.value?.first)
         #expect(viewModel.statusText(of: elsa) == "Ouvert · ferme à 19:00")
@@ -108,7 +112,7 @@ struct InfoViewModelTests {
 
 @MainActor
 struct AgendaPeriodTests {
-    // Jeudi 29 octobre 2026, pendant les vacances de la Toussaint.
+    // Thursday 29 October 2026, during the All Saints' holidays.
     let thursday = paris(2026, 10, 29, 9)
 
     func makeViewModel(period: AgendaPeriod) async -> AgendaViewModel {
@@ -156,7 +160,7 @@ struct AgendaPeriodTests {
         let viewModel = await makeViewModel(period: .all)
         var filters = AgendaFilters()
         filters.period = .wednesdays
-        // La conférence du mercredi 4 et le prix, qui couvre tous les mercredis.
+        // The talk on Wednesday the 4th and the prize, which spans every Wednesday.
         #expect(viewModel.upcomingCount(with: filters) == 2)
         filters.types = ["Lectures"]
         #expect(viewModel.upcomingCount(with: filters) == 0)

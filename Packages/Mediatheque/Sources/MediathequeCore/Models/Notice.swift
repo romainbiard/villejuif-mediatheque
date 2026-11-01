@@ -1,6 +1,10 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
-/// Type de document Bokeh (`type.code`), avec la distinction physique / en ligne.
+/// Bokeh document type (`type.code`), distinguishing physical from online.
 public struct DocumentKind: Hashable, Sendable, Codable {
     public let code: String
     public let label: String
@@ -10,7 +14,7 @@ public struct DocumentKind: Hashable, Sendable, Codable {
         self.label = label
     }
 
-    /// Codes des ressources consultables en ligne (moissonnées par Bokeh ou Eurêka).
+    /// Codes of resources available online (harvested by Bokeh or Eurêka).
     public static let digitalCodes: Set<String> = ["ArteVod", "Cafeyn", "Numilog", "ToutApprendre", "23", "24", "26", "27"]
 
     public var isDigital: Bool { Self.digitalCodes.contains(code) }
@@ -26,7 +30,7 @@ public struct DocumentKind: Hashable, Sendable, Codable {
 
 public struct Notice: Identifiable, Hashable, Sendable, Codable {
     public let id: Int
-    /// Clé Bokeh (`identifier`), nécessaire pour la page notice.
+    /// Bokeh key (`identifier`), required for the record page.
     public let key: String
     public let title: String
     public let authors: [String]
@@ -37,8 +41,8 @@ public struct Notice: Identifiable, Hashable, Sendable, Codable {
     public let series: String?
     public let volume: String?
     public let permalink: URL?
-    /// Exemplaires tels que moissonnés la nuit : utiles pour la cote et la médiathèque,
-    /// pas pour la disponibilité (voir `CatalogClient.copies`).
+    /// Copies as harvested overnight: useful for the call number and the library,
+    /// not for availability (see `CatalogClient.copies`).
     public let harvestedCopies: [HarvestedCopy]
 
     public init(
@@ -60,7 +64,7 @@ public struct Notice: Identifiable, Hashable, Sendable, Codable {
         self.harvestedCopies = harvestedCopies
     }
 
-    /// Médiathèques qui possèdent un exemplaire, sans doublon, dans l'ordre du réseau.
+    /// Libraries that own a copy, without duplicates, in network order.
     public var libraries: [Library] {
         let owned = Set(harvestedCopies.compactMap(\.library))
         return Library.allCases.filter(owned.contains)
@@ -112,11 +116,11 @@ public struct SearchQuery: Hashable, Sendable {
     var facets: [String] { kinds.map(\.searchFacet) + libraries.map(\.searchFacet) }
 }
 
-/// Disponibilité en temps réel d'un exemplaire.
+/// Real-time availability of a copy.
 public enum CopyStatus: Hashable, Sendable {
     case available
     case onLoan(dueDate: Date?)
-    /// « En réserve », « À demander à l'accueil ».
+    /// "En réserve", "À demander à l'accueil".
     case onRequest
     case other(String)
 
@@ -128,7 +132,7 @@ public enum CopyStatus: Hashable, Sendable {
     }
 }
 
-/// Un exemplaire vu en temps réel (`noticeajax/exemplaires`).
+/// A copy seen in real time (`noticeajax/exemplaires`).
 public struct LiveCopy: Hashable, Sendable {
     public let library: Library?
     public let libraryName: String
@@ -138,11 +142,11 @@ public struct LiveCopy: Hashable, Sendable {
     public let location: String?
     public let shelfMark: String?
     public let holdCount: Int
-    /// Lien du formulaire de retrait si l'exemplaire est réservable.
+    /// Pickup form link if the copy can be placed on hold.
     public let pickupPath: String?
 }
 
-/// Badge de disponibilité d'une notice dans une liste de résultats.
+/// Availability badge for a record in a results list.
 public struct Availability: Hashable, Sendable, Codable {
     public let label: String
     public let isAvailable: Bool

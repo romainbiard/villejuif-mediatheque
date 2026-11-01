@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
 public struct Patron: Hashable, Sendable {
@@ -14,7 +18,7 @@ public struct Patron: Hashable, Sendable {
         public let holds: Int
         public let digitalLoans: Int
         public let debts: Int
-        /// Réservations arrivées, à retirer.
+        /// Holds that are ready for pickup.
         public let waitingToBePulled: Int
     }
 
@@ -30,13 +34,13 @@ public struct Patron: Hashable, Sendable {
     public let cardExpiresInDays: Int
     public let permissions: Permissions
     public let counters: Counters
-    /// Message de la médiathèque, s'il y en a un.
+    /// Message from the library, if there is one.
     public let message: String?
     public let hasUnreadMessage: Bool
-    /// Identifiant des routes `/abonne/...` (`cards[0].id` de l'API).
+    /// Identifier for the `/abonne/...` routes (`cards[0].id` in the API).
     public var patronID: String?
     public var nickname: String?
-    /// Adresse postale sur une ligne. Elle ne se modifie qu'à l'accueil.
+    /// Postal address on one line. It can only be changed at the front desk.
     public var postalAddress: String?
     public var newsletterSubscribed = false
 
@@ -68,7 +72,7 @@ public struct Loan: Identifiable, Hashable, Sendable, Codable {
         self.coverURL = coverURL
     }
 
-    /// Identifiant de l'abonné, préfixe de l'identifiant du prêt (utile pour les routes HTML).
+    /// Patron identifier, prefix of the loan identifier (useful for the HTML routes).
     public var patronID: String { String(id.split(separator: "_").first ?? "") }
 
     public enum DueState: Hashable, Sendable {
@@ -77,7 +81,7 @@ public struct Loan: Identifiable, Hashable, Sendable, Codable {
         case onTime(days: Int)
     }
 
-    /// État par rapport à `now`, avec « bientôt » à 7 jours ou moins.
+    /// Status relative to `now`, with "bientôt" at 7 days or less.
     public func dueState(now: Date, calendar: Calendar) -> DueState {
         let today = calendar.startOfDay(for: now)
         let due = calendar.startOfDay(for: dueDate)
@@ -92,19 +96,19 @@ public struct Hold: Identifiable, Hashable, Sendable, Codable {
     public let id: String
     public let title: String
     public let author: String
-    /// Texte du site, par exemple « Pas disponible avant le 14/11/2026 ».
+    /// Text from the site, e.g. "Pas disponible avant le 14/11/2026".
     public let statusText: String
     public let pickupLibrary: Library?
     public let pickupLibraryName: String
     public let recordID: Int?
     public let coverURL: URL?
-    /// Rang dans la file, lu dans le HTML du compte (absent de l'API).
+    /// Position in the queue, read from the account HTML (missing from the API).
     public var rank: Int?
 
-    /// Date lue dans le statut « Pas disponible avant le … ».
+    /// Date read from the "Pas disponible avant le …" status.
     public var expectedDate: Date? { BokehDates.firstDate(in: statusText) }
 
-    /// Vrai quand le document attend l'abonné.
+    /// True when the document is waiting for the patron.
     public var isReadyForPickup: Bool {
         let status = statusText.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
         return status.contains("disponible") && !status.contains("pas disponible")

@@ -1,9 +1,13 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import BokehAPI
 import Dependencies
 import DependenciesMacros
 import Foundation
 
-/// Demande de réservation : le formulaire de retrait à soumettre et les lieux proposés.
+/// Hold request: the pickup form to submit and the locations offered.
 public struct HoldRequest: Hashable, Sendable {
     public let recordID: Int
     public let pickupPath: String
@@ -23,18 +27,18 @@ public enum HoldError: Error, Equatable, Sendable {
     case refused(message: String)
 }
 
-/// Compte abonné. Tous les appels passent par `SessionManager.perform`,
-/// qui rouvre la session si elle a expiré.
+/// Patron account. Every call goes through `SessionManager.perform`,
+/// which reopens the session if it has expired.
 @DependencyClient
 public struct AccountClient: Sendable {
     public var patron: @Sendable () async throws -> Patron
     public var loans: @Sendable () async throws -> [Loan]
     public var holds: @Sendable () async throws -> [Hold]
-    /// Le site ne dit pas si un prêt est prolongeable : on tente, puis on compare les dates.
+    /// The site doesn't say whether a loan can be renewed: we try, then compare the dates.
     public var renew: @Sendable (_ loanIDs: [Loan.ID]) async throws -> [RenewalResult]
     public var cancelHold: @Sendable (_ holdID: Hold.ID) async throws -> Void
     public var prepareHold: @Sendable (_ recordID: Int) async throws -> HoldRequest
-    /// Renvoie le message de confirmation du site.
+    /// Returns the site's confirmation message.
     public var placeHold: @Sendable (_ request: HoldRequest, _ pickup: Library) async throws -> String
 }
 
@@ -60,7 +64,7 @@ extension AccountClient: DependencyKey {
                 try await session.perform {
                     let dtos = try await http.decode(HoldsResponseDTO.self, from: .holds).holds
                     guard let patronID = dtos.first?.id.split(separator: "_").first else { return [] }
-                    // Le rang n'existe que dans le HTML ; on s'en passe s'il ne se lit pas.
+                    // The rank only exists in the HTML; we do without it if it can't be read.
                     let ranks = (try? HTMLParsers.holdRanks(in: await http.string(for: .holdsPage(patronID: String(patronID))))) ?? []
                     return dtos.enumerated().map { index, dto in
                         Hold(dto: dto, rank: ranks.indices.contains(index) ? ranks[index] : nil)
@@ -88,7 +92,7 @@ extension AccountClient: DependencyKey {
                 try await session.perform {
                     let options = try await http.decode(PopupDTO.self, from: .holdOptions(recordID: recordID))
                     let paths = try HTMLParsers.holdPickupPaths(in: options.content)
-                    // Le lien « on_record » réserve la notice (premier exemplaire qui revient).
+                    // The "on_record" link places a hold on the record (first copy to come back).
                     guard let path = paths.first(where: { $0.contains("on_record") }) ?? paths.first else {
                         throw HoldError.notHoldable
                     }

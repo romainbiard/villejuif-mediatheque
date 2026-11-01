@@ -1,6 +1,10 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
-/// Données d'aperçu, cohérentes avec les maquettes (abonnée fictive Camille Martin).
+/// Preview data, consistent with the mockups (fictional patron Camille Martin).
 public enum SampleData {
     static let calendar = BokehDates.parisCalendar
 

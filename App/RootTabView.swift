@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import AccountFeature
 import AgendaFeature
 import DesignSystem
@@ -9,10 +13,10 @@ import SwiftUI
 
 enum AppTab: Hashable {
     case account, agenda, digital, info, search
-    /// Une section de Mon compte, présente seulement dans la barre latérale de l'iPad.
+    /// A Mon compte section, shown only in the iPad sidebar.
     case accountSection(AccountSection)
 
-    /// Ordre de la barre d'onglets et des raccourcis ⌘1…⌘5.
+    /// Order of the tab bar and of the ⌘1…⌘5 shortcuts.
     static let main: [AppTab] = [.account, .agenda, .digital, .info, .search]
 
     var title: String {
@@ -38,13 +42,13 @@ enum AppTab: Hashable {
     }
 }
 
-/// iPhone (et fenêtre étroite sur iPad) : barre d'onglets iOS 26 en Liquid Glass, Recherche en onglet
-/// de rôle `.search`. iPad : barre latérale toujours ouverte, où les sections de Mon compte
-/// ont leurs propres entrées.
+/// iPhone (and narrow window on iPad): iOS 26 Liquid Glass tab bar, with Search as a tab
+/// with the `.search` role. iPad: an always-open sidebar, where the Mon compte sections
+/// have their own entries.
 struct RootTabView: View {
     @State private var selection: AppTab = .account
     @State private var searchFocusRequest = 0
-    /// Demandes des raccourcis (App Intents), relayées aux écrans concernés.
+    /// Shortcut (App Intents) requests, relayed to the relevant screens.
     @State private var cardRequest = false
     @State private var searchQueryRequest: String?
     @State private var intentRouter = AppIntentRouter.shared
@@ -52,8 +56,8 @@ struct RootTabView: View {
     @Environment(SessionStore.self) private var session
     @State private var windowWidth: CGFloat = .infinity
 
-    /// La barre latérale prend ~320 pt : en dessous de cette largeur de fenêtre (iPhone Duo déplié
-    /// tenu à la verticale, iPad en Split View étroit), la barre d'onglets laisse plus de place au contenu.
+    /// The sidebar takes ~320 pt: below this window width (iPhone Duo unfolded
+    /// held upright, narrow iPad Split View), the tab bar leaves more room for the content.
     static let sidebarMinWindowWidth: CGFloat = 800
 
     private var usesSidebar: Bool { sizeClass == .regular && windowWidth >= Self.sidebarMinWindowWidth }
@@ -85,7 +89,7 @@ struct RootTabView: View {
         }
         .onChange(of: intentRouter.pending, initial: true) { handleIntentRequest() }
         .onChange(of: usesSidebar) {
-            // Les sections de Mon compte n'existent pas dans la barre d'onglets.
+            // The Mon compte sections don't exist in the tab bar.
             if !usesSidebar, case .accountSection = selection { selection = .account }
         }
     }
@@ -128,15 +132,15 @@ struct RootTabView: View {
 
 // MARK: - iPad
 
-/// Barre latérale permanente : `TabView(.sidebarAdaptable)` laisse toujours la replier
-/// en barre d'onglets en haut, peu pratique ; un `NavigationSplitView` la garde ouverte.
+/// Permanent sidebar: `TabView(.sidebarAdaptable)` always lets the user collapse it
+/// into a tab bar at the top, which is impractical; a `NavigationSplitView` keeps it open.
 struct SidebarRootView: View {
     @Binding var selection: AppTab
     let searchFocusRequest: Int
     @Binding var cardRequest: Bool
     @Binding var searchQueryRequest: String?
     @Environment(SessionStore.self) private var session
-    /// Détenu ici pour garder la requête et les résultats quand on change d'écran.
+    /// Owned here to keep the query and results when switching screens.
     @State private var searchModel = SearchViewModel()
 
     var body: some View {
@@ -159,8 +163,8 @@ struct SidebarRootView: View {
             .navigationSplitViewColumnWidth(280)
             .toolbar(removing: .sidebarToggle)
         } detail: {
-            // Un seul écran à la fois : des écrans superposés se partageraient la barre de
-            // navigation de la colonne. La recherche garde son état grâce à `searchModel`.
+            // One screen at a time: stacked screens would share the column's navigation
+            // bar. Search keeps its state thanks to `searchModel`.
             screen(for: selection).id(selection)
         }
         .navigationSplitViewStyle(.balanced)
@@ -178,7 +182,7 @@ struct SidebarRootView: View {
         }
     }
 
-    /// Pastilles : prêts en retard, réservations à retirer.
+    /// Badges: overdue loans, holds ready for pickup.
     private func badge(for section: AccountSection, patron: Patron) -> Int {
         switch section {
         case .loans: patron.counters.lateLoans
@@ -188,7 +192,7 @@ struct SidebarRootView: View {
     }
 }
 
-// MARK: - Raccourcis clavier (iPad)
+// MARK: - Keyboard shortcuts (iPad)
 
 struct AppNavigation {
     let select: (AppTab) -> Void
@@ -199,7 +203,7 @@ extension FocusedValues {
     @Entry var appNavigation: AppNavigation?
 }
 
-/// Menu « Aller à » de la barre des menus de l'iPad : ⌘1…⌘5 et ⌘F.
+/// "Aller à" menu in the iPad menu bar: ⌘1…⌘5 and ⌘F.
 struct AppCommands: Commands {
     @FocusedValue(\.appNavigation) private var navigation
 

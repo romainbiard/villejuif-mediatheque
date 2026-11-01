@@ -1,10 +1,14 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import SwiftUI
 
-/// Charte de la ville, relevée dans `skins/villejuif/CSS/villejuif_2026.css` et sur le logo.
+/// The city's brand guidelines, taken from `skins/villejuif/CSS/villejuif_2026.css` and the logo.
 public extension Color {
-    /// `--rose` du site : accent principal (boutons, onglet actif, en-tête du compte).
+    /// The website's `--rose`: main accent (buttons, active tab, account header).
     static let brandViolet = Color(light: 0x773DBD, dark: 0xA27BE0)
-    /// `--falu_red`, couleur du logo : identité ville, temps forts.
+    /// `--falu_red`, the logo color: city identity, highlights.
     static let brandMagenta = Color(light: 0xE0005A, dark: 0xFF4D8D)
     static let brandVioletDeep = Color(light: 0x5714A4, dark: 0xC9B0F2)
     static let brandCyan = Color(hex: 0x84DADE)
@@ -19,7 +23,7 @@ public extension Color {
     static let surfaceGrouped = Color(light: 0xF4F3F8, dark: 0x0F0E13)
     static let surfaceCard = Color(light: 0xFFFFFF, dark: 0x1C1B22)
 
-    /// Fond pâle associé à une couleur de statut (pastilles).
+    /// Pale background paired with a status color (badges).
     static func soft(_ color: Color) -> Color { color.opacity(0.14) }
 }
 
@@ -46,7 +50,7 @@ public extension Color {
     }
 }
 
-/// Couleurs de catégorie pour les couvertures et affiches générées.
+/// Category colors for generated covers and posters.
 public enum BrandArtwork {
     public static let palette: [(background: Color, shape: Color)] = [
         (.brandViolet, .brandMagenta),
@@ -57,21 +61,21 @@ public enum BrandArtwork {
         (Color(hex: 0x1C1B22), .brandMagenta),
     ]
 
-    /// Couleurs stables pour un identifiant donné.
+    /// Stable colors for a given identifier.
     public static func colors(for seed: Int) -> (background: Color, shape: Color) {
         palette[abs(seed) % palette.count]
     }
 
-    /// Couleur du texte posé sur le fond de `colors(for:)` : sombre sur jaune et cyan, blanc ailleurs.
+    /// Text color on the `colors(for:)` background: dark on yellow and cyan, white elsewhere.
     public static func foreground(for seed: Int) -> Color {
         [1, 2].contains(abs(seed) % palette.count) ? Color(hex: 0x1C1B22) : .white
     }
 }
 
-/// Logo de la ville (fichiers du site de la médiathèque). Son usage dans l'app reste soumis à l'accord de la ville.
+/// City logo (files from the library website). Its use in the app remains subject to the city's approval.
 public enum VillejuifLogo {
     public static let white = Image("villejuif-logo-white", bundle: .module)
     public static let magenta = Image("villejuif-logo-magenta", bundle: .module)
-    /// Blason seul, sans le mot « VILLEJUIF » (icône de l'app, aperçus de notifications). Image modèle : se teinte.
+    /// Coat of arms alone, without the word "VILLEJUIF" (app icon, notification previews). Template image: can be tinted.
     public static let crest = Image("villejuif-crest", bundle: .module)
 }

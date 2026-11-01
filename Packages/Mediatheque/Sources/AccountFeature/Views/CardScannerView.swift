@@ -1,9 +1,13 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 #if canImport(VisionKit) && os(iOS)
 import DesignSystem
 import SwiftUI
 import VisionKit
 
-/// Scan d'un code-barres en plein écran caméra : carte d'abonné, ou ISBN d'une suggestion.
+/// Full-screen camera barcode scan: library card, or ISBN for a suggestion.
 struct CardScannerView: View {
     var prompt = "Visez le code-barres au dos de votre carte"
     var detectedTitle = "Carte détectée"
@@ -11,7 +15,7 @@ struct CardScannerView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var detected: String?
 
-    /// Le scanner n'existe que sur un appareil récent avec caméra (pas dans le simulateur).
+    /// The scanner only exists on a recent device with a camera (not in the simulator).
     static var isAvailable: Bool {
         DataScannerViewController.isSupported && DataScannerViewController.isAvailable
     }

@@ -1,22 +1,26 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 import SwiftSoup
 
-// Pages `/abonne/*` de l'espace abonné, relevées le 31/10/2026.
+// `/abonne/*` pages of the patron space, checked on 31/10/2026.
 
-/// Une carte de `/abonne/selections`.
+/// A card from `/abonne/selections`.
 public struct SelectionDTO: Sendable, Equatable {
     public let id: Int
-    /// Panier de recherche, présent dès que la sélection contient un document.
+    /// Search basket, present as soon as the selection contains a document.
     public let basketID: Int?
     public let title: String
     public let count: Int
-    /// « 30/10/2026 ».
+    /// "30/10/2026".
     public let updatedText: String?
     public let coverURLs: [URL]
     public let previewTitles: [String]
 }
 
-/// Un document emprunté à noter (`/abonne/donner-des-avis`).
+/// A borrowed document to rate (`/abonne/donner-des-avis`).
 public struct RecordToRateDTO: Sendable, Equatable {
     public let recordID: Int
     public let recordKey: String
@@ -25,9 +29,9 @@ public struct RecordToRateDTO: Sendable, Equatable {
     public let coverURL: URL?
 }
 
-/// Un avis publié (`/abonne/mes-avis`).
-/// ⚠️ Lu sur un compte sans avis : la structure d'une carte est supposée identique
-/// aux autres listes Intonation (titre lié à la notice, texte, étoiles).
+/// A published review (`/abonne/mes-avis`).
+/// ⚠️ Read from an account with no reviews: a card's structure is assumed to be identical
+/// to the other Intonation lists (title linked to the record, text, stars).
 public struct ReviewDTO: Sendable, Equatable {
     public let recordID: Int?
     public let title: String
@@ -35,8 +39,8 @@ public struct ReviewDTO: Sendable, Equatable {
     public let rating: Int?
 }
 
-/// Une suggestion d'achat envoyée (`/abonne/suggestions`).
-/// ⚠️ Lue sur un compte sans suggestion : la structure est supposée.
+/// A sent purchase suggestion (`/abonne/suggestions`).
+/// ⚠️ Read from an account with no suggestions: the structure is assumed.
 public struct SuggestionDTO: Sendable, Equatable {
     public let title: String
     public let detail: String?
@@ -64,7 +68,7 @@ extension HTMLParsers {
         }
     }
 
-    /// Les documents empruntés proposés à la notation, avec leur formulaire `ajax-review`.
+    /// Borrowed documents offered for rating, with their `ajax-review` form.
     public static func recordsToRate(in html: String) throws -> [RecordToRateDTO] {
         let document = try SwiftSoup.parse(html, HTTPClient.villejuifBaseURL.absoluteString)
         return try document.select("form[action*=ajax-review]").compactMap { form in
@@ -121,7 +125,7 @@ extension HTMLParsers {
         }
     }
 
-    /// Médiathèques en favori : celles qui proposent le lien « retirer des favoris ».
+    /// Favorite libraries: those that offer the "retirer des favoris" link.
     public static func bookmarkedLibraryIDs(in html: String) throws -> Set<Int> {
         let document = try SwiftSoup.parse(html)
         return Set(try document.select("a[href*=remove-library-from-bookmarks]").compactMap {
@@ -129,17 +133,17 @@ extension HTMLParsers {
         })
     }
 
-    /// Valeur préremplie d'un champ de formulaire (par exemple `Library` de la suggestion d'achat).
+    /// Prefilled value of a form field (e.g. `Library` in the purchase suggestion).
     public static func fieldValue(_ name: String, in html: String) throws -> String? {
         try SwiftSoup.parse(html).select("[name=\(name)]").first()?.attr("value").nilIfBlank
     }
 
-    /// Valeur du bouton radio coché (par exemple `favoriteSendingChannel`).
+    /// Value of the checked radio button (e.g. `favoriteSendingChannel`).
     public static func checkedValue(_ name: String, in html: String) throws -> String? {
         try SwiftSoup.parse(html).select("input[name=\(name)][checked]").first()?.attr("value")
     }
 
-    /// Messages d'erreur d'un formulaire renvoyé par le site (champs invalides, mot de passe refusé…).
+    /// Error messages of a form returned by the site (invalid fields, password rejected…).
     public static func formErrors(in html: String) throws -> [String] {
         let document = try SwiftSoup.parse(html)
         return try document.select(".jumbotron_rich_content ul.errors li, .jumbotron_rich_content .alert-danger, .jumbotron_rich_content .error")
@@ -147,7 +151,7 @@ extension HTMLParsers {
             .filter { !$0.isEmpty }
     }
 
-    /// Segment qui suit `name` dans un chemin Bokeh `/cle/valeur`.
+    /// Segment following `name` in a Bokeh `/cle/valeur` path.
     private static func segment(after name: String, in path: String) -> String? {
         let segments = path.split(separator: "/")
         guard let index = segments.firstIndex(of: Substring(name)), segments.indices.contains(index + 1) else { return nil }

@@ -1,10 +1,14 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import AppIntents
 import MediathequeCore
 import SwiftUI
 
-// MARK: - Routage
+// MARK: - Routing
 
-/// Ce qu'un raccourci demande à l'app une fois au premier plan ; `RootTabView` le consomme.
+/// What a shortcut asks of the app once it is in the foreground; `RootTabView` consumes it.
 @MainActor
 @Observable
 final class AppIntentRouter {
@@ -21,7 +25,7 @@ final class AppIntentRouter {
 
 // MARK: - Intents
 
-/// « Quand dois-je rendre mes livres ? » : répond sans ouvrir l'app, à partir du snapshot de l'appareil.
+/// "Quand dois-je rendre mes livres ?": answers without opening the app, from the on-device snapshot.
 struct NextReturnsIntent: AppIntent {
     static let title: LocalizedStringResource = "Prochains retours"
     static let description = IntentDescription("Dit quand rendre vos prochains documents, d'après la dernière synchronisation.")
@@ -36,7 +40,7 @@ struct NextReturnsIntent: AppIntent {
     }
 }
 
-/// Ouvre la carte d'abonné en grand, pour le comptoir.
+/// Opens the library card full screen, for the front desk.
 struct ShowLibraryCardIntent: AppIntent {
     static let title: LocalizedStringResource = "Montrer ma carte d'abonné"
     static let description = IntentDescription("Affiche votre carte avec son code-barres, luminosité au maximum.")
@@ -49,7 +53,7 @@ struct ShowLibraryCardIntent: AppIntent {
     }
 }
 
-/// Cherche dans le catalogue des 3 médiathèques.
+/// Searches the catalog of the 3 libraries.
 struct SearchCatalogIntent: AppIntent {
     static let title: LocalizedStringResource = "Chercher dans le catalogue"
     static let description = IntentDescription("Lance une recherche dans le catalogue des médiathèques de Villejuif.")
@@ -69,7 +73,7 @@ struct SearchCatalogIntent: AppIntent {
     }
 }
 
-/// Ouvre l'agenda des animations.
+/// Opens the events calendar.
 struct OpenAgendaIntent: AppIntent {
     static let title: LocalizedStringResource = "Ouvrir l'agenda"
     static let description = IntentDescription("Affiche les prochaines animations des médiathèques.")
@@ -82,7 +86,7 @@ struct OpenAgendaIntent: AppIntent {
     }
 }
 
-// MARK: - Raccourcis (Siri, Spotlight, bouton Action)
+// MARK: - Shortcuts (Siri, Spotlight, Action button)
 
 struct VillejuifShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
@@ -126,7 +130,7 @@ struct VillejuifShortcuts: AppShortcutsProvider {
     }
 }
 
-// MARK: - Aperçu sous la réponse de Siri
+// MARK: - Preview below Siri's answer
 
 struct NextReturnsSnippet: View {
     let snapshot: AccountSnapshot?

@@ -1,8 +1,12 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import DependenciesMacros
 import Foundation
 
-/// Historique du centre de notifications, dans l'App Group (l'app et la tâche de fond l'alimentent).
+/// Notification center history, in the App Group (fed by the app and the background task).
 @DependencyClient
 public struct InboxClient: Sendable {
     public var load: @Sendable () -> Inbox = { Inbox() }

@@ -1,16 +1,20 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
-/// Code 39 (« 3 parmi 9 »), la symbologie imprimée sur les cartes d'abonné des médiathèques
-/// (relevé sur une carte le 31/10/2026 : 7 chiffres, sans caractère de contrôle).
-/// CoreImage ne sait générer que du Code 128, d'où cet encodeur.
+/// Code 39 ("3 of 9"), the symbology printed on the libraries' library cards
+/// (checked on a card on 31/10/2026: 7 digits, no check character).
+/// CoreImage can only generate Code 128, hence this encoder.
 public enum Code39 {
-    /// Un module du code-barres : barre ou espace, étroit ou large.
+    /// One barcode module: bar or space, narrow or wide.
     public struct Element: Hashable, Sendable {
         public let isBar: Bool
         public let isWide: Bool
     }
 
-    /// Les 9 éléments de chaque caractère, barre en premier : `n` étroit, `w` large.
+    /// The 9 elements of each character, bar first: `n` narrow, `w` wide.
     static let patterns: [Character: String] = [
         "0": "nnnwwnwnn", "1": "wnnwnnnnw", "2": "nnwwnnnnw", "3": "wnwwnnnnn",
         "4": "nnnwwnnnw", "5": "wnnwwnnnn", "6": "nnwwwnnnn", "7": "nnnwnnwnw",
@@ -26,8 +30,8 @@ public enum Code39 {
         "/": "nwnwnnnwn", "+": "nwnnnwnwn", "%": "nnnwnwnwn", "*": "nwnnwnwnn",
     ]
 
-    /// Éléments de `value` encadrée par les `*` de début et de fin, avec un espace étroit
-    /// entre deux caractères. `nil` si un caractère n'existe pas en Code 39.
+    /// Elements of `value` wrapped in the start and stop `*`, with a narrow space
+    /// between characters. `nil` if a character doesn't exist in Code 39.
     public static func elements(for value: String) -> [Element]? {
         let characters = Array("*\(value.uppercased())*")
         var elements: [Element] = []
@@ -45,7 +49,7 @@ public enum Code39 {
         return elements
     }
 
-    /// Largeur totale en modules étroits, pour un rapport large/étroit donné.
+    /// Total width in narrow modules, for a given wide/narrow ratio.
     public static func width(of elements: [Element], wideRatio: Double) -> Double {
         elements.reduce(0) { $0 + ($1.isWide ? wideRatio : 1) }
     }

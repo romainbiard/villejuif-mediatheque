@@ -1,33 +1,37 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import DesignSystem
 import MediathequeCore
 import SwiftUI
 
-/// Onglet Recherche. Placé dans un `Tab(role: .search)`, son champ s'affiche en bas
-/// sur iPhone, comme dans iOS 26.
+/// Search tab. Placed in a `Tab(role: .search)`, its field shows at the bottom
+/// on iPhone, as in iOS 26.
 public struct SearchView: View {
     @State private var viewModel = SearchViewModel()
     @State private var path: [Notice] = []
-    /// iPad : notice affichée dans la colonne de droite.
+    /// iPad: record shown in the right column.
     @State private var selected: Notice?
     @FocusState private var isSearchFocused: Bool
     @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var contentWidth: CGFloat = .infinity
     private let focusRequest: Int
 
-    /// Colonne des résultats (420 pt) et une fiche d'au moins 400 pt.
+    /// Results column (420 pt) and a detail view of at least 400 pt.
     static let columnsMinWidth: CGFloat = 820
 
     private var showsColumns: Bool { sizeClass == .regular && contentWidth >= Self.columnsMinWidth }
-    /// Recherche demandée de l'extérieur (Siri, Raccourcis) : lancée puis remise à `nil`.
+    /// Search requested from outside (Siri, Shortcuts): launched, then reset to `nil`.
     @Binding private var queryRequest: String?
 
-    /// `focusRequest` : chaque changement donne le focus au champ de recherche (⌘F).
+    /// `focusRequest`: each change focuses the search field (⌘F).
     public init(focusRequest: Int = 0, queryRequest: Binding<String?> = .constant(nil)) {
         self.focusRequest = focusRequest
         _queryRequest = queryRequest
     }
 
-    /// Avec un view model détenu par l'appelant, qui survit à la disparition de la vue (iPad).
+    /// With a view model owned by the caller, which outlives the view (iPad).
     public init(viewModel: SearchViewModel, focusRequest: Int = 0, queryRequest: Binding<String?> = .constant(nil)) {
         _viewModel = State(initialValue: viewModel)
         self.focusRequest = focusRequest
@@ -37,8 +41,8 @@ public struct SearchView: View {
     public var body: some View {
         Group {
             if showsColumns {
-                // iPad : résultats et fiche côte à côte. Pas de NavigationSplitView ici :
-                // la racine de l'app en est déjà un (barre latérale).
+                // iPad: results and detail side by side. No NavigationSplitView here:
+                // the app's root is already one (sidebar).
                 NavigationStack {
                     HStack(spacing: 0) {
                         searchColumn
@@ -87,10 +91,10 @@ public struct SearchView: View {
 
     @ViewBuilder
     private var searchColumn: some View {
-        // Champ dans la colonne dès que la largeur est « regular » : en barre de navigation,
-        // iOS le réduit à un bouton flottant (iPhone Duo déplié, iPad en fenêtre étroite).
+        // Field in the column whenever the width is "regular": in the navigation bar,
+        // iOS shrinks it to a floating button (iPhone Duo unfolded, iPad in a narrow window).
         if sizeClass == .regular {
-            // iPad : le champ est en haut de la colonne des résultats, pas dans la barre de navigation.
+            // iPad: the field is at the top of the results column, not in the navigation bar.
             VStack(spacing: 0) {
                 ColumnSearchField(text: $viewModel.text, isFocused: $isSearchFocused) { viewModel.submit() }
                     .padding(.horizontal, 16)
@@ -111,7 +115,7 @@ public struct SearchView: View {
         }
     }
 
-    /// Lien vers la fiche : pile de navigation sur iPhone, colonne de droite sur iPad.
+    /// Link to the detail view: navigation stack on iPhone, right column on iPad.
     @ViewBuilder
     private func resultLink(_ document: Notice) -> some View {
         let row = SearchResultRow(document: document, availability: viewModel.availability[document.id])
@@ -189,7 +193,7 @@ public struct SearchView: View {
     }
 }
 
-/// Titre, retour d'exploration et suivi de la saisie, communs à l'iPhone et à l'iPad.
+/// Title, back-from-exploration and input tracking, shared by iPhone and iPad.
 private struct SearchColumnChrome: ViewModifier {
     let viewModel: SearchViewModel
 
@@ -208,7 +212,7 @@ private struct SearchColumnChrome: ViewModifier {
     }
 }
 
-/// Champ de recherche posé dans la colonne des résultats (iPad).
+/// Search field placed in the results column (iPad).
 struct ColumnSearchField: View {
     @Binding var text: String
     var isFocused: FocusState<Bool>.Binding
@@ -237,7 +241,7 @@ struct ColumnSearchField: View {
     }
 }
 
-// MARK: - Filtres
+// MARK: - Filters
 
 struct ScopeBar: View {
     let viewModel: SearchViewModel
@@ -292,7 +296,7 @@ struct Chip: View {
     }
 }
 
-// MARK: - Ligne de résultat
+// MARK: - Result row
 
 struct SearchResultRow: View {
     let document: Notice
@@ -340,7 +344,7 @@ struct SearchResultRow: View {
     }
 }
 
-// MARK: - Avant de chercher
+// MARK: - Before searching
 
 struct SearchLandingView: View {
     let viewModel: SearchViewModel

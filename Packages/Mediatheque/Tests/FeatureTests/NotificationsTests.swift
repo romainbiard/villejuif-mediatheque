@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import ConcurrencyExtras
 import Dependencies
 import DependenciesTestSupport
@@ -14,7 +18,7 @@ struct InboxPlannerTests {
     let snapshot = AccountSnapshot(loans: SampleData.loans, holds: SampleData.holds, updatedAt: .distantPast)
 
     @Test func lateDueSoonAndReadyHoldsBecomeItems() {
-        // Le 2/11 : Le Petit Prince en retard depuis le 28/10, Sway à rendre le 5/11 (J-3).
+        // On 2/11: Le Petit Prince overdue since 28/10, Sway due on 5/11 (D-3).
         let items = InboxPlanner.items(for: snapshot, daysBefore: 3, now: paris(2026, 11, 2), calendar: .paris)
         #expect(items.map(\.kind) == [.loanLate, .loanDueSoon, .holdReady])
         #expect(items[0].loanID == "100001_1")

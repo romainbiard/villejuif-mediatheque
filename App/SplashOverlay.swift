@@ -1,20 +1,24 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import MediathequeCore
 import SwiftUI
 
-/// Prend le relais de l'écran de lancement système (même magenta, même blason au même endroit),
-/// puis s'efface vers l'app : le blason grandit en disparaissant, comme une porte qui s'ouvre.
-/// Il part dès que la session est rouverte, sans jamais retenir l'app plus de `maximumDuration`.
+/// Takes over from the system launch screen (same magenta, same crest in the same spot),
+/// then fades into the app: the crest grows as it disappears, like a door opening.
+/// It leaves as soon as the session is restored, never holding the app longer than `maximumDuration`.
 struct SplashOverlay: View {
     @Binding var isPresented: Bool
     @Environment(SessionStore.self) private var session
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isLeaving = false
 
-    /// Largeur du blason dans l'écran de lancement (taille du PDF `LaunchCrest`).
+    /// Width of the crest on the launch screen (size of the `LaunchCrest` PDF).
     static let crestWidth: CGFloat = 120
-    /// Évite un simple clignotement quand la session est déjà prête.
+    /// Avoids a mere flicker when the session is already ready.
     static let minimumDuration: Duration = .milliseconds(350)
-    /// Au-delà, l'app prend le relais avec ses propres états de chargement.
+    /// Beyond this, the app takes over with its own loading states.
     static let maximumDuration: Duration = .milliseconds(1500)
 
     var body: some View {

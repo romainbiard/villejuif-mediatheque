@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 @testable import BokehAPI
 import Foundation
 import Testing
@@ -84,7 +88,7 @@ struct OpeningHoursTests {
     let elsa = OpeningHours(lines: ["Mardi : 13h - 19h", "Mercredi : 10h - 19h", "Samedi : 10h - 12h30 / 14h - 18h"])
 
     @Test func openDuringSlot() {
-        // Mercredi 4 novembre 2026, 11:00.
+        // Wednesday 4 November 2026, 11:00.
         let status = elsa.status(at: SampleData.day(2026, 11, 4, 11), calendar: calendar)
         #expect(status == .open(closesAt: SampleData.day(2026, 11, 4, 19)))
     }
@@ -95,14 +99,14 @@ struct OpeningHoursTests {
     }
 
     @Test func closedOverWeekendReopensTuesday() {
-        // Dimanche 1er novembre 2026.
+        // Sunday 1 November 2026.
         let status = elsa.status(at: SampleData.day(2026, 11, 1, 15), calendar: calendar)
         #expect(status == .closed(reopensAt: SampleData.day(2026, 11, 3, 13)))
         #expect(elsa.isClosedAllDay(SampleData.day(2026, 11, 2), calendar: calendar))
     }
 
     @Test func lunchBreakIsHandled() {
-        // Samedi 31 octobre 2026, 13:00 : entre les deux créneaux.
+        // Saturday 31 October 2026, 13:00: between the two time slots.
         let status = elsa.status(at: SampleData.day(2026, 10, 31, 13), calendar: calendar)
         #expect(status == .closed(reopensAt: SampleData.day(2026, 10, 31, 14)))
     }
@@ -160,14 +164,14 @@ struct Code39Tests {
 
     @Test func digitsAreFramedByStartAndStop() throws {
         let elements = try #require(Code39.elements(for: "1234567"))
-        // 9 caractères (start, 7 chiffres, stop) de 9 éléments, et 8 espaces entre eux.
+        // 9 characters (start, 7 digits, stop) of 9 elements each, and 8 spaces between them.
         #expect(elements.count == 9 * 9 + 8)
         #expect(elements.first?.isBar == true)
         #expect(elements.last?.isBar == true)
         let star = Code39.patterns["*"]!.map { $0 == "w" }
         #expect(elements.prefix(9).map(\.isWide) == star)
         #expect(elements.suffix(9).map(\.isWide) == star)
-        // Chiffre « 1 » juste après le start et son espace : w n n w n n n n w.
+        // Digit "1" right after the start and its space: w n n w n n n n w.
         #expect(elements[10..<19].map(\.isWide) == [true, false, false, true, false, false, false, false, true])
         #expect(Code39.width(of: elements, wideRatio: 3) == Double(9 * 15 + 8))
     }
@@ -225,7 +229,7 @@ struct DataCacheTests {
         _ = try await cache.value(for: "disque", maxAge: 60, now: { start }) { [1, 2] }
         _ = try await cache.value(for: "mémoire", maxAge: 60, persist: false, now: { start }) { [3] }
 
-        // Nouveau cache sur le même dossier : comme au relancement de l'app.
+        // New cache on the same folder: like when the app relaunches.
         let reopened = DataCache(directory: directory)
         let fromDisk: [Int] = try await reopened.value(for: "disque", maxAge: 60, now: { start + 10 }) { [] }
         let notPersisted: [Int] = try await reopened.value(for: "mémoire", maxAge: 60, persist: false, now: { start + 10 }) { [] }

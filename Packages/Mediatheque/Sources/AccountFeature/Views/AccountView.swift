@@ -1,12 +1,16 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import DesignSystem
 import MediathequeCore
 import SearchFeature
 import SwiftUI
 
-/// Onglet Compte : connexion, ou accueil du compte une fois la session ouverte.
+/// Account tab: sign-in, or the account home once the session is open.
 public struct AccountView: View {
     @Environment(SessionStore.self) private var session
-    /// Passé à `true` (raccourci « Montrer ma carte ») : affiche la carte en grand, puis repasse à `false`.
+    /// Set to `true` ("Montrer ma carte" shortcut): shows the card full screen, then resets to `false`.
     @Binding private var cardRequest: Bool
 
     public init(cardRequest: Binding<Bool> = .constant(false)) {
@@ -34,7 +38,7 @@ enum AccountRoute: Hashable {
     case information, settings
 }
 
-/// Les 7 sections de Mon compte, pour la barre latérale de l'iPad.
+/// The 7 Mon compte sections, for the iPad sidebar.
 public enum AccountSection: String, CaseIterable, Identifiable, Sendable {
     case loans, holds, selections, reviews, suggestions, information, settings
 
@@ -77,8 +81,8 @@ public enum AccountSection: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
-/// Une section de Mon compte ouverte seule (onglet de la barre latérale sur iPad).
-/// Sans session, on affiche la connexion de l'onglet Compte.
+/// A Mon compte section opened on its own (sidebar tab on iPad).
+/// Without a session, show the Account tab's sign-in.
 public struct AccountSectionView: View {
     let section: AccountSection
     @Environment(SessionStore.self) private var session
@@ -135,7 +139,7 @@ struct AccountHomeView: View {
         NavigationStack(path: $path) {
             ScrollView {
                 if sizeClass == .regular && contentWidth >= Self.twoColumnsMinWidth {
-                    // iPad : carte et compteurs à gauche, menu à droite.
+                    // iPad: card and counters on the left, menu on the right.
                     HStack(alignment: .top, spacing: 24) {
                         VStack(alignment: .leading, spacing: 14) {
                             cardAndCounters
@@ -191,7 +195,7 @@ struct AccountHomeView: View {
                 showsCard = true
                 cardRequest = false
             }
-            // Plein écran : l'explication des notifications reprend la composition de la connexion.
+            // Full screen: the notifications explanation reuses the sign-in layout.
             .fullScreenCover(isPresented: Binding(get: { !onboardingDone }, set: { if !$0 { onboardingDone = true } })) {
                 WelcomeSetupView(patron: patron) { onboardingDone = true }
             }
@@ -200,7 +204,7 @@ struct AccountHomeView: View {
         .sensoryFeedback(.impact(weight: .medium), trigger: session.state == .loggedOut)
     }
 
-    /// Carte (440 pt), menu lisible (≥ 360 pt), marges et espacement.
+    /// Card (440 pt), readable menu (≥ 360 pt), margins and spacing.
     static let twoColumnsMinWidth: CGFloat = 880
 
     @ViewBuilder
@@ -216,7 +220,7 @@ struct AccountHomeView: View {
 
     private var logoutButton: some View {
         Button("Se déconnecter", role: .destructive) { confirmsLogout = true }
-            // Attaché au bouton : sur iOS 26 la confirmation est un popover qui pointe vers sa vue.
+            // Attached to the button: on iOS 26 the confirmation is a popover pointing at its view.
             .confirmationDialog("Se déconnecter de votre compte ?", isPresented: $confirmsLogout, titleVisibility: .visible) {
                 Button("Se déconnecter", role: .destructive) { Task { await session.logout() } }
             }
@@ -291,7 +295,7 @@ struct AccountHomeView: View {
     }
 }
 
-// MARK: - Carte d'abonné
+// MARK: - Library card
 
 struct LibraryCardView: View {
     let patron: Patron
@@ -346,18 +350,18 @@ struct LibraryCardView: View {
     }
 }
 
-/// Carte plein écran pour le comptoir, luminosité au maximum le temps de l'affichage.
+/// Full-screen card for the front desk, brightness at maximum while it is displayed.
 ///
-/// Le code-barres est vertical, collé au bord droit et à la taille de celui de la carte en plastique :
-/// en plus grand, il dépasse de la fenêtre des douchettes ; au bord, on peut approcher le téléphone du lecteur.
+/// The barcode is vertical, against the right edge and the same size as the one on the plastic card:
+/// any larger and it overflows the handheld scanner's window; at the edge, the phone can get close to the reader.
 struct FullScreenCardView: View {
     let patron: Patron
     @Environment(\.dismiss) private var dismiss
     @State private var previousBrightness: CGFloat?
-    /// Sens du code-barres choisi par l'abonné (selon le lecteur), retenu d'un affichage à l'autre.
+    /// Barcode orientation chosen by the patron (depending on the reader), remembered between displays.
     @AppStorage("card.barcodeFlipped") private var isFlipped = true
 
-    /// Environ 43 × 11 mm sur iPhone, comme le code-barres imprimé sur la carte.
+    /// About 43 × 11 mm on iPhone, like the barcode printed on the card.
     static let barcodeLength: CGFloat = 260
     static let barcodeThickness: CGFloat = 64
     static let edgeInset: CGFloat = 14
@@ -374,7 +378,7 @@ struct FullScreenCardView: View {
             .padding(.trailing, Self.edgeInset)
         }
         .overlay(alignment: .trailing) {
-            // Repère du bord à présenter au lecteur.
+            // Marker for the edge to present to the reader.
             UnevenRoundedRectangle(topLeadingRadius: 2, bottomLeadingRadius: 2)
                 .fill(Color.brandViolet.opacity(0.35))
                 .frame(width: 4, height: Self.barcodeLength)
@@ -438,7 +442,7 @@ struct FullScreenCardView: View {
 
     private var barcode: some View {
         HStack(spacing: 8) {
-            // Numéro en clair le long du code-barres, lu de bas en haut comme sur la carte.
+            // Human-readable number along the barcode, read bottom to top as on the card.
             Text("*\(patron.cardNumber)*")
                 .font(.caption.weight(.semibold))
                 .monospacedDigit()
@@ -452,7 +456,7 @@ struct FullScreenCardView: View {
             BarcodeView(value: patron.cardNumber, axis: .vertical)
                 .frame(width: Self.barcodeThickness, height: Self.barcodeLength)
         }
-        // Par défaut retourné d'un demi-tour : le numéro passe côté bord et se lit de haut en bas.
+        // Rotated a half turn by default: the number moves to the edge side and reads top to bottom.
         .rotationEffect(.degrees(isFlipped ? 180 : 0))
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Code-barres de la carte, numéro \(patron.cardNumber)")
@@ -500,14 +504,14 @@ struct FullScreenCardView: View {
     }
 }
 
-/// Code-barres du numéro de carte, en Code 39 comme sur la carte en plastique (lu par les douchettes).
-/// En `.vertical`, il se lit de haut en bas.
+/// Barcode of the card number, in Code 39 like the plastic card (read by handheld scanners).
+/// In `.vertical`, it reads top to bottom.
 struct BarcodeView: View {
     let value: String
     var axis: Axis = .horizontal
     @Environment(\.displayScale) private var displayScale
 
-    /// Rapport large/étroit : 3 est le maximum de la norme et le plus tolérant à la lecture.
+    /// Wide/narrow ratio: 3 is the standard's maximum and the most forgiving to read.
     static let wideRatio = 3.0
 
     var body: some View {
@@ -516,7 +520,7 @@ struct BarcodeView: View {
             let isVertical = axis == .vertical
             let length = isVertical ? size.height : size.width
             let total = Code39.width(of: elements, wideRatio: Self.wideRatio)
-            // Module étroit calé sur un nombre entier de pixels : des barres nettes, sans flou.
+            // Narrow module snapped to a whole number of pixels: crisp bars, no blur.
             let module = max(1, (length * displayScale / total).rounded(.down)) / displayScale
             var position = (length - module * total) / 2
             for element in elements {
@@ -550,7 +554,7 @@ struct CardExpiryBanner: View {
     }
 }
 
-// MARK: - Éléments
+// MARK: - Components
 
 struct CounterTile: View {
     let value: Int

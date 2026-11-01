@@ -1,8 +1,12 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import DesignSystem
 import MediathequeCore
 import SwiftUI
 
-// MARK: - Mes sélections
+// MARK: - My selections
 
 struct SelectionsView: View {
     @State private var viewModel = SelectionsViewModel()
@@ -138,7 +142,7 @@ struct SelectionTile: View {
     }
 }
 
-// MARK: - Contenu d'une sélection
+// MARK: - Selection contents
 
 struct SelectionDetailView: View {
     @State private var viewModel: SelectionDetailViewModel
@@ -222,9 +226,9 @@ struct SelectionNoticeRow: View {
     }
 }
 
-// MARK: - Commun
+// MARK: - Shared
 
-/// Erreur de chargement d'une section du compte, avec Réessayer.
+/// Loading error for an account section, with a retry button.
 struct ProfileErrorState: View {
     let error: LoadError
     let retry: () async -> Void

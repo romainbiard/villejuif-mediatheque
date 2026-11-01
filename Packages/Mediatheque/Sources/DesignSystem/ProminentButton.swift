@@ -1,13 +1,17 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import SwiftUI
 
-// MARK: - Bouton principal
+// MARK: - Primary button
 
-/// Bouton principal en verre teinté, à la place de `.glassProminent` :
-/// - désactivé ou en cours, il garde sa couleur, estompée, au lieu du gris système ;
-/// - en cours, le texte reste en place mais invisible sous le spinner, pour que le bouton ne change pas de taille.
+/// Primary button in tinted glass, replacing `.glassProminent`:
+/// - when disabled or busy, it keeps its color, faded, instead of the system grey;
+/// - when busy, the text stays in place but hidden under the spinner, so the button does not change size.
 public struct ProminentButtonStyle: ButtonStyle {
     public enum Size: Sendable {
-        /// `compact` : dans une ligne de liste ou une carte (« Installer », « Ouvrir »).
+        /// `compact`: in a list row or a card ("Installer", "Ouvrir").
         case compact, large, extraLarge
 
         var minHeight: CGFloat {
@@ -36,7 +40,7 @@ public struct ProminentButtonStyle: ButtonStyle {
 
     @Environment(\.isEnabled) private var isEnabled
 
-    /// Opacité de la teinte quand le bouton ne peut pas servir (désactivé ou en cours).
+    /// Tint opacity when the button cannot be used (disabled or busy).
     static let fadedOpacity = 0.45
 
     public init(tint: Color, foreground: Color, size: Size, isLoading: Bool) {
@@ -50,7 +54,7 @@ public struct ProminentButtonStyle: ButtonStyle {
         let isActive = isEnabled && !isLoading
         configuration.label
             .font(size.font)
-            // Toujours une ligne : un libellé long rétrécit un peu au lieu de grandir le bouton.
+            // Always one line: a long label shrinks slightly instead of enlarging the button.
             .lineLimit(1)
             .minimumScaleFactor(0.75)
             .foregroundStyle(foreground)
@@ -71,7 +75,7 @@ public struct ProminentButtonStyle: ButtonStyle {
 }
 
 extension ButtonStyle where Self == ProminentButtonStyle {
-    /// Bouton principal de la charte : violet par défaut, texte blanc.
+    /// Brand guidelines primary button: purple by default, white text.
     public static func prominent(
         tint: Color = .brandViolet,
         foreground: Color = .white,

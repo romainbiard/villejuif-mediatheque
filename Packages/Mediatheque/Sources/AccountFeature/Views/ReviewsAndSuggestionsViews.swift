@@ -1,8 +1,12 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import DesignSystem
 import MediathequeCore
 import SwiftUI
 
-// MARK: - Mes avis
+// MARK: - My reviews
 
 struct ReviewsView: View {
     enum Tab: Hashable { case toRate, published }
@@ -133,7 +137,7 @@ struct RecordToRateRow: View {
     }
 }
 
-/// Cinq étoiles à toucher. Chaque étoile est un bouton pour VoiceOver.
+/// Five tappable stars. Each star is a button for VoiceOver.
 struct StarRatingInput: View {
     var rating: Int
     var size: Font = .title2
@@ -238,7 +242,7 @@ struct ReviewSheet: View {
     }
 }
 
-// MARK: - Mes suggestions
+// MARK: - My suggestions
 
 struct SuggestionsView: View {
     @State private var viewModel = SuggestionsViewModel()

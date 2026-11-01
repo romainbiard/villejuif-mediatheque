@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import ConcurrencyExtras
 import Dependencies
 import DependenciesTestSupport
@@ -72,7 +76,7 @@ struct LoansViewModelTests {
             $0.date.now = paris(2026, 10, 30)
             $0.accountClient.loans = { SampleData.loans }
             $0.accountClient.renew = renew
-            // La prolongation relance la synchronisation (snapshot, rappels) avec ces dépendances.
+            // Renewal restarts the sync (snapshot, reminders) with these dependencies.
             $0.accountClient.holds = { [] }
             $0.snapshotClient.load = { nil }
             $0.snapshotClient.save = { _ in }

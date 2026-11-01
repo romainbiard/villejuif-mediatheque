@@ -1,18 +1,22 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
-/// Lecture depuis le cache ou rechargement forcé (tirer pour rafraîchir).
+/// Read from the cache or force a reload (pull to refresh).
 public enum CachePolicy: Sendable {
     case useCache
     case reload
 }
 
-/// Cache des données publiques du portail (agenda, horaires, recherches, disponibilités).
-/// Jamais de données du compte ici : elles vivent dans le snapshot de l'App Group, effacé à la déconnexion.
+/// Cache for the portal's public data (agenda, opening hours, searches, availability).
+/// Never account data here: it lives in the App Group snapshot, erased on sign-out.
 ///
-/// - En mémoire, toujours ; sur disque (`Library/Caches`) quand une `directory` est fournie.
-///   iOS peut vider ce dossier à tout moment : le cache n'est qu'une accélération.
-/// - Une valeur fraîche (moins de `maxAge`) évite la requête ; une valeur périmée sert
-///   de repli quand le réseau ou le site ne répondent pas.
+/// - In memory, always; on disk (`Library/Caches`) when a `directory` is provided.
+///   iOS may purge this folder at any time: the cache is only a speed-up.
+/// - A fresh value (younger than `maxAge`) avoids the request; a stale value serves
+///   as a fallback when the network or the site doesn't respond.
 public actor DataCache {
     struct Entry<Value: Codable>: Codable {
         let savedAt: Date
@@ -29,14 +33,14 @@ public actor DataCache {
         }
     }
 
-    /// Cache partagé de l'app, sur disque.
+    /// The app's shared cache, on disk.
     public static let shared = DataCache(
         directory: FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first?
             .appending(path: "portail", directoryHint: .isDirectory)
     )
 
-    /// Renvoie la valeur en cache si elle est fraîche, sinon appelle `load` et la mémorise.
-    /// Si `load` échoue, une valeur périmée est renvoyée plutôt que l'erreur.
+    /// Returns the cached value if it is fresh, otherwise calls `load` and stores the result.
+    /// If `load` fails, a stale value is returned rather than the error.
     public func value<Value: Codable & Sendable>(
         for key: String,
         maxAge: TimeInterval,
@@ -66,7 +70,7 @@ public actor DataCache {
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     }
 
-    // MARK: Stockage
+    // MARK: Storage
 
     private func entry<Value: Codable & Sendable>(for key: String, persist: Bool) -> Entry<Value>? {
         if let hit = memory[key], let value = hit.value as? Value {

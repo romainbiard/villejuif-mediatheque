@@ -1,24 +1,28 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 import MediathequeCore
 
-/// Description d'un service numérique, embarquée dans l'app (tirée des tutoriels du site).
+/// Description of a digital service, bundled in the app (taken from the website's tutorials).
 public struct DigitalOffer: Identifiable, Hashable, Sendable {
     public let id: String
     public let category: String
     public let provider: String
     public let summary: String
     public let quota: String
-    /// Module Bokeh qui ouvre la session chez le fournisseur.
+    /// Bokeh module that opens the session with the provider.
     public let module: DigitalService
     public let app: ProviderApp?
-    /// Étapes de première utilisation, trois au plus.
+    /// First-use steps, three at most.
     public let firstUseSteps: [String]
     public let tutorialURL: URL
-    /// Information à copier en un tap (phrase de déverrouillage LCP pour BiblioAccess).
+    /// Information to copy in one tap (LCP unlock passphrase for BiblioAccess).
     public let copyableHint: (label: String, value: String)?
     public let systemImage: String
     public let colorSeed: Int
-    /// Verbe du bouton quand le service s'ouvre sur le web (« Emprunter » pour les livres).
+    /// Button verb when the service opens on the web ("Emprunter" for books).
     public var webActionLabel = "Ouvrir"
 
     public static func == (lhs: DigitalOffer, rhs: DigitalOffer) -> Bool { lhs.id == rhs.id }
@@ -27,11 +31,11 @@ public struct DigitalOffer: Identifiable, Hashable, Sendable {
 
 public struct ProviderApp: Hashable, Sendable {
     public enum Role: Hashable, Sendable {
-        /// Le service se consulte dans l'app : on propose de l'installer avant d'ouvrir.
+        /// The service is used in the app: offer to install it before opening.
         case required
-        /// Le service s'ouvre sur le web ; l'app est un complément (app musicale, BD…).
+        /// The service opens on the web; the app is a companion (music app, comics…).
         case companion
-        /// Lecteur des fichiers empruntés sur le web (Louise Reader pour BiblioAccess).
+        /// Reader for files borrowed on the web (Louise Reader for BiblioAccess).
         case reader
     }
 
@@ -42,12 +46,12 @@ public struct ProviderApp: Hashable, Sendable {
 
     public let name: String
     public let publisher: String
-    /// Identifiant App Store, pour la fiche d'installation dans l'app.
+    /// App Store identifier, for the in-app install sheet.
     public let appStoreID: String
-    /// Scheme de l'app, déclaré dans `LSApplicationQueriesSchemes` : sans lui, iOS ne dit pas si elle est installée.
+    /// App scheme, declared in `LSApplicationQueriesSchemes`: without it, iOS does not say whether the app is installed.
     public let urlScheme: String?
     public let role: Role
-    /// Trois arguments au plus pour la feuille « Installer l'app ».
+    /// Three selling points at most for the "Installer l'app" sheet.
     public let highlights: [Highlight]
 
     public init(
@@ -62,7 +66,7 @@ public struct ProviderApp: Hashable, Sendable {
         self.highlights = highlights
     }
 
-    /// Lien qui ouvre l'app telle quelle (sans connexion), quand elle a un scheme.
+    /// Link that opens the app as is (without signing in), when it has a scheme.
     public var launchURL: URL? { urlScheme.flatMap { URL(string: "\($0)://") } }
 }
 
@@ -160,7 +164,7 @@ public enum DigitalCatalog {
             id: "bd", category: "BD et mangas", provider: "Izneo",
             summary: "Franco-belge, comics, mangas et webtoons. Une BD commencée reste lisible un an.",
             quota: "10 BD par mois", module: .izneo,
-            // L'accès bibliothèque dans l'app IZNEO n'est pas confirmé : le web reste l'entrée principale.
+            // Library access in the IZNEO app is not confirmed: the web remains the main entry point.
             app: ProviderApp(
                 name: "IZNEO", publisher: "izneo", appStoreID: "377397393",
                 urlScheme: "izneo", role: .companion
@@ -173,7 +177,7 @@ public enum DigitalCatalog {
             id: "eureka", category: "Eurêka et musicMe", provider: "Département du Val-de-Marne",
             summary: "Cinéma, cours, livres DYS et la musique en streaming avec musicMe.",
             quota: "2 films par mois, musique illimitée", module: .eureka,
-            // musicMe ne déclare pas de scheme : impossible de savoir si l'app est installée.
+            // musicMe declares no scheme: no way to know whether the app is installed.
             app: ProviderApp(
                 name: "musicMe pour bibliothèques", publisher: "Apache Network", appStoreID: "1053487668",
                 urlScheme: nil, role: .companion

@@ -1,8 +1,12 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import DesignSystem
 import MediathequeCore
 import SwiftUI
 
-/// Feuille ouverte par la cloche de Mon compte.
+/// Sheet opened by the Mon compte bell.
 struct NotificationsView: View {
     let openSettings: () -> Void
     @State private var viewModel = NotificationsViewModel()

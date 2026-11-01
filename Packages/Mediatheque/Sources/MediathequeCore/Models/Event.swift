@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
 public struct Event: Identifiable, Hashable, Sendable, Codable {
@@ -8,14 +12,14 @@ public struct Event: Identifiable, Hashable, Sendable, Codable {
     public let library: Library?
     public let start: Date?
     public let end: Date?
-    /// Vrai pour un événement sur plusieurs jours sans horaire (exposition, prix…).
+    /// True for a multi-day event with no time (exhibition, award…).
     public let isAllDay: Bool
     public let type: String?
     public let audience: String?
-    /// Phrase du site, par exemple « Samedi 31 octobre 2026 de 10:30 à 11:00 ».
+    /// Sentence from the site, e.g. "Samedi 31 octobre 2026 de 10:30 à 11:00".
     public let dateDescription: String?
 
-    /// Vrai si l'événement a lieu, au moins en partie, le jour de `date`.
+    /// True if the event takes place, at least partly, on the day of `date`.
     public func occurs(on date: Date, calendar: Calendar) -> Bool {
         guard let start else { return false }
         let day = calendar.startOfDay(for: date)

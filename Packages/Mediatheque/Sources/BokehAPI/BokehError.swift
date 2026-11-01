@@ -1,19 +1,23 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
-/// Erreurs remontées par le portail Bokeh ou par le transport.
+/// Errors reported by the Bokeh portal or by the transport.
 public enum BokehError: Error, Equatable, Sendable {
-    /// La session web a expiré ou n'a jamais été ouverte
+    /// The web session has expired or was never opened
     /// (`Autorisation non spécifiée` / `Jeton d'autorisation invalide`).
     case unauthorized
-    /// Erreur métier renvoyée par l'API JSON (`{"error", "message"}`).
+    /// Business error returned by the JSON API (`{"error", "message"}`).
     case api(code: String, message: String)
-    /// Réponse HTTP inattendue (5xx, 404…).
+    /// Unexpected HTTP response (5xx, 404…).
     case http(status: Int)
-    /// Le contenu reçu ne correspond plus au format attendu.
+    /// The content received no longer matches the expected format.
     case unexpectedFormat(String)
 }
 
-/// Corps d'erreur JSON de Bokeh.
+/// Bokeh JSON error body.
 struct BokehErrorBody: Decodable {
     let error: String
     let message: String?
@@ -25,7 +29,7 @@ extension BokehError {
         "Jeton d'autorisation invalide",
     ]
 
-    /// Détecte une erreur Bokeh dans un corps JSON, `nil` si le corps n'en est pas une.
+    /// Detects a Bokeh error in a JSON body, `nil` if the body isn't one.
     static func from(json data: Data) -> BokehError? {
         guard let body = try? JSONDecoder().decode(BokehErrorBody.self, from: data) else { return nil }
         let message = body.message ?? body.error

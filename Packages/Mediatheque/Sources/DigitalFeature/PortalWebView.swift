@@ -1,18 +1,22 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 #if os(iOS)
 import SwiftUI
 import UIKit
 import WebKit
 
-/// Vue web qui déroule le SSO du fournisseur avec la session du portail,
-/// et passe la main à l'app native dès que le parcours le permet.
+/// Web view that runs the provider's SSO with the portal session,
+/// and hands off to the native app as soon as the flow allows.
 struct PortalWebView: UIViewRepresentable {
     let url: URL
     let cookies: [HTTPCookie]
     @Binding var isLoading: Bool
     @Binding var handedOffToApp: Bool
 
-    /// Universal links connus des fournisseurs : ils ouvrent l'app déjà connectée.
-    /// Relevés dans leurs fichiers apple-app-site-association.
+    /// Providers' known universal links: they open the app already signed in.
+    /// Taken from their apple-app-site-association files.
     static func isProviderAppLink(_ url: URL) -> Bool {
         guard let host = url.host()?.lowercased() else { return false }
         let path = url.path().lowercased()
@@ -25,7 +29,7 @@ struct PortalWebView: UIViewRepresentable {
 
     func makeUIView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
-        // Stockage propre à cette ouverture : la session fournisseur ne survit pas à la feuille.
+        // Storage specific to this opening: the provider session does not outlive the sheet.
         configuration.websiteDataStore = .nonPersistent()
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
@@ -44,7 +48,7 @@ struct PortalWebView: UIViewRepresentable {
 
     final class Coordinator: NSObject, WKNavigationDelegate {
         let parent: PortalWebView
-        /// Liens déjà proposés à l'app : en cas de refus, on les charge dans la vue web sans reboucler.
+        /// Links already offered to the app: if refused, load them in the web view without looping.
         private var triedInApp: Set<URL> = []
 
         init(_ parent: PortalWebView) {
@@ -55,7 +59,7 @@ struct PortalWebView: UIViewRepresentable {
         func webView(_ webView: WKWebView, decidePolicyFor action: WKNavigationAction) async -> WKNavigationActionPolicy {
             guard let url = action.request.url else { return .allow }
 
-            // Scheme propre à une app (médiathèque numérique, musicMe…) : on le confie à iOS.
+            // App-specific scheme (Médiathèque Numérique, musicMe…): hand it to iOS.
             if let scheme = url.scheme?.lowercased(), !["http", "https", "about", "blob", "data"].contains(scheme) {
                 if await UIApplication.shared.open(url) { parent.handedOffToApp = true }
                 return .cancel

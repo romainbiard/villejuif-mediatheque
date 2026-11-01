@@ -1,13 +1,17 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
-/// Vacances scolaires de la zone C (académie de Créteil), embarquées dans l'app.
-/// Source : data.education.gouv.fr, jeu « fr-en-calendrier-scolaire », relevé le 31/10/2026.
-/// À compléter chaque année quand le ministère publie le calendrier suivant.
+/// School holidays for zone C (Créteil academy), embedded in the app.
+/// Source: data.education.gouv.fr, dataset "fr-en-calendrier-scolaire", retrieved on 31/10/2026.
+/// To be updated every year when the ministry publishes the next calendar.
 public struct SchoolHoliday: Hashable, Sendable {
     public let name: String
-    /// Premier jour de vacances, à minuit à Paris.
+    /// First day of the holidays, at midnight in Paris.
     public let start: Date
-    /// Jour de la reprise (exclu).
+    /// Day school resumes (excluded).
     public let end: Date
 
     public func contains(_ date: Date) -> Bool { start <= date && date < end }
@@ -26,11 +30,11 @@ public enum SchoolHolidays {
         holiday("Vacances d'hiver", (2028, 2, 12), (2028, 2, 28)),
         holiday("Vacances de printemps", (2028, 4, 15), (2028, 5, 2)),
         holiday("Pont de l'Ascension", (2028, 5, 25), (2028, 5, 29)),
-        // Seul le début est publié : la rentrée 2028 est supposée au 1er septembre.
+        // Only the start is published: the 2028 school year is assumed to start on September 1.
         holiday("Vacances d'été", (2028, 7, 4), (2028, 9, 1)),
     ]
 
-    /// Les vacances en cours à `date`, sinon les prochaines.
+    /// The holidays in progress at `date`, otherwise the next ones.
     public static func currentOrNext(after date: Date, in holidays: [SchoolHoliday] = zoneC) -> SchoolHoliday? {
         holidays.first { $0.end > date }
     }

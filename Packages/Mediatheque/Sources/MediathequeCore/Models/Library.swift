@@ -1,7 +1,11 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 
-/// Les 3 médiathèques du réseau. `code` sert à la fois de `code_annexe`
-/// (lieu de retrait) et de facette de recherche `Y{code}`.
+/// The network's 3 libraries. `code` serves both as `code_annexe`
+/// (pickup location) and as the `Y{code}` search facet.
 public enum Library: String, CaseIterable, Sendable, Codable, Identifiable {
     case elsaTriolet = "1"
     case pulpSud = "2"
@@ -27,7 +31,7 @@ public enum Library: String, CaseIterable, Sendable, Codable, Identifiable {
         }
     }
 
-    /// Slug de la page de la médiathèque (`/elsa_triolet`).
+    /// Slug of the library's page (`/elsa_triolet`).
     public var slug: String {
         switch self {
         case .elsaTriolet: "elsa_triolet"
@@ -36,8 +40,8 @@ public enum Library: String, CaseIterable, Sendable, Codable, Identifiable {
         }
     }
 
-    /// Coordonnées embarquées : le site ne les publie pas. Elsa-Triolet vient du GEO
-    /// d'un iCal du site ; les deux PULP sont approximées d'après l'adresse, à confirmer.
+    /// Embedded coordinates: the site doesn't publish them. Elsa-Triolet comes from the GEO
+    /// of an iCal from the site; the two PULPs are approximated from the address, to be confirmed.
     public var coordinate: (latitude: Double, longitude: Double) {
         switch self {
         case .elsaTriolet: (48.792636, 2.362783)
@@ -46,8 +50,8 @@ public enum Library: String, CaseIterable, Sendable, Codable, Identifiable {
         }
     }
 
-    /// Retrouve une médiathèque à partir d'un libellé du site
-    /// (« Médiathèque Elsa-Triolet », « Pulp Nord », « PULP Sud »…).
+    /// Finds a library from a label on the site
+    /// ("Médiathèque Elsa-Triolet", "Pulp Nord", "PULP Sud"…).
     public init?(label: String) {
         let normalized = label.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
         if normalized.contains("elsa") { self = .elsaTriolet }

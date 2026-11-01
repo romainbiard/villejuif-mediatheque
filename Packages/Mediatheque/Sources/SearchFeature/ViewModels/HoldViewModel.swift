@@ -1,9 +1,13 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import Foundation
 import MediathequeCore
 import Observation
 
-/// Réservation d'une notice : préparation (lieux de retrait), choix, envoi.
+/// Hold on a record: preparation (pickup locations), choice, submission.
 @MainActor
 @Observable
 public final class HoldViewModel {

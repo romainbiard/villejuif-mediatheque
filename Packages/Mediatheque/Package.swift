@@ -1,4 +1,8 @@
 // swift-tools-version: 6.2
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import PackageDescription
 
 let dependencies: Target.Dependency = .product(name: "Dependencies", package: "swift-dependencies")

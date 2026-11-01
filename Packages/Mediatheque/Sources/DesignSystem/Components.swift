@@ -1,8 +1,12 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import SwiftUI
 
-// MARK: - Titre de section
+// MARK: - Section title
 
-/// Titre de section avec le trait violet de 4 pt au-dessus, motif repris du site.
+/// Section title with the 4 pt purple bar above it, a pattern taken from the website.
 public struct SectionHeader<Trailing: View>: View {
     let title: String
     let trailing: Trailing
@@ -26,7 +30,7 @@ public struct SectionHeader<Trailing: View>: View {
     }
 }
 
-// MARK: - Pastille de statut
+// MARK: - Status badge
 
 public struct StatusPill: View {
     public enum Style: Sendable { case success, danger, warning, accent, neutral }
@@ -69,9 +73,9 @@ public struct StatusPill: View {
     }
 }
 
-// MARK: - Couverture
+// MARK: - Cover
 
-/// Jaquette du document, ou couverture générée aux couleurs de la charte si elle manque.
+/// The item's cover art, or a cover generated in the brand guidelines colors when it is missing.
 public struct CoverImage: View {
     let url: URL?
     let title: String
@@ -84,7 +88,7 @@ public struct CoverImage: View {
     }
 
     public var body: some View {
-        // Le cadre est fixé par l'appelant : l'image remplit ce cadre sans en déborder.
+        // The frame is set by the caller: the image fills it without overflowing.
         Color.clear
             .overlay {
                 AsyncImage(url: url) { phase in
@@ -125,9 +129,9 @@ struct GeneratedCover: View {
     }
 }
 
-// MARK: - État vide
+// MARK: - Empty state
 
-/// Composant d'état vide : pastille teintée, formes de la charte, titre, message et actions.
+/// Empty state component: tinted badge, brand guidelines shapes, title, message and actions.
 public struct EmptyStateView: View {
     let systemImage: String
     let title: String
@@ -182,10 +186,10 @@ public struct EmptyStateView: View {
     }
 }
 
-// MARK: - Carte
+// MARK: - Card
 
 public extension View {
-    /// Carte pleine : le contenu reste opaque, le verre est réservé à la navigation.
+    /// Solid card: content stays opaque, glass is reserved for navigation.
     func cardStyle(padding: CGFloat = 14) -> some View {
         self.padding(padding)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -193,7 +197,7 @@ public extension View {
     }
 }
 
-// MARK: - Squelette de chargement
+// MARK: - Loading skeleton
 
 public struct SkeletonRow: View {
     public init() {}
@@ -213,21 +217,21 @@ public struct SkeletonRow: View {
     }
 }
 
-// MARK: - Largeur disponible
+// MARK: - Available width
 
 extension View {
-    /// Relève la largeur réellement disponible. La classe de taille ne suffit pas : l'iPhone Duo déplié
-    /// est `.regular`, mais une fois la barre latérale posée il reste à peine 670 pt pour le contenu.
+    /// Reads the width actually available. The size class is not enough: an unfolded iPhone Duo
+    /// is `.regular`, but once the sidebar is shown barely 670 pt remain for the content.
     public func measuringWidth(_ width: Binding<CGFloat>) -> some View {
         onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width.wrappedValue = $0 }
     }
 }
 
-// MARK: - Clavier
+// MARK: - Keyboard
 
 extension View {
-    /// Toucher une zone vide (hors champ, hors bouton) ferme le clavier.
-    /// Les champs et boutons enfants gardent la priorité sur ce geste.
+    /// Tapping an empty area (outside fields and buttons) dismisses the keyboard.
+    /// Child fields and buttons keep priority over this gesture.
     public func dismissesKeyboardOnTap() -> some View {
         contentShape(Rectangle())
             .onTapGesture {

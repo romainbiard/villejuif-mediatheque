@@ -1,62 +1,66 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Foundation
 import SwiftSoup
 
-// MARK: - DTO extraits du HTML
+// MARK: - DTOs extracted from the HTML
 
-/// Un événement de `/cms/calendar/id_module/30` (une carte « Article »).
+/// An event from `/cms/calendar/id_module/30` (an "Article" card).
 public struct CalendarEventDTO: Sendable, Equatable {
     public let articleID: Int
     public let title: String
     public let imageURL: URL?
     public let location: String?
-    /// Texte brut des badges « 31/10/2026 à 10:30 » ou « 26/09/2026 ».
+    /// Raw text of the "31/10/2026 à 10:30" or "26/09/2026" badges.
     public let startText: String?
     public let endText: String?
     public let eventType: String?
     public let audience: String?
-    /// Phrase complète affichée par le site, par exemple « Samedi 31 octobre 2026 de 10:30 à 11:00 ».
+    /// Full sentence shown by the site, e.g. "Samedi 31 octobre 2026 de 10:30 à 11:00".
     public let dateSentence: String?
 }
 
-/// Un exemplaire de `/noticeajax/exemplaires/id/{id}`.
+/// A copy from `/noticeajax/exemplaires/id/{id}`.
 public struct CopyDTO: Sendable, Equatable {
     public let libraryName: String
     public let availability: String
     public let section: String?
     public let location: String?
     public let shelfMark: String?
-    /// « 17/11/2026 ».
+    /// "17/11/2026".
     public let dueDateText: String?
-    /// « Déjà 2 réservations ».
+    /// "Déjà 2 réservations".
     public let holdsText: String?
     public let medium: String?
-    /// Lien `recherche/reservation-pickup-ajax/...` (sans `/` initial), absent si non réservable.
+    /// `recherche/reservation-pickup-ajax/...` link (without a leading `/`), absent if it can't be placed on hold.
     public let pickupPath: String?
 }
 
-/// Une médiathèque de la page Infos pratiques.
+/// A library from the Infos pratiques page.
 public struct LibraryDTO: Sendable, Equatable {
     public let slug: String
     public let name: String
     public let addressLines: [String]
     public let phone: String?
     public let contactURL: URL?
-    /// Lignes « Mardi : 13h - 19h ».
+    /// "Mardi : 13h - 19h" lines.
     public let openingHours: [String]
     public let bookmarkLibraryID: Int?
 }
 
-/// Un lieu de retrait proposé à la réservation (`code_annexe`).
+/// A pickup location offered when placing a hold (`code_annexe`).
 public struct PickupOptionDTO: Sendable, Equatable {
     public let code: String
     public let label: String
     public let isSelected: Bool
 }
 
-// MARK: - Parseurs
+// MARK: - Parsers
 
 public enum HTMLParsers {
-    /// Jeton CSRF des formulaires (`auth/login`, `auth/lostpass`).
+    /// CSRF token of the forms (`auth/login`, `auth/lostpass`).
     public static func csrfToken(in html: String) throws -> String {
         let document = try SwiftSoup.parse(html)
         guard let token = try document.select("input[name=csrftoken]").first()?.attr("value"), !token.isEmpty else {
@@ -65,7 +69,7 @@ public enum HTMLParsers {
         return token
     }
 
-    /// Vrai si la page affiche un formulaire de connexion dans le contenu principal (échec de connexion).
+    /// True if the page shows a sign-in form in the main content (sign-in failed).
     public static func isLoggedIn(_ html: String) throws -> Bool {
         let document = try SwiftSoup.parse(html)
         return try !document.select("a[href*=/auth/logout], a[href*=logout]").isEmpty()
@@ -116,7 +120,7 @@ public enum HTMLParsers {
         }
     }
 
-    /// Badge de `/noticeajax/availability/id/{id}` : libellé et disponibilité.
+    /// Badge from `/noticeajax/availability/id/{id}`: label and availability.
     public static func availability(in html: String) throws -> (label: String, isAvailable: Bool) {
         let document = try SwiftSoup.parse(html)
         guard let badge = try document.select(".badge_record_availability").first() else {
@@ -134,7 +138,7 @@ public enum HTMLParsers {
             let slug = String(try link.attr("href").drop { $0 == "/" })
             guard seen.insert(slug).inserted else { continue }
 
-            // Le site sépare les lignes par un `</br>` invalide : on lit les nœuds texte un par un.
+            // The site separates lines with an invalid `</br>`: we read the text nodes one by one.
             let addressLines = (try card.select(".badge_address .badge_text").first()?.textNodes() ?? [])
                 .map { $0.text().trimmingCharacters(in: .whitespacesAndNewlines) }
                 .filter { !$0.isEmpty }
@@ -153,7 +157,7 @@ public enum HTMLParsers {
         return libraries
     }
 
-    /// Lieux de retrait du formulaire `reservation-pickup-ajax` (contenu d'un `PopupDTO`).
+    /// Pickup locations from the `reservation-pickup-ajax` form (contents of a `PopupDTO`).
     public static func pickupOptions(in html: String) throws -> [PickupOptionDTO] {
         let document = try SwiftSoup.parse(html)
         return try document.select("input[name=code_annexe]").map { input in
@@ -168,7 +172,7 @@ public enum HTMLParsers {
         }
     }
 
-    /// Liens de réservation par exemplaire dans `recherche/reserver/.../render/popup`.
+    /// Per-copy hold links in `recherche/reserver/.../render/popup`.
     public static func holdPickupPaths(in html: String) throws -> [String] {
         let document = try SwiftSoup.parse(html)
         let paths = try document.select("a[href*=reservation-pickup-ajax]").map {
@@ -178,25 +182,25 @@ public enum HTMLParsers {
         return paths.filter { seen.insert($0).inserted }
     }
 
-    /// Rangs « Rang N » affichés sur la page « Mes réservations », dans l'ordre des réservations.
-    /// La page n'a été vue qu'avec une seule réservation : l'association rang ↔ réservation
-    /// se fait par ordre d'apparition.
+    /// "Rang N" positions shown on the "Mes réservations" page, in hold order.
+    /// The page has only been seen with a single hold: the rank ↔ hold mapping
+    /// is done by order of appearance.
     public static func holdRanks(in html: String) throws -> [Int] {
         let text = try SwiftSoup.parse(html).text()
         return text.matches(of: /Rang\s+(\d+)/).compactMap { Int($0.1) }
     }
 
-    /// URL du fournisseur portée par une page `/modules/{service}`.
+    /// Provider URL carried by a `/modules/{service}` page.
     public static func ssoTarget(in html: String) -> URL? {
         let pattern = /location\.href\s*=\s*"([^"]+)"/
         guard let match = html.firstMatch(of: pattern) else { return nil }
         return URL(string: String(match.1))
     }
 
-    // MARK: Utilitaires
+    // MARK: Utilities
 
-    /// Le site imbrique un lien dans le `mailto:` du badge (`mailto:<a href="https://…">`) :
-    /// on extrait l'URL du formulaire de contact directement de l'attribut.
+    /// The site nests a link inside the badge's `mailto:` (`mailto:<a href="https://…">`):
+    /// we extract the contact form URL straight from the attribute.
     private static func contactURL(in card: Element) throws -> URL? {
         guard let href = try card.select("a.badge_mail").first()?.attr("href"),
               let match = href.firstMatch(of: /https?:\/\/[^"'<>\s]+/)

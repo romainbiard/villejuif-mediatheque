@@ -1,13 +1,17 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import DependenciesMacros
 import Foundation
 import Observation
 
-/// Façade testable de `SessionManager` pour les ViewModels.
+/// Testable facade over `SessionManager` for the ViewModels.
 @DependencyClient
 public struct AuthClient: Sendable {
     public var login: @Sendable (_ credentials: Credentials) async throws -> Patron
-    /// Rouvre la session avec le trousseau ; `nil` si aucun identifiant n'est enregistré.
+    /// Reopens the session from the keychain; `nil` if no credentials are saved.
     public var restore: @Sendable () async throws -> Patron?
     public var logout: @Sendable () async -> Void
     public var requestPasswordReset: @Sendable (_ cardNumber: String) async throws -> Void
@@ -41,14 +45,14 @@ extension DependencyValues {
     }
 }
 
-/// État de connexion partagé par toute l'app (onglet Compte, réservation depuis une fiche).
-/// Créé une fois par l'app et transmis par `.environment(sessionStore)`.
+/// Sign-in state shared across the app (Account tab, hold from a record page).
+/// Created once by the app and passed down via `.environment(sessionStore)`.
 @MainActor
 @Observable
 public final class SessionStore {
     public enum State: Equatable, Sendable {
         case restoring
-        /// Face ID est activé et n'a pas encore été validé.
+        /// Face ID is enabled and hasn't been passed yet.
         case locked
         case loggedOut
         case loggedIn(Patron)
@@ -75,7 +79,7 @@ public final class SessionStore {
         return nil
     }
 
-    /// Au lancement : rouvre la session si des identifiants sont dans le trousseau.
+    /// At launch: reopens the session if credentials are in the keychain.
     public func restore() async {
         let hasCredentials = (try? keychain.load()) != nil
         if hasCredentials, isFaceIDEnabled {
@@ -85,7 +89,7 @@ public final class SessionStore {
         do {
             state = (try await auth.restore()).map(State.loggedIn) ?? .loggedOut
         } catch {
-            // Hors ligne au lancement : on reste déconnecté, la prochaine action réessaiera.
+            // Offline at launch: stay signed out, the next action will retry.
             state = .loggedOut
         }
     }
@@ -94,12 +98,12 @@ public final class SessionStore {
         state = .loggedIn(patron)
     }
 
-    /// Rafraîchit la fiche (compteurs, carte) après une action.
+    /// Refreshes the account (counters, card) after an action.
     public func update(_ patron: Patron) {
         if case .loggedIn = state { state = .loggedIn(patron) }
     }
 
-    /// Nouvel essai après un Face ID refusé ou annulé.
+    /// Retries after Face ID was denied or cancelled.
     public func unlock() async {
         guard state == .locked else { return }
         state = .restoring
@@ -111,7 +115,7 @@ public final class SessionStore {
         await auth.logout()
         await AccountSync.reset()
         isFaceIDEnabled = false
-        // Le prochain abonné qui se connecte sur cet appareil reverra les réglages de départ.
+        // The next patron to sign in on this device will see the default settings again.
         defaults.removeObject(forKey: ReminderSettings.Key.onboardingDone)
         state = .loggedOut
     }

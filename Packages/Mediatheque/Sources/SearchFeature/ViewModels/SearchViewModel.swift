@@ -1,10 +1,14 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import Dependencies
 import Foundation
 import MediathequeCore
 import Observation
 
-/// Filtres rapides de la recherche. Les facettes Bokeh se combinent en ET :
-/// un seul type à la fois, d'où une liste exclusive plutôt que des cases à cocher.
+/// Quick search filters. Bokeh facets combine with AND:
+/// only one type at a time, hence an exclusive list rather than checkboxes.
 public enum SearchScope: String, CaseIterable, Identifiable, Sendable {
     case all, books, dvd, cd, audiobooks, ebooks, onlineFilms
 
@@ -35,7 +39,7 @@ public enum SearchScope: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
-/// Tuile « Explorer » de l'écran de recherche vide : une recherche préremplie.
+/// "Explorer" tile on the empty search screen: a prefilled search.
 public struct ExploreShortcut: Identifiable, Hashable, Sendable {
     public let id: String
     public let title: String
@@ -67,7 +71,7 @@ public final class SearchViewModel {
     public private(set) var recentSearches: [String] = []
     public private(set) var feedback: FeedbackEvent?
 
-    /// Titre de l'écran « exploration » quand on vient d'une tuile, sans texte saisi.
+    /// Title of the "exploration" screen when coming from a tile, with no typed text.
     public private(set) var browsingTitle: String?
 
     @ObservationIgnored @Dependency(\.catalogClient) private var catalog
@@ -84,21 +88,21 @@ public final class SearchViewModel {
         recentSearches = recents.load()
     }
 
-    /// Vrai quand on montre les recherches récentes et les tuiles plutôt que des résultats.
+    /// True when showing recent searches and tiles rather than results.
     public var showsLanding: Bool {
         text.trimmingCharacters(in: .whitespaces).isEmpty && browsingTitle == nil
     }
 
-    // MARK: Intentions
+    // MARK: Intents
 
-    /// Saisie en cours : on attend une pause avant de lancer la recherche.
+    /// Typing in progress: wait for a pause before launching the search.
     public func textDidChange() {
         browsingTitle = nil
         sort = .relevance
         scheduleSearch(after: Self.debounce)
     }
 
-    /// Validation au clavier : recherche immédiate et mémorisation.
+    /// Keyboard submit: immediate search, saved to recent searches.
     public func submit() {
         remember(text)
         scheduleSearch(after: nil)
@@ -148,7 +152,7 @@ public final class SearchViewModel {
         state = .idle
     }
 
-    /// À appeler quand une ligne apparaît : charge la page suivante près de la fin.
+    /// Call when a row appears: loads the next page near the end.
     public func rowAppeared(_ document: Notice) {
         loadAvailabilityIfNeeded(for: document)
         guard let documents = state.value, !isLoadingMore,
@@ -160,7 +164,7 @@ public final class SearchViewModel {
 
     public var hasActiveFilters: Bool { scope != .all || library != nil }
 
-    // MARK: Chargement
+    // MARK: Loading
 
     private var query: SearchQuery {
         SearchQuery(
@@ -218,7 +222,7 @@ public final class SearchViewModel {
     }
 
     private func loadAvailabilityIfNeeded(for document: Notice) {
-        // Les ressources en ligne n'ont pas d'exemplaire physique.
+        // Online resources have no physical copy.
         guard !document.kind.isDigital, availabilityRequests.insert(document.id).inserted else { return }
         Task {
             if let result = try? await catalog.availability(document.id) {

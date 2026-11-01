@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import DesignSystem
 import MediathequeCore
 import SwiftUI
@@ -8,7 +12,7 @@ struct AgendaFiltersView: View {
     @State private var showsAllPlaces = false
     @Environment(\.dismiss) private var dismiss
 
-    /// Les médiathèques d'abord ; les autres lieux (écoles, parcs…) sont repliés au-delà.
+    /// Libraries first; other venues (schools, parks…) are collapsed beyond them.
     static let visiblePlaces = 4
 
     init(viewModel: AgendaViewModel) {
@@ -60,7 +64,7 @@ struct AgendaFiltersView: View {
         .sensoryFeedback(.selection, trigger: draft)
     }
 
-    /// Les lieux repliés restent visibles s'ils sont cochés.
+    /// Collapsed venues stay visible when they are checked.
     private var visiblePlaces: [String] {
         let all = viewModel.availablePlaces
         guard !showsAllPlaces, all.count > Self.visiblePlaces + 1 else { return all }
@@ -123,7 +127,7 @@ struct FilterChipLabelStyle: LabelStyle {
     }
 }
 
-/// Disposition en lignes qui passent à la ligne, pour les puces de filtres.
+/// Wrapping row layout for the filter chips.
 struct FlowLayout: Layout {
     var spacing: CGFloat
 

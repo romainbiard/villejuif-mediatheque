@@ -1,3 +1,7 @@
+// Ma médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
 import DesignSystem
 import MediathequeCore
 import SwiftUI
@@ -14,8 +18,8 @@ struct LoginView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             background
-            // Défilable quand la hauteur manque (iPhone Duo, clavier, grande taille de texte) :
-            // rien n'est tronqué, et le formulaire reste en bas quand tout tient.
+            // Scrollable when height runs short (iPhone Duo, keyboard, large text size):
+            // nothing is truncated, and the form stays at the bottom when everything fits.
             GeometryReader { proxy in
                 ScrollView {
                     content
@@ -54,7 +58,7 @@ struct LoginView: View {
             Spacer(minLength: 24)
             form
         }
-        // iPad : colonne de lecture centrée plutôt qu'un formulaire pleine largeur.
+        // iPad: centered reading column rather than a full-width form.
         .frame(maxWidth: 560)
         .frame(maxWidth: .infinity)
     }
@@ -80,8 +84,8 @@ struct LoginView: View {
                 HStack(spacing: 8) {
                     TextField("Au dos de votre carte", text: $viewModel.cardNumber)
                         .textContentType(.username)
-                        // Pas de pavé numérique : il n'a pas de barre de suggestions, donc
-                        // iOS ne peut pas y proposer l'identifiant enregistré dans les mots de passe.
+                        // No number pad: it has no suggestions bar, so
+                        // iOS can't offer the username saved in Passwords there.
                         .keyboardType(.numbersAndPunctuation)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
