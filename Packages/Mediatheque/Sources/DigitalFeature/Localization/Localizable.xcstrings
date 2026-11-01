@@ -1,835 +1,827 @@
 {
-  "sourceLanguage": "fr",
-  "strings": {
-    "%@ a sa propre app. Installez-la une fois : Ma médiathèque vous y connecte ensuite à chaque fois.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ has its own app. Install it once: Ma médiathèque will then sign you in every time."
-          }
-        }
-      },
-      "comment": "%@ is a service name"
-    },
-    "%@ est installée": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ is installed"
-          }
-        }
-      },
-      "comment": "Banner; %@ is the partner app's name"
-    },
-    "%@ n'a pas pu être ouvert. Réessayez dans un instant.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ couldn't be opened. Try again in a moment."
-          }
-        }
-      },
-      "comment": "%@ is a service name"
-    },
-    "%@ · %@": {
-      "comment": "Service provider · quota, both already translated",
-      "shouldTranslate": false
-    },
-    "%@ · Gratuite": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ · Free"
-          }
-        }
-      },
-      "comment": "%@ is the app publisher"
-    },
-    "%lld": {
-      "comment": "Step number",
-      "shouldTranslate": false
-    },
-    "10 BD par mois": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "10 comics a month"
+  "sourceLanguage" : "fr",
+  "strings" : {
+    "%@ · Gratuite" : {
+      "comment" : "%@ is the app publisher",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · Free"
           }
         }
       }
     },
-    "2 films par mois, musique illimitée": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "2 films a month, unlimited music"
+    "%@ a sa propre app. Installez-la une fois : Ma médiathèque vous y connecte ensuite à chaque fois." : {
+      "comment" : "%@ is a service name",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ has its own app. Install it once: Ma médiathèque will then sign you in every time."
           }
         }
       }
     },
-    "5 e-books et 5 livres audio, 3 semaines": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "5 e-books and 5 audiobooks, 3 weeks"
+    "%@ est installée" : {
+      "comment" : "Banner; %@ is the partner app's name",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ is installed"
           }
         }
       }
     },
-    "6 crédits par mois, renouvelés le 1er": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "6 credits a month, renewed on the 1st"
+    "%@ n'a pas pu être ouvert. Réessayez dans un instant." : {
+      "comment" : "%@ is a service name",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ couldn't be opened. Try again in a moment."
           }
         }
       }
     },
-    "6 crédits par mois, sans publicité": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "6 credits a month, ad-free"
+    "2 films par mois, musique illimitée" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 films a month, unlimited music"
           }
         }
       }
     },
-    "App installée": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "App installed"
+    "5 e-books et 5 livres audio, 3 semaines" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 e-books and 5 audiobooks, 3 weeks"
           }
         }
       }
     },
-    "Arte VOD et Univers Ciné": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Arte VOD and Univers Ciné"
-          }
-        }
-      },
-      "comment": "Provider names"
-    },
-    "Au premier livre, Louise demande la phrase de déverrouillage ci-dessous.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "With your first book, Louise asks for the passphrase below."
+    "6 crédits par mois, renouvelés le 1er" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6 credits a month, renewed on the 1st"
           }
         }
       }
     },
-    "BD et mangas": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Comics and manga"
+    "6 crédits par mois, sans publicité" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6 credits a month, ad-free"
           }
         }
       }
     },
-    "Choisissez le téléchargement « LCP » et ouvrez-le dans Louise Reader.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Choose the “LCP” download and open it in Louise Reader."
+    "10 BD par mois" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 comics a month"
           }
         }
       }
     },
-    "Cinéma, cours, livres DYS et la musique en streaming avec musicMe.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Films, courses, dyslexia-friendly books and music streaming with musicMe."
+    "À lire dans %@" : {
+      "comment" : "Under a service; %@ is a reader app, e.g. Louise Reader",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read in %@"
           }
         }
       }
     },
-    "Cinéma, séries et documentaires": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Films, series and documentaries"
+    "App installée" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App installed"
           }
         }
       }
     },
-    "Comment ça marche": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "How it works"
+    "Arte VOD et Univers Ciné" : {
+      "comment" : "Provider names",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arte VOD and Univers Ciné"
           }
         }
       }
     },
-    "Connecter l'app avec ma carte": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Connect the app with my card"
+    "Au premier livre, Louise demande la phrase de déverrouillage ci-dessous." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "With your first book, Louise asks for the passphrase below."
           }
         }
       }
     },
-    "Connectez-vous dans l'onglet Compte pour accéder au numérique.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sign in from the Account tab to use digital services."
+    "BD et mangas" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comics and manga"
           }
         }
       }
     },
-    "Connectez-vous dans l'onglet Compte pour ouvrir ces services.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sign in from the Account tab to open these services."
+    "Choisissez le téléchargement « LCP » et ouvrez-le dans Louise Reader." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose the “LCP” download and open it in Louise Reader."
           }
         }
       }
     },
-    "Connecté avec votre carte, sans mot de passe": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Signed in with your library card, no password"
+    "Cinéma, cours, livres DYS et la musique en streaming avec musicMe." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Films, courses, dyslexia-friendly books and music streaming with musicMe."
           }
         }
       }
     },
-    "Connexion avec votre carte…": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Signing in with your card…"
+    "Cinéma, séries et documentaires" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Films, series and documentaries"
           }
         }
       }
     },
-    "Continuer dans le navigateur": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Continue in the browser"
+    "Comment ça marche" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How it works"
           }
         }
       }
     },
-    "Copier": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Copy"
+    "Connecté avec votre carte, sans mot de passe" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Signed in with your library card, no password"
           }
         }
       }
     },
-    "Copié": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Copied"
+    "Connecter l'app avec ma carte" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connect the app with my card"
           }
         }
       }
     },
-    "Cours illimités, à votre rythme": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unlimited courses, at your own pace"
+    "Connectez-vous dans l'onglet Compte pour accéder au numérique." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in from the Account tab to use digital services."
           }
         }
       }
     },
-    "Des milliers de films, documentaires, séries et spectacles, en plusieurs langues.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Thousands of films, documentaries, series and shows, in several languages."
+    "Connectez-vous dans l'onglet Compte pour ouvrir ces services." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in from the Account tab to open these services."
           }
         }
       }
     },
-    "Département du Val-de-Marne": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Val-de-Marne department"
+    "Connexion avec votre carte…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Signing in with your card…"
           }
         }
       }
     },
-    "Emprunter": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Borrow"
-          }
-        }
-      },
-      "comment": "Button that opens the e-book lending website"
-    },
-    "Empruntez des e-books et des livres audio, à lire en ligne ou à télécharger.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Borrow e-books and audiobooks, to read online or download."
+    "Continuer dans le navigateur" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue in the browser"
           }
         }
       }
     },
-    "Empruntez un livre sur BiblioAccess (bouton « Emprunter »).": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Borrow a book on BiblioAccess (“Borrow” button)."
+    "Copié" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copied"
           }
         }
       }
     },
-    "Eurêka et musicMe": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Eurêka and musicMe"
+    "Copier" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy"
           }
         }
       }
     },
-    "Fermer": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Close"
+    "Cours illimités, à votre rythme" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unlimited courses, at your own pace"
           }
         }
       }
     },
-    "Films et séries": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Films and series"
+    "Département du Val-de-Marne" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Val-de-Marne department"
           }
         }
       }
     },
-    "Formation": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Learning"
-          }
-        }
-      },
-      "comment": "Service category: online courses"
-    },
-    "Franco-belge, comics, mangas et webtoons. Une BD commencée reste lisible un an.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Franco-Belgian comics, American comics, manga and webtoons. A comic you start stays readable for a year."
+    "Des milliers de films, documentaires, séries et spectacles, en plusieurs langues." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thousands of films, documentaries, series and shows, in several languages."
           }
         }
       }
     },
-    "Gratuite · iPhone et iPad": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Free · iPhone and iPad"
+    "Emprunter" : {
+      "comment" : "Button that opens the e-book lending website",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrow"
           }
         }
       }
     },
-    "Illimité": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unlimited"
+    "Empruntez des e-books et des livres audio, à lire en ligne ou à télécharger." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrow e-books and audiobooks, to read online or download."
           }
         }
       }
     },
-    "Inclus dans votre abonnement, sur tous vos appareils.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Included in your membership, on all your devices."
+    "Empruntez un livre sur BiblioAccess (bouton « Emprunter »)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrow a book on BiblioAccess (“Borrow” button)."
           }
         }
       }
     },
-    "Installer": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Install"
-          }
-        }
-      },
-      "comment": "Short button on a service tile"
-    },
-    "Installer l'app": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Install the app"
+    "Eurêka et musicMe" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eurêka and musicMe"
           }
         }
       }
     },
-    "Installez l'app Cafeyn.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Install the Cafeyn app."
+    "Fermer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
           }
         }
       }
     },
-    "Installez l'app Mozaik.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Install the Mozaik app."
+    "Films et séries" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Films and series"
           }
         }
       }
     },
-    "Installez l'app Médiathèque Numérique.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Install the Médiathèque Numérique app."
+    "Formation" : {
+      "comment" : "Service category: online courses",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Learning"
           }
         }
       }
     },
-    "Journaux et magazines, numéros archivés compris": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Newspapers and magazines, back issues included"
+    "Franco-belge, comics, mangas et webtoons. Une BD commencée reste lisible un an." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Franco-Belgian comics, American comics, manga and webtoons. A comic you start stays readable for a year."
           }
         }
       }
     },
-    "L'accès au numérique est suspendu sur votre compte. Renseignez-vous à l'accueil d'une médiathèque.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Digital access is suspended on your account. Ask at the front desk of a library."
+    "Gratuite · iPhone et iPad" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Free · iPhone and iPad"
           }
         }
       }
     },
-    "L'app reste connectée ensuite, vous n'aurez plus à le refaire.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The app stays signed in afterwards, so you won't have to do this again."
+    "Illimité" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unlimited"
           }
         }
       }
     },
-    "Langues, code de la route, soutien scolaire, bureautique, sport, musique…": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Languages, driving theory, homework help, office software, sports, music…"
+    "Inclus dans votre abonnement, sur tous vos appareils." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Included in your membership, on all your devices."
           }
         }
       }
     },
-    "Langues, code de la route, soutien scolaire…": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Languages, driving theory, homework help…"
+    "Installer" : {
+      "comment" : "Short button on a service tile",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Install"
           }
         }
       }
     },
-    "Le QR code de « Mon compte » se scanne depuis l'app Mozaik d'un autre appareil.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The QR code in “Mon compte” is scanned with the Mozaik app on another device."
-          }
-        }
-      },
-      "comment": "“Mon compte” is the name of a screen in the Mozaik app, which is in French"
-    },
-    "Lecture illimitée": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unlimited reading"
+    "Installer l'app" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Install the app"
           }
         }
       }
     },
-    "Lisez la presse dans l'app": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Read the press in the app"
+    "Installez l'app Cafeyn." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Install the Cafeyn app."
           }
         }
       }
     },
-    "Livres numériques et audio": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "E-books and audiobooks"
+    "Installez l'app Médiathèque Numérique." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Install the Médiathèque Numérique app."
           }
         }
       }
     },
-    "Numérique": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Digital"
-          }
-        }
-      },
-      "comment": "Tab title: digital library"
-    },
-    "OK": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "OK"
+    "Installez l'app Mozaik." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Install the Mozaik app."
           }
         }
       }
     },
-    "Obtenir l'app": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Get the app"
+    "Journaux et magazines, numéros archivés compris" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Newspapers and magazines, back issues included"
           }
         }
       }
     },
-    "Ouvert dans %@": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Opened in %@"
-          }
-        }
-      },
-      "comment": "%@ is the partner app's name"
-    },
-    "Ouverture impossible": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Couldn't open"
-          }
-        }
-      },
-      "comment": "Alert title"
-    },
-    "Ouvrir": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open"
-          }
-        }
-      },
-      "comment": "Button that opens a service or an app"
-    },
-    "Ouvrir %@": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open %@"
-          }
-        }
-      },
-      "comment": "Button; %@ is the partner app's name"
-    },
-    "Ouvrir sur le web": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open on the web"
+    "L'accès au numérique est suspendu sur votre compte. Renseignez-vous à l'accueil d'une médiathèque." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Digital access is suspended on your account. Ask at the front desk of a library."
           }
         }
       }
     },
-    "Pas de connexion. Réessayez une fois en ligne.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No connection. Try again once you're online."
+    "l'app" : {
+      "comment" : "Used when the partner app has no name: “Opened in the app”",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the app"
           }
         }
       }
     },
-    "Phrase de déverrouillage LCP": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "LCP passphrase"
+    "L'app reste connectée ensuite, vous n'aurez plus à le refaire." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The app stays signed in afterwards, so you won't have to do this again."
           }
         }
       }
     },
-    "Plus d'options pour %@": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "More options for %@"
-          }
-        }
-      },
-      "comment": "Accessibility label; %@ is a service"
-    },
-    "Plus de 2 500 journaux et magazines, avec les numéros archivés.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Over 2,500 newspapers and magazines, back issues included."
+    "Langues, code de la route, soutien scolaire, bureautique, sport, musique…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Languages, driving theory, homework help, office software, sports, music…"
           }
         }
       }
     },
-    "Pour l'app musicMe : sur le site musicMe, menu « Appli mobile », puis suivez l'e-mail d'activation.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "For the musicMe app: on the musicMe website, open the “Appli mobile” menu, then follow the activation email."
-          }
-        }
-      },
-      "comment": "“Appli mobile” is a menu on the musicMe website, which is in French"
-    },
-    "Presse": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Press"
-          }
-        }
-      },
-      "comment": "Service category: newspapers and magazines"
-    },
-    "Profitez-en dans l'app": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enjoy it in the app"
+    "Langues, code de la route, soutien scolaire…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Languages, driving theory, homework help…"
           }
         }
       }
     },
-    "Regardez vos films dans l'app": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Watch your films in the app"
+    "Le QR code de « Mon compte » se scanne depuis l'app Mozaik d'un autre appareil." : {
+      "comment" : "“Mon compte” is the name of a screen in the Mozaik app, which is in French",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The QR code in “Mon compte” is scanned with the Mozaik app on another device."
           }
         }
       }
     },
-    "Revenez ici et touchez « Ouvrir » : Cafeyn s'ouvre déjà connecté.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Come back here and tap “Open”: Cafeyn opens already signed in."
+    "Lecture illimitée" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unlimited reading"
           }
         }
       }
     },
-    "Revenez ici et touchez « Ouvrir » : la plateforme vous reconnaît.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Come back here and tap “Open”: the platform recognizes you."
+    "Lisez la presse dans l'app" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read the press in the app"
           }
         }
       }
     },
-    "Se consulte dans l'app": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Used in its app"
-          }
-        }
-      },
-      "comment": "Under a service: it needs the partner app"
-    },
-    "Suivez vos cours dans l'app": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Take your courses in the app"
+    "Livres numériques et audio" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "E-books and audiobooks"
           }
         }
       }
     },
-    "Sur le web": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "On the web"
+    "Numérique" : {
+      "comment" : "Tab title: digital library",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Digital"
           }
         }
       }
     },
-    "Touchez « Ouvrir » : Eurêka s'ouvre déjà connecté.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tap “Open”: Eurêka opens already signed in."
+    "Obtenir l'app" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Get the app"
           }
         }
       }
     },
-    "Touchez « Ouvrir » : Izneo s'ouvre ici, déjà connecté.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tap “Open”: Izneo opens here, already signed in."
+    "OK" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
           }
         }
       }
     },
-    "Touchez « Ouvrir » ici : si l'app ne s'ouvre pas connectée, allez dans « Mon compte » sur Mozaik.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tap “Open” here: if the app doesn't open signed in, go to “Mon compte” in Mozaik."
-          }
-        }
-      },
-      "comment": "“Mon compte” is the name of a screen in the Mozaik app, which is in French"
-    },
-    "Tutoriel complet (PDF)": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Full tutorial (PDF)"
+    "Ouvert dans %@" : {
+      "comment" : "%@ is the partner app's name",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opened in %@"
           }
         }
       }
     },
-    "l'app": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "the app"
+    "Ouverture impossible" : {
+      "comment" : "Alert title",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't open"
           }
         }
-      },
-      "comment": "Used when the partner app has no name: “Opened in the app”"
+      }
     },
-    "À lire dans %@": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Read in %@"
+    "Ouvrir" : {
+      "comment" : "Button that opens a service or an app",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open"
           }
         }
-      },
-      "comment": "Under a service; %@ is a reader app, e.g. Louise Reader"
+      }
+    },
+    "Ouvrir %@" : {
+      "comment" : "Button; %@ is the partner app's name",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open %@"
+          }
+        }
+      }
+    },
+    "Ouvrir sur le web" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open on the web"
+          }
+        }
+      }
+    },
+    "Pas de connexion. Réessayez une fois en ligne." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No connection. Try again once you're online."
+          }
+        }
+      }
+    },
+    "Phrase de déverrouillage LCP" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LCP passphrase"
+          }
+        }
+      }
+    },
+    "Plus d'options pour %@" : {
+      "comment" : "Accessibility label; %@ is a service",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "More options for %@"
+          }
+        }
+      }
+    },
+    "Plus de 2 500 journaux et magazines, avec les numéros archivés." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Over 2,500 newspapers and magazines, back issues included."
+          }
+        }
+      }
+    },
+    "Pour l'app musicMe : sur le site musicMe, menu « Appli mobile », puis suivez l'e-mail d'activation." : {
+      "comment" : "“Appli mobile” is a menu on the musicMe website, which is in French",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For the musicMe app: on the musicMe website, open the “Appli mobile” menu, then follow the activation email."
+          }
+        }
+      }
+    },
+    "Presse" : {
+      "comment" : "Service category: newspapers and magazines",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Press"
+          }
+        }
+      }
+    },
+    "Profitez-en dans l'app" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enjoy it in the app"
+          }
+        }
+      }
+    },
+    "Regardez vos films dans l'app" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watch your films in the app"
+          }
+        }
+      }
+    },
+    "Revenez ici et touchez « Ouvrir » : Cafeyn s'ouvre déjà connecté." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Come back here and tap “Open”: Cafeyn opens already signed in."
+          }
+        }
+      }
+    },
+    "Revenez ici et touchez « Ouvrir » : la plateforme vous reconnaît." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Come back here and tap “Open”: the platform recognizes you."
+          }
+        }
+      }
+    },
+    "Se consulte dans l'app" : {
+      "comment" : "Under a service: it needs the partner app",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Used in its app"
+          }
+        }
+      }
+    },
+    "Suivez vos cours dans l'app" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Take your courses in the app"
+          }
+        }
+      }
+    },
+    "Sur le web" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On the web"
+          }
+        }
+      }
+    },
+    "Touchez « Ouvrir » : Eurêka s'ouvre déjà connecté." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap “Open”: Eurêka opens already signed in."
+          }
+        }
+      }
+    },
+    "Touchez « Ouvrir » : Izneo s'ouvre ici, déjà connecté." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap “Open”: Izneo opens here, already signed in."
+          }
+        }
+      }
+    },
+    "Touchez « Ouvrir » ici : si l'app ne s'ouvre pas connectée, allez dans « Mon compte » sur Mozaik." : {
+      "comment" : "“Mon compte” is the name of a screen in the Mozaik app, which is in French",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap “Open” here: if the app doesn't open signed in, go to “Mon compte” in Mozaik."
+          }
+        }
+      }
+    },
+    "Tutoriel complet (PDF)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Full tutorial (PDF)"
+          }
+        }
+      }
     }
   },
-  "version": "1.0"
+  "version" : "1.0"
 }

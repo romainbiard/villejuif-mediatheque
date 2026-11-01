@@ -21,6 +21,7 @@ struct SelectionsView: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
         }
+        .readableContentWidth()
         .background(Color.surfaceGrouped)
         .navigationTitle(Text(.local("Mes sélections")))
         .toolbar {
@@ -195,6 +196,7 @@ struct SelectionDetailView: View {
                 .scrollContentBackground(.hidden)
             }
         }
+        .readableContentWidth()
         .background(Color.surfaceGrouped)
         .navigationTitle(viewModel.selection.name)
         .task { await viewModel.load() }

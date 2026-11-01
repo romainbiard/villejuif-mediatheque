@@ -53,6 +53,7 @@ struct InformationView: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
         }
+        .readableContentWidth()
         .background(Color.surfaceGrouped)
         .navigationTitle(Text(.local("Mes informations")))
         .task { await viewModel.load() }
@@ -281,6 +282,7 @@ struct ProfileSettingsView: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
         }
+        .readableContentWidth()
         .background(Color.surfaceGrouped)
         .navigationTitle(Text(.local("Mes configurations")))
         .task { await viewModel.load() }

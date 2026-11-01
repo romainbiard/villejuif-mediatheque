@@ -17,6 +17,7 @@ struct LoansView: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
         }
+        .readableContentWidth()
         .background(Color.surfaceGrouped)
         .navigationTitle(Text(.local("Mes prêts")))
         .toolbar {
@@ -132,6 +133,7 @@ struct HoldsView: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
         }
+        .readableContentWidth()
         .background(Color.surfaceGrouped)
         .navigationTitle(Text(.local("Mes réservations")))
         .task { await viewModel.load() }

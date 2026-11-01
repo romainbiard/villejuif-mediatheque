@@ -81,6 +81,11 @@ public enum AccountSection: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
+extension EnvironmentValues {
+    /// Set by the iPad sidebar, which already lists the Mon compte sections: the home doesn't repeat them.
+    @Entry public var accountSectionsInSidebar = false
+}
+
 /// A Mon compte section opened on its own (sidebar tab on iPad).
 /// Without a session, show the Account tab's sign-in.
 public struct AccountSectionView: View {
@@ -132,29 +137,27 @@ struct AccountHomeView: View {
     @State private var path = NavigationPath()
     @State private var confirmsLogout = false
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.accountSectionsInSidebar) private var sectionsInSidebar
     @State private var contentWidth: CGFloat = .infinity
+    /// iPad only: loans due and the hold ready for pickup, shown on the home itself.
+    @State private var loans = LoansViewModel()
+    @State private var holds = HoldsViewModel()
     @AppStorage(ReminderSettings.Key.onboardingDone, store: .shared) private var onboardingDone = false
 
     var body: some View {
         NavigationStack(path: $path) {
             ScrollView {
-                if sizeClass == .regular && contentWidth >= Self.twoColumnsMinWidth {
-                    // iPad: card and counters on the left, menu on the right.
-                    HStack(alignment: .top, spacing: 24) {
-                        VStack(alignment: .leading, spacing: 14) {
-                            cardAndCounters
-                            logoutButton
-                        }
-                        .frame(maxWidth: 440)
-                        menu
-                    }
-                    .frame(maxWidth: 1100)
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 24)
-                    .frame(maxWidth: .infinity)
+                if sizeClass == .regular {
+                    dashboard
+                        .frame(maxWidth: Self.dashboardMaxWidth)
+                        .padding(.horizontal, 24)
+                        .padding(.bottom, 24)
+                        .frame(maxWidth: .infinity)
                 } else {
                     VStack(alignment: .leading, spacing: 14) {
-                        cardAndCounters
+                        expiryBanner
+                        card
+                        counters
                         menu
                         logoutButton
                     }
@@ -187,8 +190,9 @@ struct AccountHomeView: View {
                     path.append(AccountRoute.settings)
                 }
             }
-            .refreshable { await viewModel.refresh(session) }
-            .task { await viewModel.refresh(session) }
+            .refreshable { await refresh() }
+            .task { await refresh() }
+            .overlay(alignment: .bottom) { MessageToast(message: loans.message) { loans.dismissMessage() } }
             .fullScreenCover(isPresented: $showsCard) { FullScreenCardView(patron: patron) }
             .onChange(of: cardRequest, initial: true) {
                 guard cardRequest else { return }
@@ -202,20 +206,151 @@ struct AccountHomeView: View {
         }
         .measuringWidth($contentWidth)
         .sensoryFeedback(.impact(weight: .medium), trigger: session.state == .loggedOut)
+        .sensoryFeedback(trigger: loans.feedback) { _, event in event.map(\.sensoryFeedback) }
     }
 
-    /// Card (440 pt), readable menu (≥ 360 pt), margins and spacing.
-    static let twoColumnsMinWidth: CGFloat = 880
+    /// Content of the iPad home, centered: nothing stretches on a 13-inch iPad or a full-screen window.
+    static let dashboardMaxWidth: CGFloat = 900
+    /// The card keeps the size of a real card instead of filling the column.
+    static let cardWidth: CGFloat = 340
+    /// Card next to the counters and loans in two columns from this width (the detail column
+    /// of an 11-inch iPad in landscape, next to the sidebar, is about 830 pt).
+    static let wideMinWidth: CGFloat = 700
+
+    private var isWide: Bool { contentWidth >= Self.wideMinWidth }
+
+    private func refresh() async {
+        await viewModel.refresh(session)
+        guard sizeClass == .regular else { return }
+        async let loansLoad: Void = loans.load()
+        async let holdsLoad: Void = holds.load()
+        _ = await (loansLoad, holdsLoad)
+    }
+
+    // MARK: iPad
+
+    /// iPad home: the card at its real size with the counters and the hold to pick up next to it,
+    /// then the loans due and the library's message. The sections are already in the sidebar,
+    /// so the menu only appears when there is no sidebar (narrow window).
+    private var dashboard: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            expiryBanner
+            if isWide {
+                HStack(alignment: .top, spacing: 18) {
+                    card.frame(width: Self.cardWidth)
+                    VStack(spacing: 12) {
+                        counters
+                        readyHold
+                    }
+                }
+            } else {
+                card
+                counters
+                readyHold
+            }
+            dueLoans
+            libraryMessage
+            if !sectionsInSidebar { menu }
+            logoutButton
+        }
+    }
 
     @ViewBuilder
-    private var cardAndCounters: some View {
+    private var readyHold: some View {
+        if let hold = holds.state.value?.first(where: \.isReadyForPickup) {
+            NavigationLink(value: AccountRoute.holds) {
+                HStack(spacing: 14) {
+                    CoverImage(url: hold.coverURL, title: hold.title, seed: hold.recordID ?? 0)
+                        .frame(width: 46, height: 66)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(.local("Prête à retirer"))
+                            .font(.caption.weight(.bold))
+                            .textCase(.uppercase)
+                            .foregroundStyle(Color.statusSuccess)
+                        Text(hold.title).font(.headline).foregroundStyle(Color.ink).lineLimit(2)
+                        Text(hold.pickupLibrary?.shortName ?? hold.pickupLibraryName)
+                            .font(.subheadline)
+                            .foregroundStyle(Color.inkSecondary)
+                            .lineLimit(1)
+                    }
+                    Spacer(minLength: 0)
+                    Image(systemName: "chevron.right").font(.footnote.weight(.bold)).foregroundStyle(Color.inkSecondary)
+                }
+                .padding(14)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.statusSuccess.opacity(0.12), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+                .contentShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    /// The next loans due, with Renew: what you come to the Account tab for.
+    @ViewBuilder
+    private var dueLoans: some View {
+        if let all = loans.state.value, !all.isEmpty {
+            VStack(alignment: .leading, spacing: 12) {
+                SectionHeader(.local("À rendre")) {
+                    if all.count > 1 {
+                        Button(.local("Tout prolonger")) { Task { await loans.renewAll() } }
+                            .font(.subheadline.weight(.semibold))
+                            .disabled(!loans.renewing.isEmpty)
+                    }
+                }
+                LazyVGrid(
+                    columns: Array(repeating: GridItem(.flexible(), spacing: 12, alignment: .top), count: isWide ? 2 : 1),
+                    spacing: 12
+                ) {
+                    ForEach(all.prefix(Self.dueLoansShown)) { loan in
+                        LoanRow(loan: loan, viewModel: loans).cardStyle(padding: 0)
+                    }
+                }
+                if all.count > Self.dueLoansShown {
+                    NavigationLink(value: AccountRoute.loans) {
+                        Text(.local("Voir les \(all.count) prêts")).font(.subheadline.weight(.semibold))
+                    }
+                }
+            }
+        }
+    }
+
+    static let dueLoansShown = 4
+
+    @ViewBuilder
+    private var libraryMessage: some View {
+        if let message = patron.message, !message.isEmpty {
+            Button { showsNotifications = true } label: {
+                HStack(alignment: .top, spacing: 12) {
+                    Image(systemName: "text.bubble.fill")
+                        .foregroundStyle(Color.brandVioletDeep)
+                        .frame(width: 36, height: 36)
+                        .background(Color.brandViolet.opacity(0.14), in: Circle())
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(.local("Message de la médiathèque")).font(.subheadline.weight(.semibold)).foregroundStyle(Color.ink)
+                        Text(message).font(.subheadline).foregroundStyle(Color.inkSecondary).lineLimit(3)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .cardStyle()
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    // MARK: Shared
+
+    @ViewBuilder
+    private var expiryBanner: some View {
         if patron.cardExpired || patron.cardAboutToExpire {
             CardExpiryBanner(patron: patron)
         }
+    }
+
+    private var card: some View {
         Button { showsCard = true } label: { LibraryCardView(patron: patron) }
             .buttonStyle(.plain)
             .accessibilityHint(Text(.local("Affiche la carte en grand pour le comptoir")))
-        counters
     }
 
     private var logoutButton: some View {

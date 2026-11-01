@@ -33,6 +33,7 @@ struct ReviewsView: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
         }
+        .readableContentWidth()
         .background(Color.surfaceGrouped)
         .navigationTitle(Text(.local("Mes avis")))
         .task { await viewModel.load() }
@@ -267,6 +268,7 @@ struct SuggestionsView: View {
             .padding(.bottom, 24)
         }
         .dismissesKeyboardOnTap()
+        .readableContentWidth()
         .background(Color.surfaceGrouped)
         .navigationTitle(Text(.local("Mes suggestions")))
         .scrollDismissesKeyboard(.interactively)

@@ -88,7 +88,9 @@ struct NotificationPrimerView: View {
             .padding(.horizontal, 22)
             .padding(.top, 26)
             .padding(.bottom, 18)
-            .background(Color.surfaceCard, in: ConcentricRectangle(corners: .concentric, isUniform: true))
+            // Concentric with the screen corners on iPhone; a full-screen cover on iPad has square
+            // corners, hence the minimum radius.
+            .background(Color.surfaceCard, in: ConcentricRectangle(corners: .concentric(minimum: 34), isUniform: true))
             .padding(10)
             .frame(maxWidth: 560)
         }

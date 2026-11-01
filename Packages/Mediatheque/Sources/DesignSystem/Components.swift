@@ -225,6 +225,24 @@ extension View {
     public func measuringWidth(_ width: Binding<CGFloat>) -> some View {
         onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width.wrappedValue = $0 }
     }
+
+    /// Caps the width of a scroll view's or a form's content, while its background keeps the full width:
+    /// on iPad, rows no longer stretch across the whole detail column. The content stays aligned
+    /// with the large navigation title, on the leading side.
+    public func readableContentWidth(_ maxWidth: CGFloat = 720) -> some View {
+        modifier(ReadableContentWidth(maxWidth: maxWidth))
+    }
+}
+
+private struct ReadableContentWidth: ViewModifier {
+    let maxWidth: CGFloat
+    @State private var width: CGFloat = 0
+
+    func body(content: Content) -> some View {
+        content
+            .contentMargins(.trailing, max(0, width - maxWidth), for: .scrollContent)
+            .measuringWidth($width)
+    }
 }
 
 // MARK: - Keyboard

@@ -1377,6 +1377,17 @@
       },
       "comment": "Screen title / menu item"
     },
+    "Message de la médiathèque": {
+      "comment": "iPad account home: card with the library's message",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Message from the library"
+          }
+        }
+      }
+    },
     "Mises en avant dans la recherche et l'agenda.": {
       "localizations": {
         "en": {
@@ -1872,6 +1883,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Protects access to your account"
+          }
+        }
+      }
+    },
+    "Prête à retirer": {
+      "comment": "iPad account home: a hold is ready for pickup",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ready for pickup"
           }
         }
       }
@@ -2488,6 +2510,47 @@
         }
       }
     },
+    "Voir les %lld prêts": {
+      "comment": "iPad account home: link to all loans",
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Voir le prêt"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Voir les %lld prêts"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "See the loan"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "See all %lld loans"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "Vos avis aident les autres lecteurs à choisir. Ils sont publiés après validation par la médiathèque.": {
       "localizations": {
         "en": {
@@ -2714,6 +2777,17 @@
         }
       },
       "comment": "Segmented control"
+    },
+    "À rendre": {
+      "comment": "iPad account home: section with the next loans due",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Due"
+          }
+        }
+      }
     },
     "À rendre aujourd'hui": {
       "localizations": {

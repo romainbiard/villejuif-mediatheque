@@ -166,6 +166,7 @@ struct SidebarRootView: View {
             // One screen at a time: stacked screens would share the column's navigation
             // bar. Search keeps its state thanks to `searchModel`.
             screen(for: selection).id(selection)
+                .environment(\.accountSectionsInSidebar, true)
         }
         .navigationSplitViewStyle(.balanced)
     }

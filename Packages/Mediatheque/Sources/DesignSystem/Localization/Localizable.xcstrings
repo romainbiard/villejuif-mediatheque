@@ -2,6 +2,7 @@
   "sourceLanguage" : "fr",
   "strings" : {
     "En cours" : {
+      "comment" : "Accessibility value of a button while its action is loading",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -9,16 +10,7 @@
             "value" : "In progress"
           }
         }
-      },
-      "comment" : "Accessibility value of a button while its action is loading"
-    },
-    "Ouvrir Cafeyn" : {
-      "shouldTranslate" : false,
-      "comment" : "Preview sample only"
-    },
-    "Se connecter" : {
-      "shouldTranslate" : false,
-      "comment" : "Preview sample only"
+      }
     }
   },
   "version" : "1.0"
