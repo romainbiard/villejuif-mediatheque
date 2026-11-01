@@ -20,6 +20,11 @@ public enum LoadState<Value: Sendable>: Sendable {
         if case .loading = self { return true }
         return false
     }
+
+    public var isFailed: Bool {
+        if case .failed = self { return true }
+        return false
+    }
 }
 
 extension LoadState: Equatable where Value: Equatable {}

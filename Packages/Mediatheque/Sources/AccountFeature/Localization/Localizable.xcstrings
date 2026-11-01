@@ -635,6 +635,17 @@
       },
       "comment": "Placeholder: confirm the new password"
     },
+    "Connecté en tant que": {
+      "comment": "iPad account home, above the member's name",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signed in as"
+          }
+        }
+      }
+    },
     "Connexion": {
       "localizations": {
         "en": {
@@ -931,6 +942,17 @@
         }
       },
       "comment": "Form field"
+    },
+    "Impossible de charger vos prêts.": {
+      "comment": "iPad account home: loans failed to load",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't load your loans."
+          }
+        }
+      }
     },
     "Indiquez votre numéro de carte. Vous recevrez un e-mail pour choisir un nouveau mot de passe, à l'adresse enregistrée sur votre compte.": {
       "localizations": {
@@ -2815,7 +2837,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ready for pickup"
+            "value": "To pick up"
           }
         }
       },

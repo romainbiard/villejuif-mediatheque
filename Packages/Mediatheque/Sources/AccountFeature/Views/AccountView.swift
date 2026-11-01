@@ -251,13 +251,53 @@ struct AccountHomeView: View {
             dueLoans
             libraryMessage
             if !sectionsInSidebar { menu }
-            logoutButton
+            sessionCard
         }
+    }
+
+    /// Who is signed in, with a real Sign out button: on iPad, a lone red link floated mid-screen.
+    private var sessionCard: some View {
+        HStack(spacing: 14) {
+            Text(initials)
+                .font(.headline)
+                .foregroundStyle(.white)
+                .frame(width: 44, height: 44)
+                .background(Color.brandViolet, in: Circle())
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(.local("Connecté en tant que")).font(.footnote).foregroundStyle(Color.inkSecondary)
+                Text(patron.displayName).font(.headline).foregroundStyle(Color.ink).lineLimit(1)
+            }
+            .accessibilityElement(children: .combine)
+            Spacer(minLength: 12)
+            Button(.local("Se déconnecter"), systemImage: "rectangle.portrait.and.arrow.right", role: .destructive) {
+                confirmsLogout = true
+            }
+            .buttonStyle(.bordered)
+            .tint(.statusDanger)
+            .fixedSize()
+            // Attached to the button: on iOS 26 the confirmation is a popover pointing at its view.
+            .confirmationDialog(Text(.local("Se déconnecter de votre compte ?")), isPresented: $confirmsLogout, titleVisibility: .visible) {
+                Button(.local("Se déconnecter"), role: .destructive) { Task { await session.logout() } }
+            }
+        }
+        .cardStyle()
+        .padding(.top, 6)
+    }
+
+    private var initials: String {
+        [patron.firstName, patron.lastName].compactMap { $0.first.map(String.init) }.joined().uppercased()
     }
 
     @ViewBuilder
     private var readyHold: some View {
-        if let hold = holds.state.value?.first(where: \.isReadyForPickup) {
+        if holds.state.value == nil, !holds.state.isFailed {
+            // Same footprint as the card below, so nothing jumps when holds arrive.
+            SkeletonRow()
+                .padding(14)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.surfaceCard, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        } else if let hold = holds.state.value?.first(where: \.isReadyForPickup) {
             NavigationLink(value: AccountRoute.holds) {
                 HStack(spacing: 14) {
                     CoverImage(url: hold.coverURL, title: hold.title, seed: hold.recordID ?? 0)
@@ -286,21 +326,44 @@ struct AccountHomeView: View {
     }
 
     /// The next loans due, with Renew: what you come to the Account tab for.
-    @ViewBuilder
     private var dueLoans: some View {
-        if let all = loans.state.value, !all.isEmpty {
-            VStack(alignment: .leading, spacing: 12) {
-                SectionHeader(.local("À rendre")) {
-                    if all.count > 1 {
-                        Button(.local("Tout prolonger")) { Task { await loans.renewAll() } }
-                            .font(.subheadline.weight(.semibold))
-                            .disabled(!loans.renewing.isEmpty)
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(.local("À rendre")) {
+                if let all = loans.state.value, all.count > 1 {
+                    Button(.local("Tout prolonger")) { Task { await loans.renewAll() } }
+                        .font(.subheadline.weight(.semibold))
+                        .disabled(!loans.renewing.isEmpty)
+                }
+            }
+            switch loans.state {
+            case .idle, .loading:
+                loanGrid {
+                    // Placeholders shaped like loan cards while the loans load, as many as the
+                    // account counter announces: the grid keeps its height when they arrive.
+                    ForEach(0..<min(max(patron.counters.loans, 1), Self.dueLoansShown), id: \.self) { _ in
+                        SkeletonRow().padding(12).frame(maxWidth: .infinity, alignment: .leading).cardStyle(padding: 0)
                     }
                 }
-                LazyVGrid(
-                    columns: Array(repeating: GridItem(.flexible(), spacing: 12, alignment: .top), count: isWide ? 2 : 1),
-                    spacing: 12
-                ) {
+            case let .failed(error):
+                HStack(spacing: 12) {
+                    Image(systemName: error == .offline ? "wifi.slash" : "exclamationmark.triangle")
+                        .foregroundStyle(Color.statusWarning)
+                    Text(error == .offline ? String.local("Pas de connexion") : String.local("Impossible de charger vos prêts."))
+                        .font(.subheadline)
+                        .foregroundStyle(Color.ink)
+                    Spacer(minLength: 8)
+                    Button(.local("Réessayer")) { Task { await loans.load() } }
+                        .font(.subheadline.weight(.semibold))
+                }
+                .cardStyle()
+            case let .loaded(all) where all.isEmpty:
+                Label(.local("Rien à rendre pour l'instant"), systemImage: "checkmark.circle")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.inkSecondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .cardStyle()
+            case let .loaded(all):
+                loanGrid {
                     ForEach(all.prefix(Self.dueLoansShown)) { loan in
                         LoanRow(loan: loan, viewModel: loans).cardStyle(padding: 0)
                     }
@@ -312,6 +375,14 @@ struct AccountHomeView: View {
                 }
             }
         }
+    }
+
+    private func loanGrid(@ViewBuilder content: () -> some View) -> some View {
+        LazyVGrid(
+            columns: Array(repeating: GridItem(.flexible(), spacing: 12, alignment: .top), count: isWide ? 2 : 1),
+            spacing: 12,
+            content: content
+        )
     }
 
     static let dueLoansShown = 4
