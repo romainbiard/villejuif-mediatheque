@@ -8,6 +8,9 @@ import SwiftUI
 public extension Color {
     /// The website's `--rose`: main accent (buttons, active tab, account header).
     static let brandViolet = Color(light: 0x773DBD, dark: 0xA27BE0)
+    /// Brand purple as a surface under white text (cards, sign-in, lock screen): the same in both
+    /// modes. The lighter dark-mode `brandViolet` only reaches 3.3:1 with white; this one 6.6:1.
+    static let brandVioletSurface = Color(hex: 0x773DBD)
     /// `--falu_red`, the logo color: city identity, highlights.
     static let brandMagenta = Color(light: 0xE0005A, dark: 0xFF4D8D)
     static let brandVioletDeep = Color(light: 0x5714A4, dark: 0xC9B0F2)
@@ -19,6 +22,9 @@ public extension Color {
     static let statusWarning = Color(light: 0x7A4F00, dark: 0xF5C451)
 
     static let ink = Color(light: 0x1C1B22, dark: 0xF4F3F8)
+    /// Glyph on a tinted tile: white on the light-mode tints, dark on the dark-mode ones,
+    /// which turn light (white on them drops to 1.1–2.2:1).
+    static let onTint = Color(light: 0xFFFFFF, dark: 0x1C1B22)
     static let inkSecondary = Color(light: 0x5E5B66, dark: 0xB4B1BE)
     static let surfaceGrouped = Color(light: 0xF4F3F8, dark: 0x0F0E13)
     static let surfaceCard = Color(light: 0xFFFFFF, dark: 0x1C1B22)

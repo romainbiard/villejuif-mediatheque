@@ -39,6 +39,7 @@ public struct ProminentButtonStyle: ButtonStyle {
     let isLoading: Bool
 
     @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     /// Tint opacity when the button cannot be used (disabled or busy).
     static let fadedOpacity = 0.45
@@ -54,9 +55,11 @@ public struct ProminentButtonStyle: ButtonStyle {
         let isActive = isEnabled && !isLoading
         configuration.label
             .font(size.font)
-            // Always one line: a long label shrinks slightly instead of enlarging the button.
-            .lineLimit(1)
-            .minimumScaleFactor(0.75)
+            // One line: a long label shrinks slightly instead of enlarging the button.
+            // At accessibility text sizes it wraps instead (it would be cut off).
+            .lineLimit(typeSize.isAccessibilitySize ? nil : 1)
+            .minimumScaleFactor(typeSize.isAccessibilitySize ? 1 : 0.75)
+            .multilineTextAlignment(.center)
             .foregroundStyle(foreground)
             .opacity(isLoading ? 0 : isActive ? 1 : 0.8)
             .overlay {

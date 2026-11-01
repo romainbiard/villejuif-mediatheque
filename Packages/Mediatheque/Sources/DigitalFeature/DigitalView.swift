@@ -15,6 +15,7 @@ public struct DigitalView: View {
     @State private var helpOffer: DigitalOffer?
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.dynamicTypeSize) private var typeSize
     /// Width of the scroll content, padding included (0 until the first layout pass).
     @State private var contentWidth: CGFloat = 0
 
@@ -30,11 +31,13 @@ public struct DigitalView: View {
                         .font(.subheadline)
                         .foregroundStyle(Color.inkSecondary)
                     banner
-                    if sizeClass == .regular {
+                    // At accessibility text sizes, one column everywhere (iPad mosaic included):
+                    // two or three columns would break words in the middle.
+                    if sizeClass == .regular && !typeSize.isAccessibilitySize {
                         mosaic
                     } else {
                         if let featured = viewModel.offers.first { featuredCard(featured) }
-                        LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible())], spacing: 12) {
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: typeSize.isAccessibilitySize ? 1 : 2), spacing: 12) {
                             ForEach(viewModel.offers.dropFirst()) { tile($0) }
                         }
                     }
@@ -225,6 +228,7 @@ public struct DigitalView: View {
             .transition(.move(edge: .bottom).combined(with: .opacity))
             .accessibilityElement(children: .combine)
             .task(id: id) {
+                AccessibilityNotification.Announcement(String.local("\(app.name) est installée")).post()
                 try? await Task.sleep(for: .seconds(4))
                 withAnimation { viewModel.dismissInstalledBanner() }
             }
@@ -260,6 +264,7 @@ private extension Array {
 struct AccessLine: View {
     let access: ServiceAccess
     var onDark = false
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
         switch access {
@@ -267,7 +272,7 @@ struct AccessLine: View {
             Label(.local("App installée"), systemImage: "checkmark")
                 .font(.caption.weight(.bold))
                 .foregroundStyle(onDark ? Color.brandCyan : Color(light: 0x0B6B70, dark: 0x84DADE))
-                .lineLimit(1)
+                .lineLimit(typeSize.isAccessibilitySize ? nil : 1)
         case .inApp: plain(.local("Se consulte dans l'app"))
         case .reader(let app): plain(.local("À lire dans \(app)"))
         case .web: plain(.local("Sur le web"))
@@ -275,7 +280,8 @@ struct AccessLine: View {
     }
 
     private func plain(_ text: String) -> some View {
-        Text(text).font(.caption.weight(.semibold)).foregroundStyle(Color.inkSecondary).lineLimit(1)
+        Text(text).font(.caption.weight(.semibold)).foregroundStyle(Color.inkSecondary)
+            .lineLimit(typeSize.isAccessibilitySize ? nil : 1)
     }
 }
 
@@ -327,11 +333,18 @@ struct FeaturedOfferCard: View {
     var fitsLabel = false
     let open: () -> Void
     let menu: ServiceMenu.Actions
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     /// Space reserved to the right of the text for the play circle (104 pt + margins).
     static let artworkWidth: CGFloat = 116
 
     var body: some View {
+        // At accessibility text sizes the artwork goes away so the text gets the full width,
+        // and the menu moves under the button.
+        let showsArtwork = !typeSize.isAccessibilitySize
+        let actions = showsArtwork
+            ? AnyLayout(HStackLayout(spacing: 10))
+            : AnyLayout(VStackLayout(alignment: .trailing, spacing: 10))
         VStack(alignment: .leading, spacing: 6) {
             VStack(alignment: .leading, spacing: 6) {
                 Text(offer.category).font(.caption.weight(.bold)).textCase(.uppercase).opacity(0.8)
@@ -349,10 +362,10 @@ struct FeaturedOfferCard: View {
                 }
             }
             // The text stops before the play circle, whatever the card width.
-            .padding(.trailing, Self.artworkWidth)
+            .padding(.trailing, showsArtwork ? Self.artworkWidth : 0)
             .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 24)
-            HStack(spacing: 10) {
+            actions {
                 Button(action: open) {
                     Group {
                         if needsInstall {
@@ -377,13 +390,15 @@ struct FeaturedOfferCard: View {
             // under the title when the card widens (iPad, unfolded iPhone Duo).
             ZStack(alignment: .topTrailing) {
                 Color(hex: 0x17161C)
-                Circle().fill(Color.brandVioletDeep).frame(width: 260).offset(x: 110, y: -130)
-                ZStack {
-                    Circle().fill(Color.brandMagenta)
-                    Image(systemName: "play.fill").font(.title).foregroundStyle(.white)
+                if showsArtwork {
+                    Circle().fill(Color.brandVioletDeep).frame(width: 260).offset(x: 110, y: -130)
+                    ZStack {
+                        Circle().fill(Color.brandMagenta)
+                        Image(systemName: "play.fill").font(.title).foregroundStyle(.white)
+                    }
+                    .frame(width: 104, height: 104)
+                    .padding([.top, .trailing], 20)
                 }
-                .frame(width: 104, height: 104)
-                .padding([.top, .trailing], 20)
             }
             .accessibilityHidden(true)
         }
@@ -401,6 +416,7 @@ struct OfferTile: View {
     var isPad = false
     let open: () -> Void
     let menu: ServiceMenu.Actions
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
         let colors = BrandArtwork.colors(for: offer.colorSeed)
@@ -408,6 +424,7 @@ struct OfferTile: View {
             HStack(alignment: .top) {
                 Image(systemName: offer.systemImage)
                     .font(.title3)
+                    .dynamicTypeSize(...DynamicTypeSize.xxLarge)
                     .foregroundStyle(BrandArtwork.foreground(for: offer.colorSeed))
                     .frame(width: 48, height: 48)
                     .background(colors.background, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
@@ -419,7 +436,7 @@ struct OfferTile: View {
                 Text(verbatim: "\(offer.provider) · \(offer.quota)")
                     .font(.footnote)
                     .foregroundStyle(Color.inkSecondary)
-                    .lineLimit(2)
+                    .lineLimit(typeSize.isAccessibilitySize ? nil : 2)
                 AccessLine(access: access).padding(.top, 2)
                 if isPad {
                     Text(offer.summary)

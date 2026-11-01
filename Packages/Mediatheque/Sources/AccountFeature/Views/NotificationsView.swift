@@ -98,9 +98,21 @@ struct NotificationRow: View {
         }
         .contentShape(Rectangle())
         .onTapGesture { viewModel.markRead(item) }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(item.isRead ? item.title : String.local("Non lu, \(item.title)"))
+        // One element read in full (state, title, body, date); Renew is offered as an action.
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityText)
         .accessibilityAction(named: Text(.local("Marquer comme lu"))) { viewModel.markRead(item) }
+        .accessibilityActions {
+            if viewModel.canRenew(item) {
+                Button(.local("Prolonger")) { Task { await viewModel.renew(item) } }
+            }
+        }
+    }
+
+    private var accessibilityText: String {
+        let date = item.date.formatted(.relative(presentation: .named))
+        let text = "\(item.title). \(item.body). \(date)"
+        return item.isRead ? text : String.local("Non lu, \(text)")
     }
 
     @ViewBuilder

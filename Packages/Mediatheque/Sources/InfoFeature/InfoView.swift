@@ -126,7 +126,7 @@ struct LibraryCard: View {
             }
             .frame(maxWidth: .infinity, minHeight: 54)
             .foregroundStyle(prominent ? .white : Color.brandVioletDeep)
-            .background(prominent ? Color.brandViolet : Color.soft(.brandViolet), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .background(prominent ? Color.brandVioletSurface : Color.soft(.brandViolet), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
         .buttonStyle(.plain)
     }

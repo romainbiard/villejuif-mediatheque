@@ -133,7 +133,7 @@ struct BrandBackdrop: View {
     var body: some View {
         GeometryReader { proxy in
             ZStack(alignment: .topLeading) {
-                Color.brandViolet
+                Color.brandVioletSurface
                 Circle().fill(Color.brandMagenta)
                     .frame(width: 330)
                     .offset(x: proxy.size.width - 165, y: -190)
@@ -292,7 +292,7 @@ struct SettingRow: View {
             HStack(spacing: 12) {
                 Image(systemName: systemImage)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Color.onTint)
                     .frame(width: 30, height: 30)
                     .background(tint, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
                 VStack(alignment: .leading, spacing: 2) {
@@ -322,12 +322,12 @@ struct LockedView: View {
                 .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 34, style: .continuous))
             Text(.local("Compte verrouillé")).font(.title.weight(.heavy)).foregroundStyle(.white)
             Button(.local("Déverrouiller")) { Task { await session.unlock() } }
-                .buttonStyle(.prominent(tint: .white, foreground: .brandViolet))
+                .buttonStyle(.prominent(tint: .white, foreground: .brandVioletSurface))
             Button(.local("Se déconnecter")) { Task { await session.logout() } }
                 .foregroundStyle(.white.opacity(0.85))
             Spacer()
         }
         .frame(maxWidth: .infinity)
-        .background(Color.brandViolet.ignoresSafeArea())
+        .background(Color.brandVioletSurface.ignoresSafeArea())
     }
 }

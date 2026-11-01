@@ -56,9 +56,12 @@ struct NextReturnsView: View {
     let entry: Entry
     @Environment(\.widgetFamily) private var family
 
-    private let violet = Color(red: 0x77 / 255, green: 0x3D / 255, blue: 0xBD / 255)
-    private let danger = Color(red: 0xA6 / 255, green: 0x0A / 255, blue: 0x3D / 255)
-    private let success = Color(red: 0x00, green: 0x6E / 255, blue: 0x43 / 255)
+    // Same light/dark pairs as the app's palette: the light-mode colors alone fell to 2.2–2.7:1
+    // on the dark widget background.
+    private let violet = Color.adaptive(light: 0x773DBD, dark: 0xA27BE0)
+    private let danger = Color.adaptive(light: 0xA60A3D, dark: 0xFF6B8E)
+    private let success = Color.adaptive(light: 0x006E43, dark: 0x4CC38A)
+    private let warning = Color.adaptive(light: 0x7A4F00, dark: 0xF5C451)
 
     private var loans: [Loan] { entry.snapshot?.upcomingLoans ?? [] }
     private var readyHolds: [Hold] { entry.snapshot?.holds.filter(\.isReadyForPickup) ?? [] }
@@ -135,8 +138,23 @@ struct NextReturnsView: View {
     private func color(_ loan: Loan) -> Color {
         switch loan.dueState(now: entry.date, calendar: .paris) {
         case .late: danger
-        case .dueSoon: Color(red: 0x7A / 255, green: 0x4F / 255, blue: 0)
+        case .dueSoon: warning
         case .onTime: success
         }
+    }
+}
+
+private extension Color {
+    /// A color that follows the widget's light or dark appearance.
+    static func adaptive(light: UInt32, dark: UInt32) -> Color {
+        Color(uiColor: UIColor { traits in
+            let hex = traits.userInterfaceStyle == .dark ? dark : light
+            return UIColor(
+                red: CGFloat((hex >> 16) & 0xFF) / 255,
+                green: CGFloat((hex >> 8) & 0xFF) / 255,
+                blue: CGFloat(hex & 0xFF) / 255,
+                alpha: 1
+            )
+        })
     }
 }

@@ -138,6 +138,7 @@ struct AccountHomeView: View {
     @State private var confirmsLogout = false
     @Environment(\.horizontalSizeClass) private var sizeClass
     @Environment(\.accountSectionsInSidebar) private var sectionsInSidebar
+    @Environment(\.dynamicTypeSize) private var typeSize
     @State private var contentWidth: CGFloat = .infinity
     /// iPad only: loans due and the hold ready for pickup, shown on the home itself.
     @State private var loans = LoansViewModel()
@@ -435,7 +436,9 @@ struct AccountHomeView: View {
     }
 
     private var counters: some View {
-        HStack(spacing: 10) {
+        // Side by side, stacked at accessibility text sizes (labels would be cut off).
+        let layout = typeSize.isAccessibilitySize ? AnyLayout(VStackLayout(spacing: 10)) : AnyLayout(HStackLayout(spacing: 10))
+        return layout {
             NavigationLink(value: AccountRoute.loans) {
                 CounterTile(value: patron.counters.loans, label: .local("Prêts"), color: .ink)
             }
@@ -505,10 +508,15 @@ struct AccountHomeView: View {
 
 struct LibraryCardView: View {
     let patron: Patron
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
+        // "Gratuit" next to the name, under it at accessibility text sizes (the name would wrap mid-word).
+        let header = typeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 10))
+            : AnyLayout(HStackLayout(alignment: .top))
         VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .top) {
+            header {
                 VStack(alignment: .leading, spacing: 8) {
                     VillejuifLogo.white.resizable().scaledToFit().frame(height: 26).accessibilityLabel(Text(.local("Ville de Villejuif")))
                     Text(patron.displayName).font(.title2.weight(.bold))
@@ -518,7 +526,7 @@ struct LibraryCardView: View {
                             .opacity(0.85)
                     }
                 }
-                Spacer()
+                if !typeSize.isAccessibilitySize { Spacer() }
                 Text(.local("Gratuit"))
                     .font(.caption.weight(.semibold))
                     .padding(.horizontal, 10)
@@ -527,15 +535,19 @@ struct LibraryCardView: View {
             }
             VStack(spacing: 6) {
                 BarcodeView(value: patron.cardNumber).frame(height: 44)
-                HStack {
+                let footer = typeSize.isAccessibilitySize
+                    ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+                    : AnyLayout(HStackLayout())
+                footer {
                     Text(patron.cardNumber).font(.footnote.weight(.semibold)).monospacedDigit().tracking(2)
                         .lineLimit(1)
-                        .fixedSize()
-                    Spacer(minLength: 8)
+                        .minimumScaleFactor(0.6)
+                    if !typeSize.isAccessibilitySize { Spacer(minLength: 8) }
                     Text(.local("Toucher pour agrandir")).font(.footnote).foregroundStyle(Color(hex: 0x5E5B66))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
+                        .lineLimit(typeSize.isAccessibilitySize ? nil : 1)
+                        .minimumScaleFactor(typeSize.isAccessibilitySize ? 1 : 0.8)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .foregroundStyle(Color(hex: 0x1C1B22))
             .padding(12)
@@ -545,7 +557,7 @@ struct LibraryCardView: View {
         .padding(20)
         .background {
             ZStack {
-                Color.brandViolet
+                Color.brandVioletSurface
                 Circle().fill(Color.brandMagenta.opacity(0.55)).frame(width: 220).offset(x: 140, y: -110)
                 Circle().fill(Color.brandVioletDeep.opacity(0.7)).frame(width: 120).offset(x: 170, y: 10)
             }
@@ -785,14 +797,16 @@ struct CounterTile: View {
     let value: Int
     let label: String
     let color: Color
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(value, format: .number).font(.title.weight(.heavy)).foregroundStyle(color)
             Text(label).font(.subheadline).foregroundStyle(Color.inkSecondary)
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
+                .lineLimit(typeSize.isAccessibilitySize ? nil : 1)
+                .minimumScaleFactor(typeSize.isAccessibilitySize ? 1 : 0.75)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .cardStyle(padding: 12)
         .accessibilityElement(children: .combine)
     }
@@ -803,21 +817,36 @@ struct MenuRow<Accessory: View>: View {
     let systemImage: String
     let tint: Color
     @ViewBuilder let accessory: Accessory
+    @Environment(\.dynamicTypeSize) private var typeSize
+    /// The icon tile grows with the text size, capped so the title keeps its width.
+    @ScaledMetric(relativeTo: .body) private var scaledTileSize: CGFloat = 32
+    private var tileSize: CGFloat { min(scaledTileSize, 44) }
 
     var body: some View {
+        // Badge next to the title, under it at accessibility text sizes.
+        let textLayout = typeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+            : AnyLayout(HStackLayout(spacing: 12))
         HStack(spacing: 12) {
             Image(systemName: systemImage)
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.white)
-                .frame(width: 32, height: 32)
+                .dynamicTypeSize(...DynamicTypeSize.xxLarge)
+                .foregroundStyle(Color.onTint)
+                .frame(width: tileSize, height: tileSize)
                 .background(tint, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-            Text(title).font(.body.weight(.semibold)).foregroundStyle(Color.ink)
-            Spacer()
-            accessory
+                .accessibilityHidden(true)
+            textLayout {
+                Text(title).font(.body.weight(.semibold)).foregroundStyle(Color.ink)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                accessory
+            }
             Image(systemName: "chevron.right").font(.footnote.weight(.semibold)).foregroundStyle(Color.inkSecondary)
+                .accessibilityHidden(true)
         }
         .padding(.horizontal, 14)
-        .frame(height: 56)
+        .padding(.vertical, 8)
+        // Minimum only: the row grows with the text instead of cutting the title off.
+        .frame(minHeight: 56)
         .contentShape(Rectangle())
         .hoverEffect(.highlight)
     }

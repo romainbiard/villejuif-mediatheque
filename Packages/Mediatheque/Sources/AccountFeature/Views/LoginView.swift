@@ -65,7 +65,7 @@ struct LoginView: View {
 
     private var background: some View {
         ZStack {
-            Color.brandViolet
+            Color.brandVioletSurface
             Circle().fill(Color.brandMagenta).frame(width: 330).offset(x: 150, y: -330)
             Circle().fill(Color.brandVioletDeep).frame(width: 190).offset(x: -170, y: -120)
             Circle().stroke(Color.brandCyan, lineWidth: 10).frame(width: 66).offset(x: 140, y: -60)
@@ -92,6 +92,9 @@ struct LoginView: View {
                         .submitLabel(.next)
                         .onSubmit { focus = .password }
                         .focused($focus, equals: .card)
+                        // Without this, VoiceOver names the field after its placeholder.
+                        .accessibilityLabel(Text(.local("Numéro de carte")))
+                        .accessibilityHint(Text(.local("Au dos de votre carte")))
                     if CardScannerView.isAvailable {
                         Button(.local("Scanner ma carte"), systemImage: "barcode.viewfinder") { showsScanner = true }
                             .labelStyle(.iconOnly)
@@ -106,6 +109,7 @@ struct LoginView: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(.local("Mot de passe")).font(.footnote.weight(.semibold)).foregroundStyle(Color.inkSecondary)
                 SecureField(text: $viewModel.password) { Text(.local("Votre mot de passe")) }
+                    .accessibilityLabel(Text(.local("Mot de passe")))
                     .textContentType(.password)
                     .focused($focus, equals: .password)
                     .submitLabel(.go)
@@ -117,6 +121,7 @@ struct LoginView: View {
                 Label(error, systemImage: "exclamationmark.circle.fill")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Color.statusDanger)
+                    .task(id: error) { AccessibilityNotification.Announcement(error).post() }
             }
 
             HStack {
@@ -152,7 +157,8 @@ extension View {
         self.font(.body.weight(.medium))
             .padding(.leading, 16)
             .padding(.trailing, 6)
-            .frame(height: 54)
+            // Minimum only: the field grows with large text sizes instead of clipping what is typed.
+            .frame(minHeight: 54)
             .background(Color.surfaceCard, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
