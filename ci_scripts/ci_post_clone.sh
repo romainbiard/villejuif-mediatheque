@@ -35,9 +35,9 @@ XCCONFIG
 
 brew install xcodegen swiftformat swiftlint
 
-# Style first: a badly formatted commit stops here rather than reaching TestFlight.
-# SwiftLint errors stop the build; its warnings are only reported.
-swiftformat --lint .
-swiftlint lint --quiet
+# Style report, never blocking: Homebrew installs the latest SwiftFormat and SwiftLint, whose new
+# rules mustn't stop a TestFlight build. Format locally with the versions the README names.
+swiftformat --lint . || echo "warning: SwiftFormat found code to reformat (run swiftformat . locally)"
+swiftlint lint --quiet || echo "warning: SwiftLint found errors (run swiftlint locally)"
 
 xcodegen generate

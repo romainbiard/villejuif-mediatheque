@@ -3,6 +3,7 @@
 // See LICENSE in the project root for the full license text and copyright notice.
 
 import Foundation
+import Testing
 
 enum Fixture {
     static func data(_ name: String) throws -> Data {
@@ -14,5 +15,3 @@ enum Fixture {
         try String(decoding: data(name), as: UTF8.self)
     }
 }
-
-import Testing

@@ -15,8 +15,8 @@
 --stripunusedargs closure-only
 --header ignore
 
-# One-line bodies (`var id: String { rawValue }`) are part of the style.
---disable wrapPropertyBodies,wrapFunctionBodies,wrapLoopBodies
+# One-line bodies (`var id: String { rawValue }`, `if done { return }`) are part of the style.
+--disable wrapPropertyBodies,wrapFunctionBodies,wrapLoopBodies,wrapIfStatementBodies,wrapIfExpressionBodies
 # Literals stay as written (2600 m, coordinates, hex colors).
 --disable numberFormatting
 # Test names stay in lowerCamelCase.

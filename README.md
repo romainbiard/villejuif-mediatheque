@@ -126,7 +126,7 @@ flowchart LR
 │   │   └── …Feature/        # un module par onglet : vues et ViewModels
 │   └── Tests/               # Swift Testing, sur des fixtures réelles anonymisées
 ├── Widget/                  # widget « Prochains retours »
-├── ci_scripts/              # Xcode Cloud : vérification du style, génération du projet, identifiants
+├── ci_scripts/              # Xcode Cloud : rapport de style, génération du projet, identifiants
 ├── project.yml              # projet Xcode généré par XcodeGen
 ├── .swiftformat             # format du code
 ├── .swiftlint.yml           # règles de SwiftLint
@@ -186,11 +186,11 @@ swiftlint       # signale ce que SwiftFormat ne corrige pas
 periphery scan  # cherche le code mort (après xcodegen generate)
 ```
 
-Xcode Cloud lance les deux avant chaque build : un commit mal formaté n'arrive pas sur TestFlight.
+Le style est vérifié avec SwiftFormat 0.64 et SwiftLint 0.65. Xcode Cloud lance aussi les deux avant chaque build, mais à titre d'information : ce sont les dernières versions de Homebrew, et une nouvelle règle n'arrête pas un build TestFlight.
 
 ### Xcode Cloud et TestFlight
 
-Le projet Xcode n'est pas versionné : sur Xcode Cloud, `ci_scripts/ci_post_clone.sh` vérifie le style, installe XcodeGen, génère le projet et écrit `Config/Local.xcconfig` à partir des variables d'environnement du workflow. Le numéro de build suit `CI_BUILD_NUMBER`.
+Le projet Xcode n'est pas versionné : sur Xcode Cloud, `ci_scripts/ci_post_clone.sh` signale les écarts de style, installe XcodeGen, génère le projet et écrit `Config/Local.xcconfig` à partir des variables d'environnement du workflow. Le numéro de build suit `CI_BUILD_NUMBER`.
 
 | Variable | Exemple |
 |---|---|

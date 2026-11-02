@@ -50,7 +50,7 @@ extension ProfileClient: DependencyKey {
             try await session.perform { try await http.string(for: .patronPage(name, patronID: patronID())) }
         }
 
-        /// Submits a form and surfaces the first error message shown by the site.
+        // Submits a form and surfaces the first error message shown by the site.
         @Sendable func submit(_ name: String, _ fields: [Endpoint.FormField]) async throws {
             try await session.perform {
                 let html = try await http.string(for: .patronForm(name, patronID: patronID(), fields: fields))
