@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/icon.png" width="128" alt="Icône de Médiathèque : le blason de Villejuif en blanc sur magenta">
+<img src="Docs/icon.png" width="128" alt="Icône de Médiathèque : le blason de Villejuif en blanc sur magenta">
 
 # Médiathèque
 
@@ -16,11 +16,11 @@ Vos prêts, vos réservations, l'agenda, le catalogue et la médiathèque numér
 </div>
 
 <p align="center">
-  <img src="docs/screenshots/connexion.png" width="19%" alt="Écran de connexion">
-  <img src="docs/screenshots/recherche.png" width="19%" alt="Recherche dans le catalogue, avec la disponibilité par médiathèque">
-  <img src="docs/screenshots/agenda.png" width="19%" alt="Agenda des animations du mercredi">
-  <img src="docs/screenshots/numerique.png" width="19%" alt="Médiathèque numérique : Arte VOD, presse, formation">
-  <img src="docs/screenshots/infos.png" width="19%" alt="Infos pratiques : carte des trois médiathèques et horaires">
+  <img src="Docs/screenshots/connexion.png" width="19%" alt="Écran de connexion">
+  <img src="Docs/screenshots/recherche.png" width="19%" alt="Recherche dans le catalogue, avec la disponibilité par médiathèque">
+  <img src="Docs/screenshots/agenda.png" width="19%" alt="Agenda des animations du mercredi">
+  <img src="Docs/screenshots/numerique.png" width="19%" alt="Médiathèque numérique : Arte VOD, presse, formation">
+  <img src="Docs/screenshots/infos.png" width="19%" alt="Infos pratiques : carte des trois médiathèques et horaires">
 </p>
 
 > [!IMPORTANT]
@@ -125,7 +125,7 @@ flowchart LR
 │   │   ├── DesignSystem/    # charte de Villejuif, composants, boutons
 │   │   └── …Feature/        # un module par onglet : vues et ViewModels
 │   └── Tests/               # Swift Testing, sur des fixtures réelles anonymisées
-├── docs/                    # captures et icône du README
+├── Docs/                    # captures et icône du README
 └── project.yml              # projet Xcode généré par XcodeGen
 ```
 
