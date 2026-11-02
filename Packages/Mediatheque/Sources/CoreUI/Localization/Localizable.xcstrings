@@ -1,0 +1,17 @@
+{
+  "sourceLanguage" : "fr",
+  "strings" : {
+    "Réessayer" : {
+      "comment" : "Error screen button: load again",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try Again"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

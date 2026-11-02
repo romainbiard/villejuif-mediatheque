@@ -45,29 +45,31 @@ let package = Package(
             ],
             resources: [.process("Localization/Localizable.xcstrings")]
         ),
+        .target(name: "DesignSystem", resources: [.process("Resources"), .process("Localization/Localizable.xcstrings")]),
+        // Links the two: DesignSystem components built from MediathequeCore types (LoadError).
         .target(
-            name: "DesignSystem",
-            dependencies: ["MediathequeCore"],
-            resources: [.process("Resources"), .process("Localization/Localizable.xcstrings")]
+            name: "CoreUI",
+            dependencies: ["MediathequeCore", "DesignSystem"],
+            resources: [.process("Localization/Localizable.xcstrings")]
         ),
         .target(
             name: "SearchFeature",
-            dependencies: ["MediathequeCore", "DesignSystem", dependencies],
+            dependencies: ["MediathequeCore", "DesignSystem", "CoreUI", dependencies],
             resources: [.process("Localization/Localizable.xcstrings")]
         ),
         .target(
             name: "AgendaFeature",
-            dependencies: ["MediathequeCore", "DesignSystem", dependencies],
+            dependencies: ["MediathequeCore", "DesignSystem", "CoreUI", dependencies],
             resources: [.process("Localization/Localizable.xcstrings")]
         ),
         .target(
             name: "InfoFeature",
-            dependencies: ["MediathequeCore", "DesignSystem", dependencies],
+            dependencies: ["MediathequeCore", "DesignSystem", "CoreUI", dependencies],
             resources: [.process("Localization/Localizable.xcstrings")]
         ),
         .target(
             name: "AccountFeature",
-            dependencies: ["MediathequeCore", "DesignSystem", "SearchFeature", dependencies],
+            dependencies: ["MediathequeCore", "DesignSystem", "CoreUI", "SearchFeature", dependencies],
             resources: [.process("Localization/Localizable.xcstrings")]
         ),
         .target(

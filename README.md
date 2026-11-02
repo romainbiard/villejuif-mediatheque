@@ -104,13 +104,16 @@ flowchart LR
         Info[InfoFeature]
     end
     DS[DesignSystem]
+    CoreUI["CoreUI<br><sub>vues construites depuis le domaine</sub>"]
     Core["MediathequeCore<br><sub>modèles, clients, session, cache</sub>"]
     API["BokehAPI<br><sub>HTTP, DTO, HTML, iCal</sub>"]
 
     App --> Features
+    Features --> CoreUI
     Features --> DS
     Features --> Core
-    DS --> Core
+    CoreUI --> DS
+    CoreUI --> Core
     Core --> API
 ```
 
@@ -123,7 +126,8 @@ flowchart LR
 │   ├── Sources/
 │   │   ├── BokehAPI/        # transport et formats du portail
 │   │   ├── MediathequeCore/ # domaine, clients de dépendances, cache, notifications, textes d'erreur
-│   │   ├── DesignSystem/    # charte de Villejuif, composants, écrans d'erreur
+│   │   ├── DesignSystem/    # charte de Villejuif, composants, boutons (ne dépend de rien)
+│   │   ├── CoreUI/          # lien entre les deux : écrans d'erreur construits depuis LoadError
 │   │   └── …Feature/        # un module par onglet : vues et ViewModels
 │   └── Tests/               # Swift Testing, sur des fixtures réelles anonymisées
 ├── Widget/                  # widget « Prochains retours »
