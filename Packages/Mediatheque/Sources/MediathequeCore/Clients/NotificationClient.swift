@@ -50,7 +50,7 @@ extension NotificationClient: DependencyKey {
                 return try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
             } catch {
                 // Without this log, a refusal by iOS (rather than the user) would go unnoticed.
-                logger.error("Autorisation des notifications impossible : \(error.localizedDescription, privacy: .public)")
+                logger.error("Notification authorization failed: \(error.localizedDescription, privacy: .public)")
                 return false
             }
         },

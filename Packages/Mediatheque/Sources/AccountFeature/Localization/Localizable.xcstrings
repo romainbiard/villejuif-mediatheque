@@ -1437,7 +1437,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Account"
+            "value": "My Account"
           }
         }
       },
@@ -2111,7 +2111,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Try again"
+            "value": "Try Again"
           }
         }
       },

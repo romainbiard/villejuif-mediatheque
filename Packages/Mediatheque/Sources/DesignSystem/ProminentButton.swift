@@ -92,15 +92,15 @@ extension ButtonStyle where Self == ProminentButtonStyle {
 
 #Preview("États") {
     VStack(spacing: 16) {
-        Button {} label: { Text("Se connecter").frame(maxWidth: .infinity) }
+        Button {} label: { Text(verbatim: "Se connecter").frame(maxWidth: .infinity) }
             .buttonStyle(.prominent())
-        Button {} label: { Text("Se connecter").frame(maxWidth: .infinity) }
+        Button {} label: { Text(verbatim: "Se connecter").frame(maxWidth: .infinity) }
             .buttonStyle(.prominent())
             .disabled(true)
-        Button {} label: { Text("Se connecter").frame(maxWidth: .infinity) }
+        Button {} label: { Text(verbatim: "Se connecter").frame(maxWidth: .infinity) }
             .buttonStyle(.prominent(isLoading: true))
             .disabled(true)
-        Button {} label: { Text("Ouvrir Cafeyn").frame(maxWidth: .infinity) }
+        Button {} label: { Text(verbatim: "Ouvrir Cafeyn").frame(maxWidth: .infinity) }
             .buttonStyle(.prominent(tint: .white, foreground: .ink, size: .large, isLoading: true))
     }
     .padding()
