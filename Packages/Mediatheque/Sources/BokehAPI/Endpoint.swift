@@ -85,15 +85,6 @@ extension Endpoint {
         return Endpoint(pathSegments: segments)
     }
 
-    public static func notice(key: String, id: Int) -> Endpoint {
-        Endpoint(pathSegments: ["recherche", "viewnotice", "clef", key, "id", String(id), "format", "json"])
-    }
-
-    /// Full HTML page of the record (summary, subjects, series).
-    public static func noticePage(key: String, id: Int) -> Endpoint {
-        Endpoint(pathSegments: ["recherche", "viewnotice", "clef", key, "id", String(id)])
-    }
-
     /// Real-time availability badge (HTML).
     public static func availability(recordID: Int) -> Endpoint {
         Endpoint(pathSegments: ["noticeajax", "availability", "id", String(recordID)])
@@ -165,7 +156,6 @@ extension Endpoint {
 extension Endpoint {
     public static let account = Endpoint(pathSegments: ["api", "user", "account"])
     public static let loans = Endpoint(pathSegments: ["api", "user", "loans"])
-    public static let loansHistory = Endpoint(pathSegments: ["api", "user", "loans", "history"])
     public static let holds = Endpoint(pathSegments: ["api", "user", "holds"])
 
     /// Renews one or more loans (identifiers separated by `;`).
@@ -183,10 +173,6 @@ extension Endpoint {
     /// HTML holds page: the only source for the queue position.
     public static func holdsPage(patronID: String) -> Endpoint {
         Endpoint(pathSegments: ["abonne", "reservations", "id_profil", "1", "id", patronID])
-    }
-
-    public static func addToSelection(label: String, recordID: Int) -> Endpoint {
-        Endpoint(pathSegments: ["abonne", "ajouter-le-document-a-la-selection", "selection_label", label, "record_id", String(recordID)])
     }
 
     public static func bookmarkLibrary(libraryID: Int) -> Endpoint {
@@ -222,10 +208,6 @@ extension Endpoint {
     /// Tiny `<script>document.location.href="…"</script>` page that carries the SSO URL.
     public static func digitalModule(_ slug: String) -> Endpoint {
         Endpoint(pathSegments: ["modules", slug])
-    }
-
-    public static func digitalRecord(noticeID: Int) -> Endpoint {
-        Endpoint(pathSegments: ["modules", "sso", "id", String(noticeID)])
     }
 }
 

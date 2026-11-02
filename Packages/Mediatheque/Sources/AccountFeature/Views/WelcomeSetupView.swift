@@ -10,7 +10,6 @@ import SwiftUI
 /// After the first sign-in: notifications explanation, system alert on a yes,
 /// then fine-grained settings (notifications, Face ID). Everything can be changed later in "Mes configurations".
 struct WelcomeSetupView: View {
-    let patron: Patron
     let done: () -> Void
 
     @State private var viewModel = OnboardingViewModel()

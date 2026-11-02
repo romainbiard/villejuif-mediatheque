@@ -31,7 +31,6 @@ extension AgendaClient: DependencyKey {
                 let ics = try await http.string(for: .eventICal(articleID: event.id))
                 let vevent = ICalParser.events(from: ics).first
                 return EventDetail(
-                    event: event,
                     descriptionText: vevent?.descriptionText,
                     latitude: vevent?.latitude,
                     longitude: vevent?.longitude
@@ -42,8 +41,8 @@ extension AgendaClient: DependencyKey {
 
     public static let previewValue = AgendaClient(
         events: { _ in Cached(SampleData.events) },
-        detail: { event in
-            EventDetail(event: event, descriptionText: "Un moment de lecture partagé, en accès libre.", latitude: 48.7926, longitude: 2.3628)
+        detail: { _ in
+            EventDetail(descriptionText: "Un moment de lecture partagé, en accès libre.", latitude: 48.7926, longitude: 2.3628)
         }
     )
 

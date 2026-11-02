@@ -21,7 +21,7 @@ struct SearchViewModelTests {
             $0.recentSearches.load = { [] }
             $0.catalogClient.search = { query in
                 queries.withValue { $0.append(query) }
-                return SearchPage(total: 1, page: 1, pageSize: 10, documents: [SampleData.documents[0]])
+                return SearchPage(total: 1, documents: [SampleData.documents[0]])
             }
         } operation: {
             SearchViewModel()
@@ -48,7 +48,7 @@ struct SearchViewModelTests {
             $0.recentSearches.load = { [] }
             $0.catalogClient.search = { query in
                 queries.withValue { $0.append(query) }
-                return SearchPage(total: 0, page: 1, pageSize: 10, documents: [])
+                return SearchPage(total: 0, documents: [])
             }
         } operation: {
             SearchViewModel()
@@ -69,7 +69,7 @@ struct SearchViewModelTests {
             $0.continuousClock = ImmediateClock()
             $0.recentSearches.load = { ["astérix"] }
             $0.recentSearches.save = { saved.setValue($0) }
-            $0.catalogClient.search = { _ in SearchPage(total: 0, page: 1, pageSize: 10, documents: []) }
+            $0.catalogClient.search = { _ in SearchPage(total: 0, documents: []) }
         } operation: {
             SearchViewModel()
         }
@@ -84,7 +84,7 @@ struct SearchViewModelTests {
             $0.recentSearches.load = { [] }
             $0.catalogClient.search = { query in
                 queries.withValue { $0.append(query) }
-                return SearchPage(total: 0, page: 1, pageSize: 10, documents: [])
+                return SearchPage(total: 0, documents: [])
             }
         } operation: {
             SearchViewModel()
@@ -102,8 +102,8 @@ struct SearchViewModelTests {
             $0.recentSearches.load = { [] }
             $0.catalogClient.search = { query in
                 query.page == 1
-                    ? SearchPage(total: 3, page: 1, pageSize: 2, documents: Array(documents.prefix(2)))
-                    : SearchPage(total: 3, page: 2, pageSize: 2, documents: Array(documents.suffix(2)))
+                    ? SearchPage(total: 3, documents: Array(documents.prefix(2)))
+                    : SearchPage(total: 3, documents: Array(documents.suffix(2)))
             }
         } operation: {
             SearchViewModel()

@@ -203,7 +203,7 @@ struct AccountHomeView: View {
             }
             // Full screen: the notifications explanation reuses the sign-in layout.
             .fullScreenCover(isPresented: Binding(get: { !onboardingDone }, set: { if !$0 { onboardingDone = true } })) {
-                WelcomeSetupView(patron: patron) { onboardingDone = true }
+                WelcomeSetupView { onboardingDone = true }
             }
         }
         .measuringWidth($contentWidth)

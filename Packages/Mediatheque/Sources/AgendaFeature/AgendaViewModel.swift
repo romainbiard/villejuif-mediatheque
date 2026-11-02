@@ -8,12 +8,12 @@ import MediathequeCore
 import Observation
 
 /// "Quand": computed in the app, the website has no such filter.
-public enum AgendaPeriod: String, CaseIterable, Hashable, Sendable, Identifiable {
+enum AgendaPeriod: String, CaseIterable, Hashable, Identifiable {
     case all, weekend, wednesdays, schoolHolidays
 
-    public var id: String { rawValue }
+    var id: String { rawValue }
 
-    public var label: String {
+    var label: String {
         switch self {
         case .all: .local("Tout", comment: "Agenda period filter: no date restriction")
         case .weekend: .local("Ce week-end")
@@ -26,7 +26,7 @@ public enum AgendaPeriod: String, CaseIterable, Hashable, Sendable, Identifiable
     static let wednesdayWeeks = 8
 
     /// Days covered, starting today. Empty for `.all`.
-    public func days(from now: Date, calendar: Calendar) -> [Date] {
+    func days(from now: Date, calendar: Calendar) -> [Date] {
         let today = calendar.startOfDay(for: now)
         func adding(_ days: Int, to date: Date) -> Date? { calendar.date(byAdding: .day, value: days, to: date) }
         switch self {
@@ -56,16 +56,14 @@ public enum AgendaPeriod: String, CaseIterable, Hashable, Sendable, Identifiable
 }
 
 /// Agenda filters, applied locally: a single request fetches all events.
-public struct AgendaFilters: Hashable, Sendable {
-    public var places: Set<String> = []
-    public var types: Set<String> = []
-    public var audiences: Set<String> = []
-    public var period: AgendaPeriod = .all
+struct AgendaFilters: Hashable {
+    var places: Set<String> = []
+    var types: Set<String> = []
+    var audiences: Set<String> = []
+    var period: AgendaPeriod = .all
 
-    public init() {}
-
-    public var count: Int { places.count + types.count + audiences.count + (period == .all ? 0 : 1) }
-    public var isEmpty: Bool { count == 0 }
+    var count: Int { places.count + types.count + audiences.count + (period == .all ? 0 : 1) }
+    var isEmpty: Bool { count == 0 }
 
     func matches(_ event: Event) -> Bool {
         (places.isEmpty || event.place.map(places.contains) == true)
@@ -76,18 +74,18 @@ public struct AgendaFilters: Hashable, Sendable {
 
 @MainActor
 @Observable
-public final class AgendaViewModel {
-    public private(set) var state: LoadState<[Event]> = .idle
+final class AgendaViewModel {
+    private(set) var state: LoadState<[Event]> = .idle
     /// The portal didn't answer: the agenda on screen is the last one saved.
-    public private(set) var staleError: LoadError?
-    public private(set) var selectedDay: Date
+    private(set) var staleError: LoadError?
+    private(set) var selectedDay: Date
     /// First day of the month shown by the mini calendar (iPad).
-    public private(set) var displayedMonth: Date
-    public var filters = AgendaFilters() {
+    private(set) var displayedMonth: Date
+    var filters = AgendaFilters() {
         didSet { feedback = .selection }
     }
 
-    public private(set) var feedback: FeedbackEvent?
+    private(set) var feedback: FeedbackEvent?
 
     @ObservationIgnored @Dependency(\.agendaClient) private var agenda
     @ObservationIgnored @Dependency(\.date.now) private var now
@@ -95,14 +93,14 @@ public final class AgendaViewModel {
 
     static let visibleDays = 14
 
-    public init() {
+    init() {
         @Dependency(\.date.now) var now
         selectedDay = Calendar.paris.startOfDay(for: now)
         displayedMonth = Calendar.paris.dateInterval(of: .month, for: now)?.start ?? now
     }
 
     /// `.reload` for pull-to-refresh: bypasses the cache, without losing the list on failure.
-    public func load(_ policy: CachePolicy = .useCache) async {
+    func load(_ policy: CachePolicy = .useCache) async {
         if state.value == nil { state = .loading }
         do {
             let events = try await agenda.events(policy)
@@ -117,7 +115,7 @@ public final class AgendaViewModel {
         }
     }
 
-    public func select(day: Date) {
+    func select(day: Date) {
         guard !calendar.isDate(day, inSameDayAs: selectedDay) else { return }
         selectedDay = calendar.startOfDay(for: day)
         if let month = calendar.dateInterval(of: .month, for: day)?.start { displayedMonth = month }
@@ -127,7 +125,7 @@ public final class AgendaViewModel {
     // MARK: Mini calendar (iPad)
 
     /// Cells of the displayed month, Monday first: `nil` for the leading empty cells.
-    public var monthGrid: [Date?] {
+    var monthGrid: [Date?] {
         guard let range = calendar.range(of: .day, in: .month, for: displayedMonth) else { return [] }
         // weekday: 1 = Sunday; offset so the week starts on Monday.
         let leading = (calendar.component(.weekday, from: displayedMonth) + 5) % 7
@@ -136,22 +134,22 @@ public final class AgendaViewModel {
     }
 
     /// No going back before the current month: the agenda only shows the future.
-    public var canShowPreviousMonth: Bool {
+    var canShowPreviousMonth: Bool {
         guard let current = calendar.dateInterval(of: .month, for: now)?.start else { return false }
         return displayedMonth > current
     }
 
-    public func showPreviousMonth() {
+    func showPreviousMonth() {
         guard canShowPreviousMonth else { return }
         moveMonth(by: -1)
     }
 
-    public func showNextMonth() {
+    func showNextMonth() {
         moveMonth(by: 1)
     }
 
     /// Past days cannot be selected.
-    public func isSelectable(_ day: Date) -> Bool {
+    func isSelectable(_ day: Date) -> Bool {
         day >= calendar.startOfDay(for: now)
     }
 
@@ -161,14 +159,14 @@ public final class AgendaViewModel {
         feedback = .selection
     }
 
-    public func clearFilters() {
+    func clearFilters() {
         filters = AgendaFilters()
     }
 
     // MARK: Derived data
 
     /// The next 14 days, for the picker.
-    public var days: [Date] {
+    var days: [Date] {
         let today = calendar.startOfDay(for: now)
         return (0..<Self.visibleDays).compactMap { calendar.date(byAdding: .day, value: $0, to: today) }
     }
@@ -178,22 +176,22 @@ public final class AgendaViewModel {
     }
 
     /// Timed events on the selected day.
-    public var eventsOfSelectedDay: [Event] {
+    var eventsOfSelectedDay: [Event] {
         filteredEvents.filter { !$0.isAllDay && $0.occurs(on: selectedDay, calendar: calendar) }
     }
 
     /// Exhibitions, prizes… that span the selected day.
-    public var ongoingEvents: [Event] {
+    var ongoingEvents: [Event] {
         filteredEvents.filter { $0.isAllDay && $0.occurs(on: selectedDay, calendar: calendar) }
     }
 
     /// True if a picker day has at least one timed event (dot under the date).
-    public func hasEvents(on day: Date) -> Bool {
+    func hasEvents(on day: Date) -> Bool {
         filteredEvents.contains { !$0.isAllDay && $0.occurs(on: day, calendar: calendar) }
     }
 
     /// Next day with an event after the selected day, for the empty state.
-    public var nextDayWithEvents: Date? {
+    var nextDayWithEvents: Date? {
         filteredEvents
             .compactMap { event -> Date? in
                 guard !event.isAllDay, let start = event.start else { return nil }
@@ -204,7 +202,7 @@ public final class AgendaViewModel {
     }
 
     /// Number of upcoming events with the current filters ("Voir N événements" button).
-    public func upcomingCount(with filters: AgendaFilters) -> Int {
+    func upcomingCount(with filters: AgendaFilters) -> Int {
         let today = calendar.startOfDay(for: now)
         let periodDays = filters.period.days(from: now, calendar: calendar)
         return (state.value ?? []).count(where: { event in
@@ -216,14 +214,14 @@ public final class AgendaViewModel {
     // MARK: Period ("Quand")
 
     /// One day of the selected period, with its timed events.
-    public struct PeriodDay: Identifiable, Equatable {
-        public let day: Date
-        public let events: [Event]
-        public var id: Date { day }
+    struct PeriodDay: Identifiable, Equatable {
+        let day: Date
+        let events: [Event]
+        var id: Date { day }
     }
 
     /// Days of the period that have at least one timed event.
-    public var periodDays: [PeriodDay] {
+    var periodDays: [PeriodDay] {
         filters.period.days(from: now, calendar: calendar).compactMap { day in
             let events = filteredEvents.filter { !$0.isAllDay && $0.occurs(on: day, calendar: calendar) }
             return events.isEmpty ? nil : PeriodDay(day: day, events: events)
@@ -231,13 +229,13 @@ public final class AgendaViewModel {
     }
 
     /// Exhibitions and long events that span at least one day of the period.
-    public var periodOngoingEvents: [Event] {
+    var periodOngoingEvents: [Event] {
         let days = filters.period.days(from: now, calendar: calendar)
         return filteredEvents.filter { event in event.isAllDay && days.contains { event.occurs(on: $0, calendar: calendar) } }
     }
 
     /// Label under the title: "Samedi 31 octobre et dimanche 1er novembre", "Vacances de Noël"…
-    public var periodSummary: String? {
+    var periodSummary: String? {
         let days = filters.period.days(from: now, calendar: calendar)
         switch filters.period {
         case .all:
@@ -257,16 +255,16 @@ public final class AgendaViewModel {
         }
     }
 
-    public func clearPeriod() {
+    func clearPeriod() {
         filters.period = .all
     }
 
-    public var availablePlaces: [String] { distinct(\.place, prioritizing: Library.allCases.map(\.shortName)) }
-    public var availableTypes: [String] { distinct(\.type) }
-    public var availableAudiences: [String] { distinct(\.audience) }
+    var availablePlaces: [String] { distinct(\.place, prioritizing: Library.allCases.map(\.shortName)) }
+    var availableTypes: [String] { distinct(\.type) }
+    var availableAudiences: [String] { distinct(\.audience) }
 
     /// The network is closed on Sundays and Mondays.
-    public func isLibraryClosingDay(_ day: Date) -> Bool {
+    func isLibraryClosingDay(_ day: Date) -> Bool {
         [1, 2].contains(calendar.component(.weekday, from: day))
     }
 
@@ -281,17 +279,17 @@ public final class AgendaViewModel {
 
 @MainActor
 @Observable
-public final class EventDetailViewModel {
-    public let event: Event
-    public private(set) var detail: LoadState<EventDetail> = .idle
+final class EventDetailViewModel {
+    let event: Event
+    private(set) var detail: LoadState<EventDetail> = .idle
 
     @ObservationIgnored @Dependency(\.agendaClient) private var agenda
 
-    public init(event: Event) {
+    init(event: Event) {
         self.event = event
     }
 
-    public func load() async {
+    func load() async {
         detail = .loading
         do {
             detail = try await .loaded(agenda.detail(event))
@@ -301,7 +299,7 @@ public final class EventDetailViewModel {
     }
 
     /// The website's iCal link, for adding to the calendar.
-    public var iCalURL: URL {
+    var iCalURL: URL {
         URL(string: "https://mediatheque.villejuif.fr/cms/ical/id_article/\(event.id)")!
     }
 }

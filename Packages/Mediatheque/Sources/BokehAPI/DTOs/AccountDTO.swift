@@ -35,13 +35,12 @@ public struct AccountDTO: Decodable, Sendable {
     }
 
     public struct Card: Decodable, Sendable {
-        public let id: String
         public let expireAt: String
         public let expired: Bool
         public let aboutToExpire: Bool
         public let expiresIn: Int
         enum CodingKeys: String, CodingKey {
-            case id, expired
+            case expired
             case expireAt = "expire_at"
             case aboutToExpire = "about_to_expire"
             case expiresIn = "expires_in"
@@ -51,17 +50,12 @@ public struct AccountDTO: Decodable, Sendable {
     public struct LibraryDetails: Decodable, Sendable {
         public let id: Int
         public let label: String
-        public let code: String
     }
 
     public struct Permissions: Decodable, Sendable {
-        public let blocked: Bool
-        public let loanForbidden: Bool
         public let holdForbidden: Bool
         public let digitalResourcesForbidden: Bool
         enum CodingKeys: String, CodingKey {
-            case blocked
-            case loanForbidden = "loan_forbidden"
             case holdForbidden = "hold_forbidden"
             case digitalResourcesForbidden = "digital_resources_forbidden"
         }
@@ -70,14 +64,10 @@ public struct AccountDTO: Decodable, Sendable {
     public struct Counters: Decodable, Sendable {
         public let loans: Int
         public let lateLoans: Int
-        public let holds: Int
-        public let digitalLoans: Int
-        public let debts: Int
         public let waitingToBePulled: Int
         enum CodingKeys: String, CodingKey {
-            case loans, holds, debts
+            case loans
             case lateLoans = "late_loans"
-            case digitalLoans = "pnb_loans"
             case waitingToBePulled = "waiting_to_be_pulled"
         }
     }
@@ -91,17 +81,11 @@ public struct AccountDTO: Decodable, Sendable {
         /// Subscribed newsletters. The format of an item has never been seen (empty list):
         /// we only read how many there are.
         public let newsletters: [Opaque]
-        public let sendingChannel: String?
-        enum CodingKeys: String, CodingKey {
-            case newsletters
-            case sendingChannel = "sending_channel"
-        }
     }
 
     /// Card linked to the account. Its `id` is the patron identifier for the `/abonne/...` routes.
     public struct LinkedCard: Decodable, Sendable {
         public let id: Int
-        public let label: String?
     }
 
     /// Any JSON value, ignored.
@@ -109,7 +93,6 @@ public struct AccountDTO: Decodable, Sendable {
         public init(from decoder: any Decoder) throws {}
     }
 
-    public let label: String
     public let login: String
     public let identity: Identity
     public let contact: Contact
@@ -122,7 +105,7 @@ public struct AccountDTO: Decodable, Sendable {
     public let cards: [LinkedCard]?
 
     enum CodingKeys: String, CodingKey {
-        case label, login, identity, contact, card, permissions, counters, message, preferences, cards
+        case login, identity, contact, card, permissions, counters, message, preferences, cards
         case libraryDetails = "library_details"
     }
 }
@@ -160,7 +143,6 @@ public struct HoldsResponseDTO: Decodable, Sendable {
 public struct HoldDTO: Decodable, Sendable {
     public let id: String
     public let title: String
-    public let author: String
     /// Free text, e.g. "Pas disponible avant le 14/11/2026".
     public let status: String
     /// Pickup location.
@@ -170,7 +152,6 @@ public struct HoldDTO: Decodable, Sendable {
 
 /// JSON response from AJAX popups (holds…).
 public struct PopupDTO: Decodable, Sendable {
-    public let result: String
     public let title: String?
     public let content: String
 }

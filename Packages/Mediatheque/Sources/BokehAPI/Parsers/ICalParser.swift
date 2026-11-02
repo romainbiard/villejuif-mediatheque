@@ -9,19 +9,15 @@ public struct ICalEventDTO: Sendable, Equatable {
     public var uid: String?
     public var summary: String?
     public var start: Date?
-    public var end: Date?
     public var location: String?
     public var latitude: Double?
     public var longitude: Double?
     public var descriptionText: String?
-    public var descriptionHTML: String?
-    public var url: URL?
     public var imageURL: URL?
-    public var categories: [String] = []
 }
 
 /// Minimal RFC 5545 parser: it covers what Bokeh produces
-/// (folded lines, `TZID=Europe/Paris`, `GEO`, `X-ALT-DESC`).
+/// (folded lines, `TZID=Europe/Paris`, `GEO`).
 public enum ICalParser {
     public static func events(from text: String) -> [ICalEventDTO] {
         var events: [ICalEventDTO] = []
@@ -49,12 +45,8 @@ public enum ICalParser {
         case "SUMMARY": event.summary = unescape(property.value)
         case "LOCATION": event.location = unescape(property.value)
         case "DESCRIPTION": event.descriptionText = unescape(property.value).trimmingCharacters(in: .whitespacesAndNewlines)
-        case "X-ALT-DESC": event.descriptionHTML = unescape(property.value)
-        case "URL": event.url = URL(string: property.value)
         case "ATTACH": event.imageURL = URL(string: property.value)
-        case "CATEGORIES": event.categories = property.value.split(separator: ",").map { String($0) }
         case "DTSTART": event.start = date(property)
-        case "DTEND": event.end = date(property)
         case "GEO":
             let parts = property.value.split(separator: ";").compactMap { Double($0) }
             if parts.count == 2 {

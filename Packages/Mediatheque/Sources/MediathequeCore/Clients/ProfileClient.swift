@@ -64,7 +64,7 @@ extension ProfileClient: DependencyKey {
             },
             selectionNotices: { selection, pageNumber in
                 guard let basketID = selection.basketID else {
-                    return SearchPage(total: 0, page: 1, pageSize: 10, documents: [])
+                    return SearchPage(total: 0, documents: [])
                 }
                 return try await session.perform {
                     try await SearchPage(dto: http.decode(SearchResponseDTO.self, from: .selectionRecords(basketID: basketID, page: pageNumber)))
@@ -83,7 +83,7 @@ extension ProfileClient: DependencyKey {
             },
             reviews: {
                 try await HTMLParsers.reviews(in: page("mes-avis")).enumerated().map { index, dto in
-                    Review(id: "\(dto.recordID ?? 0)-\(index)", recordID: dto.recordID, title: dto.title, text: dto.text, rating: dto.rating)
+                    Review(id: "\(dto.recordID ?? 0)-\(index)", title: dto.title, text: dto.text, rating: dto.rating)
                 }
             },
             submitReview: { record, rating, title, text in
@@ -156,8 +156,8 @@ extension ProfileClient: DependencyKey {
 
     public static let previewValue = ProfileClient(
         selections: { SampleData.selections },
-        selectionNotices: { _, page in
-            SearchPage(total: SampleData.documents.count, page: page, pageSize: 10, documents: SampleData.documents)
+        selectionNotices: { _, _ in
+            SearchPage(total: SampleData.documents.count, documents: SampleData.documents)
         },
         createSelection: { _ in },
         removeFromSelection: { _, _ in },

@@ -35,8 +35,8 @@ struct MapperTests {
 
     @Test func liveCopyStatus() {
         let copy = LiveCopy(dto: CopyDTO(
-            libraryName: "Médiathèque Elsa-Triolet", availability: "En prêt", section: "Jeunesse", location: nil,
-            shelfMark: "SF ROW", dueDateText: "17/11/2026", holdsText: "Déjà 2 réservations", medium: "Livre", pickupPath: nil
+            libraryName: "Médiathèque Elsa-Triolet", availability: "En prêt", section: "Jeunesse",
+            shelfMark: "SF ROW", dueDateText: "17/11/2026", holdsText: "Déjà 2 réservations"
         ))
         #expect(copy.library == .elsaTriolet)
         #expect(copy.holdCount == 2)
@@ -44,8 +44,8 @@ struct MapperTests {
         #expect(due == SampleData.day(2026, 11, 17))
         #expect(LiveCopy.holdCount(from: "Déjà une réservation") == 1)
         let soon = LiveCopy(dto: CopyDTO(
-            libraryName: "PULP Nord", availability: "Bientôt disponible", section: nil, location: nil,
-            shelfMark: nil, dueDateText: nil, holdsText: nil, medium: nil, pickupPath: nil
+            libraryName: "PULP Nord", availability: "Bientôt disponible", section: nil,
+            shelfMark: nil, dueDateText: nil, holdsText: nil
         ))
         #expect(soon.status.isAvailable == false)
     }

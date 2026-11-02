@@ -119,13 +119,14 @@ public enum InboxPlanner {
     }
 
     /// Message shown by the library on the account (`account.message`).
-    public static func libraryMessage(_ text: String, now: Date) -> InboxItem {
+    public static func libraryMessage(_ text: String, isRead: Bool = false, now: Date) -> InboxItem {
         InboxItem(
             id: "message-\(stableHash(text))",
             kind: .libraryMessage,
             title: .local("Message de la médiathèque"),
             body: text.replacing(#/<[^>]+>/#, with: "").trimmingCharacters(in: .whitespacesAndNewlines),
-            date: now
+            date: now,
+            isRead: isRead
         )
     }
 

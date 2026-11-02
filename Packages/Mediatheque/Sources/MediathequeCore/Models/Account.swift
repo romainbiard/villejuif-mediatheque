@@ -6,8 +6,6 @@ import Foundation
 
 public struct Patron: Hashable, Sendable, Codable {
     public struct Permissions: Hashable, Sendable, Codable {
-        public let blocked: Bool
-        public let loanForbidden: Bool
         public let holdForbidden: Bool
         public let digitalResourcesForbidden: Bool
     }
@@ -15,9 +13,6 @@ public struct Patron: Hashable, Sendable, Codable {
     public struct Counters: Hashable, Sendable, Codable {
         public let loans: Int
         public let lateLoans: Int
-        public let holds: Int
-        public let digitalLoans: Int
-        public let debts: Int
         /// Holds that are ready for pickup.
         public let waitingToBePulled: Int
     }
@@ -37,8 +32,6 @@ public struct Patron: Hashable, Sendable, Codable {
     /// Message from the library, if there is one.
     public let message: String?
     public let hasUnreadMessage: Bool
-    /// Identifier for the `/abonne/...` routes (`cards[0].id` in the API).
-    public var patronID: String?
     public var nickname: String?
     /// Postal address on one line. It can only be changed at the front desk.
     public var postalAddress: String?
@@ -95,7 +88,6 @@ public struct Loan: Identifiable, Hashable, Sendable, Codable {
 public struct Hold: Identifiable, Hashable, Sendable, Codable {
     public let id: String
     public let title: String
-    public let author: String
     /// Text from the site, e.g. "Pas disponible avant le 14/11/2026".
     public let statusText: String
     public let pickupLibrary: Library?

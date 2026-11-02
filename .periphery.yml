@@ -1,0 +1,9 @@
+# Periphery: unused code (`periphery scan` from the project root, after `xcodegen generate`).
+project: Mediatheque.xcodeproj
+schemes:
+  - Mediatheque
+relative_results: true
+build_arguments:
+  - -destination
+  - generic/platform=iOS Simulator
+  - -skipMacroValidation

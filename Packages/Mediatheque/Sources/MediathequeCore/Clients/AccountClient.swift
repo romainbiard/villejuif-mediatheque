@@ -9,13 +9,11 @@ import Foundation
 
 /// Hold request: the pickup form to submit and the locations offered.
 public struct HoldRequest: Hashable, Sendable {
-    public let recordID: Int
     public let pickupPath: String
     public let pickupLibraries: [Library]
     public let defaultPickup: Library?
 
-    public init(recordID: Int, pickupPath: String, pickupLibraries: [Library], defaultPickup: Library?) {
-        self.recordID = recordID
+    public init(pickupPath: String, pickupLibraries: [Library], defaultPickup: Library?) {
         self.pickupPath = pickupPath
         self.pickupLibraries = pickupLibraries
         self.defaultPickup = defaultPickup
@@ -99,7 +97,6 @@ extension AccountClient: DependencyKey {
                     let form = try await http.decode(PopupDTO.self, from: .pickupForm(path: path))
                     let pickups = try HTMLParsers.pickupOptions(in: form.content)
                     return HoldRequest(
-                        recordID: recordID,
                         pickupPath: path,
                         pickupLibraries: pickups.compactMap { Library(rawValue: $0.code) },
                         defaultPickup: pickups.first(where: \.isSelected).flatMap { Library(rawValue: $0.code) }
@@ -130,8 +127,8 @@ extension AccountClient: DependencyKey {
         holds: { SampleData.holds },
         renew: { ids in ids.map { .renewed(loanID: $0, newDueDate: Date().addingTimeInterval(21 * 86_400)) } },
         cancelHold: { _ in },
-        prepareHold: { recordID in
-            HoldRequest(recordID: recordID, pickupPath: "preview", pickupLibraries: Library.allCases, defaultPickup: .pulpNord)
+        prepareHold: { _ in
+            HoldRequest(pickupPath: "preview", pickupLibraries: Library.allCases, defaultPickup: .pulpNord)
         },
         placeHold: { _, pickup in "Votre réservation est enregistrée.\nRetrait à \(pickup.shortName)." }
     )

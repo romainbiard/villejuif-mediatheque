@@ -21,17 +21,13 @@ public struct DocumentKind: Hashable, Sendable, Codable {
     public var searchFacet: String { "T\(code)" }
 
     public static let book = DocumentKind(code: "1", label: "Livre")
-    public static let magazine = DocumentKind(code: "2", label: "Revue")
     public static let cd = DocumentKind(code: "3", label: "CD")
     public static let dvd = DocumentKind(code: "4", label: "DVD")
     public static let audiobook = DocumentKind(code: "17", label: "Livre audio")
-    public static let boardGame = DocumentKind(code: "15", label: "Jeu de société")
 }
 
 public struct Notice: Identifiable, Hashable, Sendable, Codable {
     public let id: Int
-    /// Bokeh key (`identifier`), required for the record page.
-    public let key: String
     public let title: String
     public let authors: [String]
     public let year: String?
@@ -46,12 +42,11 @@ public struct Notice: Identifiable, Hashable, Sendable, Codable {
     public let harvestedCopies: [HarvestedCopy]
 
     public init(
-        id: Int, key: String, title: String, authors: [String], year: String?, publisher: String?,
+        id: Int, title: String, authors: [String], year: String?, publisher: String?,
         kind: DocumentKind, coverURL: URL?, series: String?, volume: String?, permalink: URL?,
         harvestedCopies: [HarvestedCopy]
     ) {
         self.id = id
-        self.key = key
         self.title = title
         self.authors = authors
         self.year = year
@@ -73,24 +68,16 @@ public struct Notice: Identifiable, Hashable, Sendable, Codable {
 
 public struct HarvestedCopy: Hashable, Sendable, Codable {
     public let library: Library?
-    public let shelfMark: String
-    public let barcode: String?
 }
 
 public struct SearchPage: Sendable, Equatable, Codable {
     public let total: Int
-    public let page: Int
-    public let pageSize: Int
     public let documents: [Notice]
 
-    public init(total: Int, page: Int, pageSize: Int, documents: [Notice]) {
+    public init(total: Int, documents: [Notice]) {
         self.total = total
-        self.page = page
-        self.pageSize = pageSize
         self.documents = documents
     }
-
-    public var hasNextPage: Bool { page * pageSize < total }
 }
 
 public struct SearchQuery: Hashable, Sendable {
@@ -139,11 +126,8 @@ public struct LiveCopy: Hashable, Sendable {
     public let status: CopyStatus
     public let statusLabel: String
     public let section: String?
-    public let location: String?
     public let shelfMark: String?
     public let holdCount: Int
-    /// Pickup form link if the copy can be placed on hold.
-    public let pickupPath: String?
 }
 
 /// Availability badge for a record in a results list.

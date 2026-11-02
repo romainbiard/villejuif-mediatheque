@@ -9,7 +9,6 @@ import SwiftUI
 
 public struct InfoView: View {
     @State private var viewModel = InfoViewModel()
-    @State private var selection: LibraryInfo.ID?
     @Environment(\.openURL) private var openURL
 
     public init() {}

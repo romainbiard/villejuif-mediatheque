@@ -81,7 +81,6 @@ public enum BrandArtwork {
 /// City logo (files from the library website). Its use in the app remains subject to the city's approval.
 public enum VillejuifLogo {
     public static let white = Image("villejuif-logo-white", bundle: .module)
-    public static let magenta = Image("villejuif-logo-magenta", bundle: .module)
     /// Coat of arms alone, without the word "VILLEJUIF" (app icon, notification previews). Template image: can be tinted.
     public static let crest = Image("villejuif-crest", bundle: .module)
 }

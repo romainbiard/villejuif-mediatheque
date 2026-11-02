@@ -9,22 +9,22 @@ import Observation
 
 @MainActor
 @Observable
-public final class LoginViewModel {
-    public var cardNumber = ""
-    public var password = ""
-    public private(set) var isSubmitting = false
-    public private(set) var errorMessage: String?
-    public private(set) var feedback: FeedbackEvent?
+final class LoginViewModel {
+    var cardNumber = ""
+    var password = ""
+    private(set) var isSubmitting = false
+    private(set) var errorMessage: String?
+    private(set) var feedback: FeedbackEvent?
 
     @ObservationIgnored @Dependency(\.authClient) private var auth
 
-    public init() {}
+    init() {}
 
-    public var canSubmit: Bool {
+    var canSubmit: Bool {
         !cardNumber.trimmingCharacters(in: .whitespaces).isEmpty && !password.isEmpty && !isSubmitting
     }
 
-    public func submit(into session: SessionStore) async {
+    func submit(into session: SessionStore) async {
         guard canSubmit else { return }
         isSubmitting = true
         errorMessage = nil
@@ -51,19 +51,19 @@ public final class LoginViewModel {
 
 @MainActor
 @Observable
-public final class LostPasswordViewModel {
-    public enum State: Equatable { case idle, sending, sent, failed(String) }
+final class LostPasswordViewModel {
+    enum State: Equatable { case idle, sending, sent, failed(String) }
 
-    public var cardNumber: String
-    public private(set) var state: State = .idle
+    var cardNumber: String
+    private(set) var state: State = .idle
 
     @ObservationIgnored @Dependency(\.authClient) private var auth
 
-    public init(cardNumber: String = "") {
+    init(cardNumber: String = "") {
         self.cardNumber = cardNumber
     }
 
-    public func send() async {
+    func send() async {
         let card = cardNumber.trimmingCharacters(in: .whitespaces)
         guard !card.isEmpty, state != .sending else { return }
         state = .sending

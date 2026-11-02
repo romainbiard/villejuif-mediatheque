@@ -17,15 +17,6 @@ public enum DigitalService: String, CaseIterable, Sendable, Identifiable {
     case eureka = "bibliondemand"
 
     public var id: String { rawValue }
-
-    /// True when the provider URL calls back the portal: the web session is then required
-    /// (WKWebView with the cookie), not plain Safari.
-    public var needsPortalSession: Bool {
-        switch self {
-        case .cafeyn, .eureka: true
-        case .arteVod, .izneo, .numilog, .toutApprendre: false
-        }
-    }
 }
 
 @DependencyClient

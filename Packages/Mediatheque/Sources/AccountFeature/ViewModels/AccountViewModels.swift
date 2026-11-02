@@ -10,19 +10,19 @@ import Observation
 /// Account home: the record (counters, card) refreshes on every appearance.
 @MainActor
 @Observable
-public final class AccountHomeViewModel {
-    public private(set) var isRefreshing = false
+final class AccountHomeViewModel {
+    private(set) var isRefreshing = false
     /// The refresh failed: the account on screen is the last one read ("Mise à jour impossible" banner).
-    public private(set) var error: LoadError?
+    private(set) var error: LoadError?
     /// Bell badge.
-    public private(set) var unreadNotifications = 0
+    private(set) var unreadNotifications = 0
 
     @ObservationIgnored @Dependency(\.accountClient) private var account
     @ObservationIgnored @Dependency(\.inboxClient) private var inbox
 
-    public init() {}
+    init() {}
 
-    public func refresh(_ session: SessionStore) async {
+    func refresh(_ session: SessionStore) async {
         isRefreshing = true
         defer {
             isRefreshing = false
@@ -35,7 +35,7 @@ public final class AccountHomeViewModel {
             let patron = try await account.patron()
             session.update(patron)
             error = nil
-            withDependencies(from: self) { AccountSync.record(libraryMessage: patron.message) }
+            withDependencies(from: self) { AccountSync.record(libraryMessage: patron.message, unread: patron.hasUnreadMessage) }
             _ = await sync
         } catch {
             _ = await sync
@@ -45,21 +45,21 @@ public final class AccountHomeViewModel {
         }
     }
 
-    public func refreshUnreadCount() {
+    func refreshUnreadCount() {
         unreadNotifications = inbox.load().unreadCount
     }
 }
 
 @MainActor
 @Observable
-public final class LoansViewModel {
-    public struct Section: Identifiable, Equatable {
-        public enum Kind: String, Sendable { case late, thisWeek, later }
-        public let kind: Kind
-        public let loans: [Loan]
-        public var id: Kind { kind }
+final class LoansViewModel {
+    struct Section: Identifiable, Equatable {
+        enum Kind: String { case late, thisWeek, later }
+        let kind: Kind
+        let loans: [Loan]
+        var id: Kind { kind }
 
-        public var title: String {
+        var title: String {
             switch kind {
             case .late: .local("En retard")
             case .thisWeek: .local("Cette semaine")
@@ -68,24 +68,24 @@ public final class LoansViewModel {
         }
     }
 
-    public private(set) var state: LoadState<[Loan]> = .idle
+    private(set) var state: LoadState<[Loan]> = .idle
     /// The refresh failed: the loans on screen are the last ones read.
-    public private(set) var staleError: LoadError?
-    public private(set) var renewing: Set<Loan.ID> = []
+    private(set) var staleError: LoadError?
+    private(set) var renewing: Set<Loan.ID> = []
     /// Loans the site refused to renew during this screen session.
-    public private(set) var refused: Set<Loan.ID> = []
-    public private(set) var message: String?
-    public private(set) var feedback: FeedbackEvent?
+    private(set) var refused: Set<Loan.ID> = []
+    private(set) var message: String?
+    private(set) var feedback: FeedbackEvent?
 
     @ObservationIgnored @Dependency(\.accountClient) private var account
     @ObservationIgnored @Dependency(\.snapshotClient) private var snapshots
     @ObservationIgnored @Dependency(\.date.now) private var now
     @ObservationIgnored private let calendar = Calendar.paris
 
-    public init() {}
+    init() {}
 
     /// The last snapshot shows at once, then the portal's list replaces it.
-    public func load() async {
+    func load() async {
         if state.value == nil {
             state = snapshots.load().map { .loaded($0.upcomingLoans) } ?? .loading
         }
@@ -101,7 +101,7 @@ public final class LoansViewModel {
         }
     }
 
-    public var sections: [Section] {
+    var sections: [Section] {
         let loans = state.value ?? []
         let grouped = Dictionary(grouping: loans) { loan -> Section.Kind in
             switch loan.dueState(now: now, calendar: calendar) {
@@ -115,15 +115,15 @@ public final class LoansViewModel {
         }
     }
 
-    public func dueState(of loan: Loan) -> Loan.DueState {
+    func dueState(of loan: Loan) -> Loan.DueState {
         loan.dueState(now: now, calendar: calendar)
     }
 
-    public func renew(_ loan: Loan) async {
+    func renew(_ loan: Loan) async {
         await renew([loan.id])
     }
 
-    public func renewAll() async {
+    func renewAll() async {
         await renew((state.value ?? []).map(\.id).filter { !refused.contains($0) })
     }
 
@@ -161,28 +161,28 @@ public final class LoansViewModel {
         }
     }
 
-    public func dismissMessage() {
+    func dismissMessage() {
         message = nil
     }
 }
 
 @MainActor
 @Observable
-public final class HoldsViewModel {
-    public private(set) var state: LoadState<[Hold]> = .idle
+final class HoldsViewModel {
+    private(set) var state: LoadState<[Hold]> = .idle
     /// The refresh failed: the holds on screen are the last ones read.
-    public private(set) var staleError: LoadError?
-    public private(set) var cancelling: Set<Hold.ID> = []
-    public private(set) var message: String?
-    public private(set) var feedback: FeedbackEvent?
+    private(set) var staleError: LoadError?
+    private(set) var cancelling: Set<Hold.ID> = []
+    private(set) var message: String?
+    private(set) var feedback: FeedbackEvent?
 
     @ObservationIgnored @Dependency(\.accountClient) private var account
     @ObservationIgnored @Dependency(\.snapshotClient) private var snapshots
 
-    public init() {}
+    init() {}
 
     /// The last snapshot shows at once, then the portal's list replaces it.
-    public func load() async {
+    func load() async {
         if state.value == nil {
             state = snapshots.load().map { .loaded($0.holds) } ?? .loading
         }
@@ -198,10 +198,10 @@ public final class HoldsViewModel {
         }
     }
 
-    public var ready: [Hold] { (state.value ?? []).filter(\.isReadyForPickup) }
-    public var waiting: [Hold] { (state.value ?? []).filter { !$0.isReadyForPickup } }
+    var ready: [Hold] { (state.value ?? []).filter(\.isReadyForPickup) }
+    var waiting: [Hold] { (state.value ?? []).filter { !$0.isReadyForPickup } }
 
-    public func cancel(_ hold: Hold) async {
+    func cancel(_ hold: Hold) async {
         cancelling.insert(hold.id)
         defer { cancelling.remove(hold.id) }
         do {

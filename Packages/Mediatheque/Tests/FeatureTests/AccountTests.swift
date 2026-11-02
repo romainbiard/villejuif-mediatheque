@@ -171,7 +171,7 @@ struct HoldsTests {
 
     @Test func placingAHoldUsesTheChosenPickup() async {
         let placed = LockIsolated<Library?>(nil)
-        let request = HoldRequest(recordID: 909376, pickupPath: "p", pickupLibraries: Library.allCases, defaultPickup: .pulpNord)
+        let request = HoldRequest(pickupPath: "p", pickupLibraries: Library.allCases, defaultPickup: .pulpNord)
         let viewModel = withDependencies {
             $0.accountClient.prepareHold = { _ in request }
             $0.accountClient.placeHold = { _, pickup in

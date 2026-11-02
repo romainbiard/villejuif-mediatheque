@@ -13,8 +13,6 @@ public struct SchoolHoliday: Hashable, Sendable {
     public let start: Date
     /// Day school resumes (excluded).
     public let end: Date
-
-    public func contains(_ date: Date) -> Bool { start <= date && date < end }
 }
 
 public enum SchoolHolidays {

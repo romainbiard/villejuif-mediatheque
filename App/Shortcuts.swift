@@ -28,6 +28,7 @@ final class AppIntentRouter {
 /// "Quand dois-je rendre mes livres ?": answers without opening the app, from the on-device snapshot.
 struct NextReturnsIntent: AppIntent {
     static let title: LocalizedStringResource = "Prochains retours"
+    // periphery:ignore - read by the system (Shortcuts app), not by our code.
     static let description = IntentDescription("Dit quand rendre vos prochains documents, d'après la dernière synchronisation.")
     /// Titles of what the patron borrows: never read out while the iPhone is locked.
     static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
@@ -45,6 +46,7 @@ struct NextReturnsIntent: AppIntent {
 /// Opens the library card full screen, for the front desk.
 struct ShowLibraryCardIntent: AppIntent {
     static let title: LocalizedStringResource = "Montrer ma carte d'abonné"
+    // periphery:ignore - read by the system (Shortcuts app), not by our code.
     static let description = IntentDescription("Affiche votre carte avec son code-barres, luminosité au maximum.")
     static let supportedModes: IntentModes = .foreground
 
@@ -58,6 +60,7 @@ struct ShowLibraryCardIntent: AppIntent {
 /// Searches the catalog of the 3 libraries.
 struct SearchCatalogIntent: AppIntent {
     static let title: LocalizedStringResource = "Chercher dans le catalogue"
+    // periphery:ignore - read by the system (Shortcuts app), not by our code.
     static let description = IntentDescription("Lance une recherche dans le catalogue des médiathèques de Villejuif.")
     static let supportedModes: IntentModes = .foreground
 
@@ -78,6 +81,7 @@ struct SearchCatalogIntent: AppIntent {
 /// Opens the events calendar.
 struct OpenAgendaIntent: AppIntent {
     static let title: LocalizedStringResource = "Ouvrir l'agenda"
+    // periphery:ignore - read by the system (Shortcuts app), not by our code.
     static let description = IntentDescription("Affiche les prochaines animations des médiathèques.")
     static let supportedModes: IntentModes = .foreground
 

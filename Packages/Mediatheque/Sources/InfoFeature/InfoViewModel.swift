@@ -9,19 +9,19 @@ import Observation
 
 @MainActor
 @Observable
-public final class InfoViewModel {
-    public private(set) var state: LoadState<[LibraryInfo]> = .idle
+final class InfoViewModel {
+    private(set) var state: LoadState<[LibraryInfo]> = .idle
     /// The portal didn't answer: the opening hours on screen are the last ones saved.
-    public private(set) var staleError: LoadError?
+    private(set) var staleError: LoadError?
 
     @ObservationIgnored @Dependency(\.libraryClient) private var libraryClient
     @ObservationIgnored @Dependency(\.date.now) private var now
     @ObservationIgnored let calendar = Calendar.paris
 
-    public init() {}
+    init() {}
 
     /// `.reload` for pull-to-refresh; otherwise the cached opening hours (12 h) show right away.
-    public func load(_ policy: CachePolicy = .useCache) async {
+    func load(_ policy: CachePolicy = .useCache) async {
         if state.value == nil { state = .loading }
         do {
             let libraries = try await libraryClient.libraries(policy)
@@ -37,12 +37,12 @@ public final class InfoViewModel {
         }
     }
 
-    public func status(of library: LibraryInfo) -> OpeningHours.Status {
+    func status(of library: LibraryInfo) -> OpeningHours.Status {
         library.hours.status(at: now, calendar: calendar)
     }
 
     /// "Ouvert · ferme à 19:00", "Fermé · ouvre samedi à 10:00".
-    public func statusText(of library: LibraryInfo) -> String {
+    func statusText(of library: LibraryInfo) -> String {
         switch status(of: library) {
         case let .open(closesAt):
             return String.local("Ouvert · ferme à \(closesAt.formatted(Self.time))", comment: "Library status; %@ is a time")
@@ -59,13 +59,13 @@ public final class InfoViewModel {
         }
     }
 
-    public func isOpen(_ library: LibraryInfo) -> Bool {
+    func isOpen(_ library: LibraryInfo) -> Bool {
         if case .open = status(of: library) { return true }
         return false
     }
 
     /// Today's opening-hours row, highlighted in the list.
-    public func isToday(_ line: String) -> Bool {
+    func isToday(_ line: String) -> Bool {
         let weekday = now.formatted(.dateTime.weekday(.wide).locale(Locale(identifier: "fr_FR")))
         return line.lowercased().hasPrefix(weekday.lowercased())
     }

@@ -8,20 +8,20 @@ import MediathequeCore
 import Observation
 
 /// Session opened with a provider: the SSO URL and the portal cookies for the web view.
-public struct PortalSession: Identifiable, Sendable {
-    public let id = UUID()
-    public let offer: DigitalOffer
+struct PortalSession: Identifiable {
+    let id = UUID()
+    let offer: DigitalOffer
     /// ⚠️ May contain personal data (Arte): never log it.
-    public let url: URL
-    public let cookies: [HTTPCookie]
+    let url: URL
+    let cookies: [HTTPCookie]
 }
 
 /// App Store sheet to present in the app.
-public struct StoreProduct: Identifiable, Equatable, Sendable {
-    public let id: String
+struct StoreProduct: Identifiable, Equatable {
+    let id: String
 }
 
-public enum AppAvailability: Equatable, Sendable {
+enum AppAvailability: Equatable {
     case installed
     case notInstalled
     /// No known scheme (musicMe): iOS cannot tell.
@@ -29,7 +29,7 @@ public enum AppAvailability: Equatable, Sendable {
 }
 
 /// Where a service is used: the line under its name, in the tab.
-public enum ServiceAccess: Equatable, Sendable {
+enum ServiceAccess: Equatable {
     case appInstalled
     /// The app is required but not installed yet.
     case inApp
@@ -40,17 +40,17 @@ public enum ServiceAccess: Equatable, Sendable {
 
 @MainActor
 @Observable
-public final class DigitalViewModel {
-    public let offers = DigitalCatalog.offers
-    public private(set) var resolving: DigitalOffer.ID?
-    public var session: PortalSession?
-    public private(set) var errorMessage: String?
-    public private(set) var feedback: FeedbackEvent?
+final class DigitalViewModel {
+    let offers = DigitalCatalog.offers
+    private(set) var resolving: DigitalOffer.ID?
+    var session: PortalSession?
+    private(set) var errorMessage: String?
+    private(set) var feedback: FeedbackEvent?
     /// "Installer l'app" sheet, before the App Store sheet.
-    public var installOffer: DigitalOffer?
-    public var storeProduct: StoreProduct?
+    var installOffer: DigitalOffer?
+    var storeProduct: StoreProduct?
     /// The app was just installed from Médiathèque: "L'app est installée" banner.
-    public private(set) var justInstalled: DigitalOffer.ID?
+    private(set) var justInstalled: DigitalOffer.ID?
     private var installedSchemes: Set<String> = []
     /// Service whose app the patron went to get: open it as soon as it is there.
     private var pendingInstall: DigitalOffer.ID?
@@ -58,14 +58,14 @@ public final class DigitalViewModel {
     @ObservationIgnored @Dependency(\.digitalClient) private var digital
     @ObservationIgnored @Dependency(\.installedApps) private var installedApps
 
-    public init() {}
+    init() {}
 
-    public func availability(of app: ProviderApp) -> AppAvailability {
+    func availability(of app: ProviderApp) -> AppAvailability {
         guard let scheme = app.urlScheme else { return .unknown }
         return installedSchemes.contains(scheme) ? .installed : .notInstalled
     }
 
-    public func access(for offer: DigitalOffer) -> ServiceAccess {
+    func access(for offer: DigitalOffer) -> ServiceAccess {
         guard let app = offer.app else { return .web }
         switch app.role {
         case .required: return availability(of: app) == .installed ? .appInstalled : .inApp
@@ -75,18 +75,18 @@ public final class DigitalViewModel {
     }
 
     /// "Connecter l'app avec ma carte" only makes sense for a required app that is already installed.
-    public func canConnectApp(_ offer: DigitalOffer) -> Bool {
+    func canConnectApp(_ offer: DigitalOffer) -> Bool {
         access(for: offer) == .appInstalled
     }
 
     /// True when the primary button should offer to install rather than open.
-    public func needsInstall(_ offer: DigitalOffer) -> Bool {
+    func needsInstall(_ offer: DigitalOffer) -> Bool {
         guard let app = offer.app, app.role == .required else { return false }
         return availability(of: app) == .notInstalled
     }
 
     /// On appear and when returning to the app (App Store, Settings): apps may have changed.
-    public func refreshInstalledApps() async {
+    func refreshInstalledApps() async {
         installedSchemes = Set(offers.compactMap(\.app?.urlScheme).filter { installedApps.isInstalled($0) })
         guard let pendingInstall, let offer = offers.first(where: { $0.id == pendingInstall }),
               let app = offer.app, availability(of: app) == .installed
@@ -99,7 +99,7 @@ public final class DigitalViewModel {
     }
 
     /// A card's primary button: install the app if missing, open it if present, otherwise the web.
-    public func primaryAction(_ offer: DigitalOffer) async {
+    func primaryAction(_ offer: DigitalOffer) async {
         if needsInstall(offer) {
             installOffer = offer
             feedback = .lightImpact
@@ -114,12 +114,12 @@ public final class DigitalViewModel {
     }
 
     /// "Connecter l'app" (help): sign-in through the portal, for a first time or a lost session.
-    public func connectThroughPortal(_ offer: DigitalOffer) async {
+    func connectThroughPortal(_ offer: DigitalOffer) async {
         await open(offer)
     }
 
     /// "Obtenir l'app": App Store sheet in the app, without leaving Médiathèque.
-    public func getApp(for offer: DigitalOffer) {
+    func getApp(for offer: DigitalOffer) {
         guard let app = offer.app else { return }
         installOffer = nil
         pendingInstall = offer.id
@@ -127,22 +127,22 @@ public final class DigitalViewModel {
     }
 
     /// "Continuer dans le navigateur": the service on the web, without the app.
-    public func continueOnWeb(_ offer: DigitalOffer) async {
+    func continueOnWeb(_ offer: DigitalOffer) async {
         installOffer = nil
         await open(offer)
     }
 
-    public func storeDismissed() async {
+    func storeDismissed() async {
         storeProduct = nil
         await refreshInstalledApps()
     }
 
-    public func dismissInstalledBanner() {
+    func dismissInstalledBanner() {
         justInstalled = nil
     }
 
     /// The SSO URL is single-use and short-lived: resolve it at tap time.
-    public func open(_ offer: DigitalOffer) async {
+    func open(_ offer: DigitalOffer) async {
         guard resolving == nil else { return }
         resolving = offer.id
         errorMessage = nil
@@ -162,7 +162,7 @@ public final class DigitalViewModel {
         }
     }
 
-    public func dismissError() {
+    func dismissError() {
         errorMessage = nil
     }
 }

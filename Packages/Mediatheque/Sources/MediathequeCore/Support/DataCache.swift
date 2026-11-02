@@ -87,13 +87,6 @@ public actor DataCache {
         }
     }
 
-    public func removeAll() {
-        memory.removeAll()
-        guard let directory else { return }
-        try? FileManager.default.removeItem(at: directory)
-        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-    }
-
     // MARK: Storage
 
     private func entry<Value: Codable & Sendable>(for key: String, persist: Bool) -> Entry<Value>? {

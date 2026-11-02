@@ -10,8 +10,8 @@ import Observation
 /// Hold on a record: preparation (pickup locations), choice, submission.
 @MainActor
 @Observable
-public final class HoldViewModel {
-    public enum Step: Equatable {
+final class HoldViewModel {
+    enum Step: Equatable {
         case preparing
         case choosing(HoldRequest)
         case submitting(HoldRequest)
@@ -19,26 +19,26 @@ public final class HoldViewModel {
         case failed(String)
     }
 
-    public let notice: Notice
-    public private(set) var step: Step = .preparing
-    public var pickup: Library? {
+    let notice: Notice
+    private(set) var step: Step = .preparing
+    var pickup: Library? {
         didSet { if oldValue != nil, pickup != oldValue { feedback = .selection } }
     }
 
-    public private(set) var feedback: FeedbackEvent?
+    private(set) var feedback: FeedbackEvent?
 
-    public var isSubmitting: Bool {
+    var isSubmitting: Bool {
         if case .submitting = step { true } else { false }
     }
 
     @ObservationIgnored @Dependency(\.accountClient) private var account
 
-    public init(notice: Notice, defaultPickup: Library?) {
+    init(notice: Notice, defaultPickup: Library?) {
         self.notice = notice
         pickup = defaultPickup
     }
 
-    public func prepare() async {
+    func prepare() async {
         step = .preparing
         do {
             let request = try await account.prepareHold(notice.id)
@@ -53,7 +53,7 @@ public final class HoldViewModel {
         }
     }
 
-    public func submit() async {
+    func submit() async {
         guard case let .choosing(request) = step, let pickup else { return }
         step = .submitting(request)
         do {

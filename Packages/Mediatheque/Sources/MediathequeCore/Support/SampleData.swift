@@ -14,22 +14,22 @@ public enum SampleData {
 
     public static let documents: [Notice] = [
         Notice(
-            id: 745828, key: "HARRYPOTTERALECOLEDESSORCIERS--ROWLINGJ-1-GALLIMARDJEUNESSE-2023-1",
+            id: 745828,
             title: "Harry Potter à l'école des sorciers", authors: ["Joanne Kathleen Rowling"], year: "2023",
             publisher: "Gallimard jeunesse", kind: .book, coverURL: nil, series: "Harry Potter", volume: "1",
             permalink: nil,
             harvestedCopies: [
-                HarvestedCopy(library: .elsaTriolet, shelfMark: "SF ROW", barcode: "69372109"),
-                HarvestedCopy(library: .pulpSud, shelfMark: "SF ROW", barcode: nil)
+                HarvestedCopy(library: .elsaTriolet),
+                HarvestedCopy(library: .pulpSud)
             ]
         ),
         Notice(
-            id: 474169, key: "SWAY--TOTOG--IDOL-2018-3", title: "Sway", authors: ["Gérald Toto"], year: "2018",
+            id: 474169, title: "Sway", authors: ["Gérald Toto"], year: "2018",
             publisher: "Idol", kind: .cd, coverURL: nil, series: nil, volume: nil, permalink: nil,
-            harvestedCopies: [HarvestedCopy(library: .elsaTriolet, shelfMark: "781.3 TOT", barcode: "69288593")]
+            harvestedCopies: [HarvestedCopy(library: .elsaTriolet)]
         ),
         Notice(
-            id: 871798, key: "TERRESDECINEMASURLESTRACESDEHARRYPOTTER--FROMENTJEAN---2017-ArteVod",
+            id: 871798,
             title: "Terres de cinéma – Sur les traces de Harry Potter", authors: ["Jean Froment"], year: "2017",
             publisher: nil, kind: DocumentKind(code: "ArteVod", label: "Cinéma en ligne"), coverURL: nil,
             series: nil, volume: nil, permalink: nil, harvestedCopies: []
@@ -43,10 +43,8 @@ public enum SampleData {
             status: .available,
             statusLabel: "Disponible",
             section: "Jeunesse",
-            location: "Pôle Littératures et langues",
             shelfMark: "SF ROW",
-            holdCount: 0,
-            pickupPath: nil
+            holdCount: 0
         ),
         LiveCopy(
             library: .pulpNord,
@@ -54,18 +52,16 @@ public enum SampleData {
             status: .onLoan(dueDate: day(2026, 11, 17)),
             statusLabel: "En prêt",
             section: "Jeunesse",
-            location: nil,
             shelfMark: "SF ROW",
-            holdCount: 2,
-            pickupPath: "preview"
+            holdCount: 2
         )
     ]
 
     public static let patron = Patron(
         cardNumber: "0012345", firstName: "Camille", lastName: "MARTIN", email: "camille.martin@exemple.fr", phone: nil,
         homeLibrary: .pulpNord, cardExpiry: day(2027, 3, 14), cardExpired: false, cardAboutToExpire: false, cardExpiresInDays: 135,
-        permissions: .init(blocked: false, loanForbidden: false, holdForbidden: false, digitalResourcesForbidden: false),
-        counters: .init(loans: 4, lateLoans: 1, holds: 2, digitalLoans: 0, debts: 0, waitingToBePulled: 1),
+        permissions: .init(holdForbidden: false, digitalResourcesForbidden: false),
+        counters: .init(loans: 4, lateLoans: 1, waitingToBePulled: 1),
         message: nil, hasUnreadMessage: false
     )
 
@@ -106,7 +102,6 @@ public enum SampleData {
         Hold(
             id: "100001_10",
             title: "Murmuration",
-            author: "Sylvie Germain",
             statusText: "Disponible jusqu'au 06/11/2026",
             pickupLibrary: .elsaTriolet,
             pickupLibraryName: "Médiathèque Elsa-Triolet",
@@ -117,7 +112,6 @@ public enum SampleData {
         Hold(
             id: "100001_11",
             title: "Astérix n° 39 · Astérix et le griffon",
-            author: "Jean-Yves Ferri",
             statusText: "Pas disponible avant le 14/11/2026",
             pickupLibrary: .pulpNord,
             pickupLibraryName: "PULP Nord",

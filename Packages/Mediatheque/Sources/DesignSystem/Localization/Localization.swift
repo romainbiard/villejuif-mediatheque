@@ -13,10 +13,3 @@ extension LocalizedStringResource {
         LocalizedStringResource(key, bundle: .module, comment: comment)
     }
 }
-
-extension String {
-    /// For text built in code (catalog, view models, alerts).
-    static func local(_ key: LocalizationValue, comment: StaticString? = nil) -> String {
-        String(localized: key, bundle: .module, comment: comment)
-    }
-}

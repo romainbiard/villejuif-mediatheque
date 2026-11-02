@@ -12,17 +12,17 @@ import Security
 
 @MainActor
 @Observable
-public final class SelectionsViewModel {
-    public private(set) var state: LoadState<[Selection]> = .idle
-    public private(set) var isCreating = false
-    public private(set) var message: String?
-    public private(set) var feedback: FeedbackEvent?
+final class SelectionsViewModel {
+    private(set) var state: LoadState<[Selection]> = .idle
+    private(set) var isCreating = false
+    private(set) var message: String?
+    private(set) var feedback: FeedbackEvent?
 
     @ObservationIgnored @Dependency(\.profileClient) private var profile
 
-    public init() {}
+    init() {}
 
-    public func load() async {
+    func load() async {
         if state.value == nil { state = .loading }
         do {
             state = try await .loaded(profile.selections())
@@ -31,7 +31,7 @@ public final class SelectionsViewModel {
         }
     }
 
-    public func create(named name: String) async {
+    func create(named name: String) async {
         let name = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !name.isEmpty else { return }
         if state.value?.contains(where: { $0.name.localizedCaseInsensitiveCompare(name) == .orderedSame }) == true {
@@ -52,25 +52,25 @@ public final class SelectionsViewModel {
         }
     }
 
-    public func dismissMessage() { message = nil }
+    func dismissMessage() { message = nil }
 }
 
 @MainActor
 @Observable
-public final class SelectionDetailViewModel {
-    public let selection: Selection
-    public private(set) var state: LoadState<[Notice]> = .idle
-    public private(set) var removing: Set<Notice.ID> = []
-    public private(set) var message: String?
-    public private(set) var feedback: FeedbackEvent?
+final class SelectionDetailViewModel {
+    let selection: Selection
+    private(set) var state: LoadState<[Notice]> = .idle
+    private(set) var removing: Set<Notice.ID> = []
+    private(set) var message: String?
+    private(set) var feedback: FeedbackEvent?
 
     @ObservationIgnored @Dependency(\.profileClient) private var profile
 
-    public init(selection: Selection) {
+    init(selection: Selection) {
         self.selection = selection
     }
 
-    public func load() async {
+    func load() async {
         if state.value == nil { state = .loading }
         do {
             // Selections stay short: load all pages at once.
@@ -88,7 +88,7 @@ public final class SelectionDetailViewModel {
         }
     }
 
-    public func remove(_ notice: Notice) async {
+    func remove(_ notice: Notice) async {
         removing.insert(notice.id)
         defer { removing.remove(notice.id) }
         do {
@@ -102,25 +102,25 @@ public final class SelectionDetailViewModel {
         }
     }
 
-    public func dismissMessage() { message = nil }
+    func dismissMessage() { message = nil }
 }
 
 // MARK: - My reviews
 
 @MainActor
 @Observable
-public final class ReviewsViewModel {
-    public private(set) var toRate: LoadState<[RecordToRate]> = .idle
-    public private(set) var published: LoadState<[Review]> = .idle
-    public private(set) var isSubmitting = false
-    public private(set) var message: String?
-    public private(set) var feedback: FeedbackEvent?
+final class ReviewsViewModel {
+    private(set) var toRate: LoadState<[RecordToRate]> = .idle
+    private(set) var published: LoadState<[Review]> = .idle
+    private(set) var isSubmitting = false
+    private(set) var message: String?
+    private(set) var feedback: FeedbackEvent?
 
     @ObservationIgnored @Dependency(\.profileClient) private var profile
 
-    public init() {}
+    init() {}
 
-    public func load() async {
+    func load() async {
         if toRate.value == nil { toRate = .loading }
         if published.value == nil { published = .loading }
         do {
@@ -136,7 +136,7 @@ public final class ReviewsViewModel {
     }
 
     /// Submits the review. Returns `true` if the sheet can close.
-    public func submit(_ record: RecordToRate, rating: Int, title: String, text: String) async -> Bool {
+    func submit(_ record: RecordToRate, rating: Int, title: String, text: String) async -> Bool {
         guard (1...5).contains(rating) else { return false }
         isSubmitting = true
         defer { isSubmitting = false }
@@ -159,25 +159,25 @@ public final class ReviewsViewModel {
         }
     }
 
-    public func dismissMessage() { message = nil }
+    func dismissMessage() { message = nil }
 }
 
 // MARK: - My suggestions
 
 @MainActor
 @Observable
-public final class SuggestionsViewModel {
-    public var draft = SuggestionDraft()
-    public private(set) var sent: LoadState<[Suggestion]> = .idle
-    public private(set) var isSending = false
-    public private(set) var message: String?
-    public private(set) var feedback: FeedbackEvent?
+final class SuggestionsViewModel {
+    var draft = SuggestionDraft()
+    private(set) var sent: LoadState<[Suggestion]> = .idle
+    private(set) var isSending = false
+    private(set) var message: String?
+    private(set) var feedback: FeedbackEvent?
 
     @ObservationIgnored @Dependency(\.profileClient) private var profile
 
-    public init() {}
+    init() {}
 
-    public func load() async {
+    func load() async {
         if sent.value == nil { sent = .loading }
         do {
             sent = try await .loaded(profile.suggestions())
@@ -186,7 +186,7 @@ public final class SuggestionsViewModel {
         }
     }
 
-    public func send() async {
+    func send() async {
         guard draft.isValid, !isSending else { return }
         isSending = true
         defer { isSending = false }
@@ -202,29 +202,29 @@ public final class SuggestionsViewModel {
         }
     }
 
-    public func dismissMessage() { message = nil }
+    func dismissMessage() { message = nil }
 }
 
 // MARK: - My information
 
 @MainActor
 @Observable
-public final class InformationViewModel {
-    public private(set) var contact: LoadState<ContactDetails> = .idle
-    public private(set) var isSaving = false
-    public private(set) var message: String?
-    public private(set) var feedback: FeedbackEvent?
+final class InformationViewModel {
+    private(set) var contact: LoadState<ContactDetails> = .idle
+    private(set) var isSaving = false
+    private(set) var message: String?
+    private(set) var feedback: FeedbackEvent?
     /// Shown once the password sheet is gone: the app can't update the Passwords app itself
     /// (the portal publishes no apple-app-site-association file), so the user has to.
-    public var showsPasswordsReminder = false
+    var showsPasswordsReminder = false
     private var passwordChanged = false
 
     @ObservationIgnored @Dependency(\.profileClient) private var profile
     @ObservationIgnored @Dependency(\.keychainClient) private var keychain
 
-    public init() {}
+    init() {}
 
-    public func load() async {
+    func load() async {
         if contact.value == nil { contact = .loading }
         do {
             contact = try await .loaded(profile.contactDetails())
@@ -234,7 +234,7 @@ public final class InformationViewModel {
     }
 
     /// Returns `true` if the sheet can close.
-    public func save(_ details: ContactDetails) async -> Bool {
+    func save(_ details: ContactDetails) async -> Bool {
         let email = details.email.trimmingCharacters(in: .whitespaces)
         guard email.isEmpty || email.wholeMatch(of: #/[^@\s]+@[^@\s]+\.[^@\s]+/#) != nil else {
             message = String.local("Adresse e-mail invalide")
@@ -257,7 +257,7 @@ public final class InformationViewModel {
     }
 
     /// Local validation before submitting. `nil` when the new password is acceptable.
-    public static func passwordProblem(_ password: String, confirmation: String) -> String? {
+    static func passwordProblem(_ password: String, confirmation: String) -> String? {
         if password.isEmpty { return .local("Saisissez un nouveau mot de passe") }
         if password != confirmation { return .local("Les deux mots de passe ne correspondent pas") }
         return nil
@@ -265,19 +265,19 @@ public final class InformationViewModel {
 
     /// Strong password generated by the system (Safari's generator), offered by the password sheet.
     /// `nil` when the system can't provide one: the button then does nothing.
-    public static func suggestedPassword() -> String? {
+    static func suggestedPassword() -> String? {
         SecCreateSharedWebCredentialPassword() as String?
     }
 
     /// Called when the password sheet is dismissed: raises the Passwords reminder after a change.
-    public func passwordSheetDismissed() {
+    func passwordSheetDismissed() {
         guard passwordChanged else { return }
         passwordChanged = false
         showsPasswordsReminder = true
     }
 
     /// Returns `true` if the sheet can close.
-    public func changePassword(_ password: String, confirmation: String) async -> Bool {
+    func changePassword(_ password: String, confirmation: String) async -> Bool {
         if let problem = Self.passwordProblem(password, confirmation: confirmation) {
             message = problem
             feedback = .error
@@ -301,34 +301,34 @@ public final class InformationViewModel {
         }
     }
 
-    public func dismissMessage() { message = nil }
+    func dismissMessage() { message = nil }
 }
 
 // MARK: - My settings
 
 @MainActor
 @Observable
-public final class ProfileSettingsViewModel {
-    public private(set) var bookmarks: LoadState<Set<Library>> = .idle
-    public private(set) var newsletter: Bool
-    public private(set) var updating: Set<String> = []
-    public private(set) var message: String?
-    public private(set) var feedback: FeedbackEvent?
+final class ProfileSettingsViewModel {
+    private(set) var bookmarks: LoadState<Set<Library>> = .idle
+    private(set) var newsletter: Bool
+    private(set) var updating: Set<String> = []
+    private(set) var message: String?
+    private(set) var feedback: FeedbackEvent?
 
     @ObservationIgnored @Dependency(\.profileClient) private var profile
     @ObservationIgnored @Dependency(\.notificationClient) private var notifications
     @ObservationIgnored @Dependency(\.biometricClient) private var biometrics
 
-    public init(newsletterSubscribed: Bool) {
+    init(newsletterSubscribed: Bool) {
         newsletter = newsletterSubscribed
     }
 
     /// "Face ID" or "Touch ID", `nil` if the device has neither.
-    public var biometricKind: String? { biometrics.availableKind() }
+    var biometricKind: String? { biometrics.availableKind() }
 
     /// After a reminder change: authorization requested on enabling, reminders rescheduled.
     /// Returns `false` if iOS refuses notifications.
-    public func remindersChanged(enabling: Bool) async -> Bool {
+    func remindersChanged(enabling: Bool) async -> Bool {
         if enabling, await !(notifications.requestAuthorization()) {
             message = String.local("Autorisez les notifications dans Réglages pour recevoir les rappels")
             feedback = .error
@@ -339,7 +339,7 @@ public final class ProfileSettingsViewModel {
         return true
     }
 
-    public func load() async {
+    func load() async {
         if bookmarks.value == nil { bookmarks = .loading }
         do {
             bookmarks = try await .loaded(profile.bookmarkedLibraries())
@@ -348,7 +348,7 @@ public final class ProfileSettingsViewModel {
         }
     }
 
-    public func setBookmarked(_ library: Library, _ isOn: Bool) async {
+    func setBookmarked(_ library: Library, _ isOn: Bool) async {
         guard var current = bookmarks.value, current.contains(library) != isOn else { return }
         updating.insert(library.rawValue)
         defer { updating.remove(library.rawValue) }
@@ -363,7 +363,7 @@ public final class ProfileSettingsViewModel {
         }
     }
 
-    public func setNewsletter(_ isOn: Bool) async {
+    func setNewsletter(_ isOn: Bool) async {
         guard newsletter != isOn else { return }
         updating.insert("newsletter")
         defer { updating.remove("newsletter") }
@@ -377,7 +377,7 @@ public final class ProfileSettingsViewModel {
         }
     }
 
-    public func dismissMessage() { message = nil }
+    func dismissMessage() { message = nil }
 }
 
 // MARK: - Messages

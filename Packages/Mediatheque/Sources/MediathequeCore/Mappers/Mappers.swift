@@ -13,7 +13,6 @@ extension Notice {
         guard let id = dto.noticeID else { return nil }
         self.init(
             id: id,
-            key: dto.identifier,
             title: dto.titles.last ?? dto.titles.first ?? "",
             authors: dto.creators.map(Notice.displayName(fromCreator:)),
             year: dto.date.isEmpty ? nil : dto.date,
@@ -24,11 +23,7 @@ extension Notice {
             volume: dto.volume,
             permalink: URL(string: dto.permalink),
             harvestedCopies: dto.items.map {
-                HarvestedCopy(
-                    library: $0.subfield("a").flatMap(Library.init(label:)) ?? $0.annex.flatMap(Library.init(rawValue:)),
-                    shelfMark: $0.shelfMark,
-                    barcode: $0.barcode
-                )
+                HarvestedCopy(library: $0.subfield("a").flatMap(Library.init(label:)) ?? $0.annex.flatMap(Library.init(rawValue:)))
             }
         )
     }
@@ -48,7 +43,7 @@ extension Notice {
 
 extension SearchPage {
     init(dto: SearchResponseDTO) {
-        self.init(total: dto.total, page: dto.page, pageSize: dto.pageSize, documents: dto.records.compactMap(Notice.init(dto:)))
+        self.init(total: dto.total, documents: dto.records.compactMap(Notice.init(dto:)))
     }
 }
 
@@ -74,10 +69,8 @@ extension LiveCopy {
             status: status,
             statusLabel: label,
             section: dto.section,
-            location: dto.location,
             shelfMark: dto.shelfMark,
-            holdCount: LiveCopy.holdCount(from: dto.holdsText),
-            pickupPath: dto.pickupPath
+            holdCount: LiveCopy.holdCount(from: dto.holdsText)
         )
     }
 
@@ -103,22 +96,16 @@ extension Patron {
             cardAboutToExpire: dto.card.aboutToExpire,
             cardExpiresInDays: dto.card.expiresIn,
             permissions: Permissions(
-                blocked: dto.permissions.blocked,
-                loanForbidden: dto.permissions.loanForbidden,
                 holdForbidden: dto.permissions.holdForbidden,
                 digitalResourcesForbidden: dto.permissions.digitalResourcesForbidden
             ),
             counters: Counters(
                 loans: dto.counters.loans,
                 lateLoans: dto.counters.lateLoans,
-                holds: dto.counters.holds,
-                digitalLoans: dto.counters.digitalLoans,
-                debts: dto.counters.debts,
                 waitingToBePulled: dto.counters.waitingToBePulled
             ),
             message: dto.message.content.nilIfEmpty,
             hasUnreadMessage: dto.message.unread,
-            patronID: dto.cards?.first.map { String($0.id) },
             nickname: dto.identity.nickname?.nilIfEmpty,
             postalAddress: [dto.contact.address, "\(dto.contact.zipCode) \(dto.contact.city.capitalized)"]
                 .map { $0.trimmingCharacters(in: .whitespaces) }
@@ -151,7 +138,6 @@ extension Hold {
         self.init(
             id: dto.id,
             title: Hold.cleanTitle(dto.title),
-            author: dto.author,
             statusText: dto.status,
             pickupLibrary: Library(label: dto.library),
             pickupLibraryName: dto.library,

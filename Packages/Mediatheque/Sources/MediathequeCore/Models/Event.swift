@@ -30,7 +30,6 @@ public struct Event: Identifiable, Hashable, Sendable, Codable {
 }
 
 public struct EventDetail: Hashable, Sendable {
-    public let event: Event
     public let descriptionText: String?
     public let latitude: Double?
     public let longitude: Double?

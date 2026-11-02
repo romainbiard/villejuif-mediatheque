@@ -175,9 +175,10 @@ Remplacez le simulateur par l'un de ceux installés sur votre Mac (`xcrun simctl
 Le format est fixé par [SwiftFormat](https://github.com/nicklockwood/SwiftFormat) (`.swiftformat`) et vérifié par [SwiftLint](https://github.com/realm/SwiftLint) (`.swiftlint.yml`).
 
 ```bash
-brew install swiftformat swiftlint
+brew install swiftformat swiftlint periphery
 swiftformat .   # met le code au format
 swiftlint       # signale ce que SwiftFormat ne corrige pas
+periphery scan  # cherche le code mort (après xcodegen generate)
 ```
 
 Xcode Cloud lance les deux avant chaque build : un commit mal formaté n'arrive pas sur TestFlight.

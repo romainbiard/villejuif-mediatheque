@@ -14,29 +14,29 @@ import Observation
 /// after an explicit yes, so as not to waste that single attempt.
 @MainActor
 @Observable
-public final class OnboardingViewModel {
-    public enum Step: Equatable {
+final class OnboardingViewModel {
+    enum Step: Equatable {
         /// Authorization status being read.
         case checking
         case primer
         case settings
     }
 
-    public private(set) var step: Step = .checking
+    private(set) var step: Step = .checking
     /// Notifications are allowed by iOS: the toggles are enabled.
-    public private(set) var notificationsAllowed = false
+    private(set) var notificationsAllowed = false
     /// Denied (now or in the past): point to Settings rather than insisting.
-    public private(set) var notificationsDenied = false
-    public private(set) var isRequesting = false
-    public private(set) var isFinishing = false
-    public private(set) var feedback: FeedbackEvent?
+    private(set) var notificationsDenied = false
+    private(set) var isRequesting = false
+    private(set) var isFinishing = false
+    private(set) var feedback: FeedbackEvent?
 
     @ObservationIgnored @Dependency(\.notificationClient) private var notifications
 
-    public init() {}
+    init() {}
 
     /// If no alert has been requested yet, show the explanation; otherwise go straight to the settings.
-    public func start() async {
+    func start() async {
         switch await notifications.authorizationStatus() {
         case .notDetermined:
             step = .primer
@@ -50,7 +50,7 @@ public final class OnboardingViewModel {
     }
 
     /// "Activer les notifications": this is the only place where the system alert appears.
-    public func enableNotifications() async {
+    func enableNotifications() async {
         isRequesting = true
         defer { isRequesting = false }
         let granted = await notifications.requestAuthorization()
@@ -61,7 +61,7 @@ public final class OnboardingViewModel {
     }
 
     /// "Pas maintenant": the system alert stays available for later ("Mes configurations").
-    public func skipNotifications() {
+    func skipNotifications() {
         notificationsAllowed = false
         notificationsDenied = false
         feedback = .lightImpact
@@ -69,7 +69,7 @@ public final class OnboardingViewModel {
     }
 
     /// "Terminer": apply Face ID, then reschedule reminders with the chosen settings.
-    public func finish(faceID: Bool, session: SessionStore) async {
+    func finish(faceID: Bool, session: SessionStore) async {
         isFinishing = true
         defer { isFinishing = false }
         session.isFaceIDEnabled = faceID

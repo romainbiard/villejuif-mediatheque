@@ -104,7 +104,8 @@ enum AppStorePresenter {
         }
     }
 
-    /// The controller does not retain its delegate.
+    // periphery:ignore - only held, never read.
+    /// The controller does not retain its delegate: this reference keeps it alive.
     private static var delegate: Delegate?
 
     static func present(appStoreID: String, onDismiss: @escaping () -> Void) {

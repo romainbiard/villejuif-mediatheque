@@ -59,7 +59,6 @@ struct ParserTests {
         #expect(copy.shelfMark == "SF ROW")
         #expect(copy.dueDateText == "17/11/2026")
         #expect(copy.holdsText == "Déjà 2 réservations")
-        #expect(copy.pickupPath?.hasPrefix("recherche/reservation-pickup-ajax/") == true)
     }
 
     @Test func availabilityBadge() throws {

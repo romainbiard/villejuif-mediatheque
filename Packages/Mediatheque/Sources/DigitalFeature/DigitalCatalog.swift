@@ -76,12 +76,12 @@ extension ProviderApp.Highlight {
     }
 }
 
-public enum DigitalCatalog {
+enum DigitalCatalog {
     static func tutorial(_ name: String) -> URL {
         URL(string: "https://mediatheque.villejuif.fr/userfiles/file/mediatheque-numerique_tutoriels/mediatheque-numerique_tuto-\(name).pdf")!
     }
 
-    public static let offers: [DigitalOffer] = [
+    static let offers: [DigitalOffer] = [
         DigitalOffer(
             id: "films", category: .local("Films et séries"), provider: .local("Arte VOD et Univers Ciné"),
             summary: .local("Des milliers de films, documentaires, séries et spectacles, en plusieurs langues."),

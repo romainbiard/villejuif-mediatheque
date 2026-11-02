@@ -50,6 +50,20 @@ struct InboxPlannerTests {
         #expect(inbox.unreadCount == 1)
     }
 
+    @Test func messageAlreadyReadOnTheWebsiteArrivesRead() {
+        let saved = LockIsolated(Inbox())
+        withDependencies {
+            $0.inboxClient.load = { saved.value }
+            $0.inboxClient.save = { saved.setValue($0) }
+            $0.date.now = Date(timeIntervalSince1970: 1_793_000_000)
+        } operation: {
+            AccountSync.record(libraryMessage: "Fermé le 11/11", unread: false)
+            AccountSync.record(libraryMessage: "Ouvert le dimanche 15/11", unread: true)
+        }
+        #expect(saved.value.items.count == 2)
+        #expect(saved.value.unreadCount == 1)
+    }
+
     @Test func messageIsStrippedOfHTML() {
         let item = InboxPlanner.libraryMessage("<p>Fermeture <b>exceptionnelle</b></p>", now: .now)
         #expect(item.body == "Fermeture exceptionnelle")

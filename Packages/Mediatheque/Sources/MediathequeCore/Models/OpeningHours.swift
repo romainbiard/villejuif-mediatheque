@@ -15,10 +15,6 @@ public struct OpeningHours: Hashable, Sendable, Codable {
     /// Time slots per weekday, as defined by `Calendar` (1 = Sunday … 7 = Saturday).
     public let slotsByWeekday: [Int: [Slot]]
 
-    public init(slotsByWeekday: [Int: [Slot]]) {
-        self.slotsByWeekday = slotsByWeekday
-    }
-
     static let weekdays: [String: Int] = [
         "dimanche": 1, "lundi": 2, "mardi": 3, "mercredi": 4, "jeudi": 5, "vendredi": 6, "samedi": 7
     ]

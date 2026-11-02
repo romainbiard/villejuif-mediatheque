@@ -47,8 +47,8 @@ struct SelectionsTests {
     @Test func removingANoticeUpdatesTheList() async {
         let selection = SampleData.selections[0]
         let viewModel = withDependencies {
-            $0.profileClient.selectionNotices = { _, page in
-                SearchPage(total: SampleData.documents.count, page: page, pageSize: 10, documents: SampleData.documents)
+            $0.profileClient.selectionNotices = { _, _ in
+                SearchPage(total: SampleData.documents.count, documents: SampleData.documents)
             }
             $0.profileClient.removeFromSelection = { _, _ in }
         } operation: { SelectionDetailViewModel(selection: selection) }

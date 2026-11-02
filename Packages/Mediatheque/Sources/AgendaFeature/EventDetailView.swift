@@ -7,17 +7,17 @@ import MapKit
 import MediathequeCore
 import SwiftUI
 
-public struct EventDetailView: View {
+struct EventDetailView: View {
     @State private var viewModel: EventDetailViewModel
     @Environment(\.openURL) private var openURL
 
-    public init(event: Event) {
+    init(event: Event) {
         _viewModel = State(initialValue: EventDetailViewModel(event: event))
     }
 
     private var event: Event { viewModel.event }
 
-    public var body: some View {
+    var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 EventArtwork(event: event)

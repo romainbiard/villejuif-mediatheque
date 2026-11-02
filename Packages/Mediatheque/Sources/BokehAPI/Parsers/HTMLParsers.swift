@@ -27,15 +27,11 @@ public struct CopyDTO: Sendable, Equatable {
     public let libraryName: String
     public let availability: String
     public let section: String?
-    public let location: String?
     public let shelfMark: String?
     /// "17/11/2026".
     public let dueDateText: String?
     /// "Déjà 2 réservations".
     public let holdsText: String?
-    public let medium: String?
-    /// `recherche/reservation-pickup-ajax/...` link (without a leading `/`), absent if it can't be placed on hold.
-    public let pickupPath: String?
 }
 
 /// A library from the Infos pratiques page.
@@ -80,12 +76,6 @@ public enum HTMLParsers {
         }
     }
 
-    /// True if the page shows a sign-in form in the main content (sign-in failed).
-    public static func isLoggedIn(_ html: String) throws -> Bool {
-        let document = try SwiftSoup.parse(html)
-        return try !document.select("a[href*=/auth/logout], a[href*=logout]").isEmpty()
-    }
-
     public static func calendarEvents(in html: String) throws -> [CalendarEventDTO] {
         let document = try SwiftSoup.parse(html, HTTPClient.villejuifBaseURL.absoluteString)
         var seen = Set<Int>()
@@ -120,13 +110,9 @@ public enum HTMLParsers {
                 libraryName: card.select(".card-title a").first()?.ownText().trimmingCharacters(in: .whitespaces) ?? "",
                 availability: card.select(".item_availability").first()?.text() ?? "",
                 section: badgeText(card, ".badge_section"),
-                location: badgeText(card, ".badge_emplacement"),
                 shelfMark: badgeText(card, ".badge_cote"),
                 dueDateText: badgeText(card, ".badge_retour"),
-                holdsText: badgeText(card, ".item_hold_rank"),
-                medium: badgeText(card, ".datas_items_995_r"),
-                pickupPath: card.select("a[href*=reservation-pickup-ajax]").first()
-                    .map { try String($0.attr("href").drop { $0 == "/" }) }
+                holdsText: badgeText(card, ".item_hold_rank")
             )
         }
     }

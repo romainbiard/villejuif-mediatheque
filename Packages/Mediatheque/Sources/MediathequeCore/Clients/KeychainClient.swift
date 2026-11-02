@@ -124,8 +124,9 @@ extension PatronCacheClient: DependencyKey {
     }
 }
 
-public struct KeychainError: Error, Equatable {
-    public let status: OSStatus
+struct KeychainError: Error, Equatable {
+    // periphery:ignore - shown when the error is printed or inspected in the debugger.
+    let status: OSStatus
 }
 
 extension DependencyValues {

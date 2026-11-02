@@ -205,12 +205,13 @@ public enum AccountSync {
     }
 
     /// Library message read from the account, added to the notification center.
-    public static func record(libraryMessage: String?) {
+    /// Already read on the website: it arrives read, without lighting up the bell.
+    public static func record(libraryMessage: String?, unread: Bool) {
         @Dependency(\.inboxClient) var inboxClient
         @Dependency(\.date.now) var now
         guard let libraryMessage, !libraryMessage.isEmpty else { return }
         var inbox = inboxClient.load()
-        inbox.merge([InboxPlanner.libraryMessage(libraryMessage, now: now)], now: now, calendar: .paris)
+        inbox.merge([InboxPlanner.libraryMessage(libraryMessage, isRead: !unread, now: now)], now: now, calendar: .paris)
         inboxClient.save(inbox)
     }
 

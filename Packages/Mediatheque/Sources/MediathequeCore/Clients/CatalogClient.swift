@@ -42,8 +42,8 @@ extension CatalogClient: DependencyKey {
     }
 
     public static let previewValue = CatalogClient(
-        search: { query in
-            SearchPage(total: SampleData.documents.count, page: query.page, pageSize: 10, documents: SampleData.documents)
+        search: { _ in
+            SearchPage(total: SampleData.documents.count, documents: SampleData.documents)
         },
         availability: { recordID in
             recordID.isMultiple(of: 2)

@@ -21,10 +21,6 @@ public struct Selection: Identifiable, Hashable, Sendable {
         self.updatedAt = updatedAt
         self.coverURLs = coverURLs
     }
-
-    /// The three selections the site creates for each patron.
-    public static let defaultNames = ["Mes préférés", "Déjà lu", "À lire"]
-    public var isDefault: Bool { Self.defaultNames.contains(name) }
 }
 
 /// A borrowed document the patron can rate.
@@ -47,14 +43,12 @@ public struct RecordToRate: Identifiable, Hashable, Sendable {
 
 public struct Review: Identifiable, Hashable, Sendable {
     public let id: String
-    public let recordID: Int?
     public let title: String
     public let text: String
     public let rating: Int?
 
-    public init(id: String, recordID: Int?, title: String, text: String, rating: Int?) {
+    public init(id: String, title: String, text: String, rating: Int?) {
         self.id = id
-        self.recordID = recordID
         self.title = title
         self.text = text
         self.rating = rating

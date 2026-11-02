@@ -9,17 +9,17 @@ import Observation
 
 @MainActor
 @Observable
-public final class DocumentDetailViewModel {
-    public let document: Notice
-    public private(set) var copies: LoadState<[LiveCopy]> = .idle
+final class DocumentDetailViewModel {
+    let document: Notice
+    private(set) var copies: LoadState<[LiveCopy]> = .idle
 
     @ObservationIgnored @Dependency(\.catalogClient) private var catalog
 
-    public init(document: Notice) {
+    init(document: Notice) {
         self.document = document
     }
 
-    public func load() async {
+    func load() async {
         guard !document.kind.isDigital else {
             copies = .loaded([])
             return
@@ -33,7 +33,7 @@ public final class DocumentDetailViewModel {
     }
 
     /// Copies grouped by library, available ones first.
-    public var copiesByLibrary: [(name: String, copies: [LiveCopy])] {
+    var copiesByLibrary: [(name: String, copies: [LiveCopy])] {
         let grouped = Dictionary(grouping: copies.value ?? [], by: \.libraryName)
         return grouped
             .map { (name: $0.key, copies: $0.value) }
@@ -42,10 +42,5 @@ public final class DocumentDetailViewModel {
                 let rhsAvailable = rhs.copies.contains { $0.status.isAvailable }
                 return lhsAvailable != rhsAvailable ? lhsAvailable : lhs.name < rhs.name
             }
-    }
-
-    /// True if at least one copy can be placed on hold (pickup link present).
-    public var isHoldable: Bool {
-        copies.value?.contains { $0.pickupPath != nil } ?? false
     }
 }
