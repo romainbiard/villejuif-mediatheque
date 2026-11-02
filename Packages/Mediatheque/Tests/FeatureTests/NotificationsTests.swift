@@ -10,10 +10,6 @@ import MediathequeCore
 import Testing
 @testable import AccountFeature
 
-private func paris(_ year: Int, _ month: Int, _ day: Int, _ hour: Int = 12) -> Date {
-    Calendar.paris.date(from: DateComponents(year: year, month: month, day: day, hour: hour))!
-}
-
 struct InboxPlannerTests {
     let snapshot = AccountSnapshot(loans: SampleData.loans, holds: SampleData.holds, updatedAt: .distantPast)
 

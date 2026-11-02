@@ -9,13 +9,23 @@ import MediathequeCore
 import Testing
 @testable import DigitalFeature
 
+/// A URL written out in a test: always valid.
+private func url(_ string: String) -> URL {
+    URL(string: string)!
+}
+
+/// A service of the catalog, by its identifier (the catalog is static).
+private func offer(_ id: String) -> DigitalOffer {
+    DigitalCatalog.offers.first { $0.id == id }!
+}
+
 @MainActor
 struct DigitalTests {
     @Test func providerUniversalLinksAreRecognised() {
-        #expect(PortalWebView.isProviderAppLink(URL(string: "https://www.cafeyn.co/fr/externallogin/abc")!))
-        #expect(!PortalWebView.isProviderAppLink(URL(string: "https://www.cafeyn.co/fr/loginexternal/8480")!))
-        #expect(PortalWebView.isProviderAppLink(URL(string: "https://app.mozaik.co/autoLogin.php?t=1")!))
-        #expect(!PortalWebView.isProviderAppLink(URL(string: "https://vod.mediatheque-numerique.com/")!))
+        #expect(PortalWebView.isProviderAppLink(url("https://www.cafeyn.co/fr/externallogin/abc")))
+        #expect(!PortalWebView.isProviderAppLink(url("https://www.cafeyn.co/fr/loginexternal/8480")))
+        #expect(PortalWebView.isProviderAppLink(url("https://app.mozaik.co/autoLogin.php?t=1")))
+        #expect(!PortalWebView.isProviderAppLink(url("https://vod.mediatheque-numerique.com/")))
     }
 
     @Test func onlyPartnerAppsLeaveTheWebView() {
@@ -42,7 +52,7 @@ struct DigitalTests {
         let viewModel = withDependencies {
             $0.digitalClient.target = { service in
                 #expect(service == .cafeyn)
-                return URL(string: "https://www.cafeyn.co/fr/loginexternal/8480")!
+                return url("https://www.cafeyn.co/fr/loginexternal/8480")
             }
             $0.digitalClient.sessionCookies = { [] }
         } operation: { DigitalViewModel() }
@@ -66,22 +76,25 @@ struct DigitalTests {
 
 @MainActor
 struct PartnerAppsTests {
-    private var films: DigitalOffer { DigitalCatalog.offers.first { $0.id == "films" }! }
-    private var eureka: DigitalOffer { DigitalCatalog.offers.first { $0.id == "eureka" }! }
+    private let films = offer("films")
+    private let presse = offer("presse")
+    private let eureka = offer("eureka")
 
-    @Test func schemesTellWhichAppsAreInstalled() async {
+    @Test func schemesTellWhichAppsAreInstalled() async throws {
         let viewModel = withDependencies {
             $0.installedApps.isInstalled = { $0 == "cafeyn" }
         } operation: { DigitalViewModel() }
 
         await viewModel.refreshInstalledApps()
-        let cafeyn = DigitalCatalog.offers.first { $0.id == "presse" }!
-        #expect(viewModel.availability(of: cafeyn.app!) == .installed)
-        #expect(viewModel.availability(of: films.app!) == .notInstalled)
+        let cafeyn = try #require(presse.app)
+        let arte = try #require(films.app)
+        let musicMe = try #require(eureka.app)
+        #expect(viewModel.availability(of: cafeyn) == .installed)
+        #expect(viewModel.availability(of: arte) == .notInstalled)
         // musicMe has no scheme: we cannot know.
-        #expect(viewModel.availability(of: eureka.app!) == .unknown)
+        #expect(viewModel.availability(of: musicMe) == .unknown)
         #expect(viewModel.needsInstall(films))
-        #expect(!viewModel.needsInstall(cafeyn))
+        #expect(!viewModel.needsInstall(presse))
         #expect(!viewModel.needsInstall(eureka))
     }
 
@@ -99,7 +112,7 @@ struct PartnerAppsTests {
         #expect(byID["eureka"] == .web)
         // "Connecter l'app" only for a required app that is already installed.
         #expect(viewModel.canConnectApp(films))
-        #expect(!viewModel.canConnectApp(DigitalCatalog.offers.first { $0.id == "presse" }!))
+        #expect(!viewModel.canConnectApp(presse))
     }
 
     @Test func missingRequiredAppOffersInstallInsteadOfOpening() async {
@@ -107,7 +120,7 @@ struct PartnerAppsTests {
             $0.installedApps.isInstalled = { _ in false }
             $0.digitalClient.target = { _ in
                 Issue.record("Pas de SSO tant que l'app n'est pas installée")
-                return URL(string: "https://example.org")!
+                return url("https://example.org")
             }
         } operation: { DigitalViewModel() }
 
@@ -133,7 +146,7 @@ struct PartnerAppsTests {
 
         await viewModel.refreshInstalledApps()
         await viewModel.primaryAction(films)
-        #expect(opened.value == [URL(string: "arte-mednum://")!])
+        #expect(opened.value == [url("arte-mednum://")])
         #expect(viewModel.installOffer == nil)
         // No portal web view: the app itself opens.
         #expect(viewModel.session == nil)

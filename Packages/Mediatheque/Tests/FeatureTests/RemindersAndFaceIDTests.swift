@@ -9,10 +9,6 @@ import Foundation
 import MediathequeCore
 import Testing
 
-private func paris(_ year: Int, _ month: Int, _ day: Int, _ hour: Int = 12) -> Date {
-    Calendar.paris.date(from: DateComponents(year: year, month: month, day: day, hour: hour))!
-}
-
 struct ReminderPlannerTests {
     @Test func remindersBeforeAndOnDueDayInTheFutureOnly() {
         let reminders = ReminderPlanner.loanReminders(
@@ -118,7 +114,7 @@ struct FaceIDTests {
     }
 
     @Test func faceIDRefusedKeepsTheAccountLocked() async {
-        let defaults = UserDefaults(suiteName: "tests.\(UUID().uuidString)")!
+        let defaults = freshDefaults()
         let session = makeSession(authenticates: false, defaults: defaults)
         session.isFaceIDEnabled = true
         await session.restore()
@@ -128,7 +124,7 @@ struct FaceIDTests {
     }
 
     @Test func faceIDAcceptedOpensTheAccount() async {
-        let defaults = UserDefaults(suiteName: "tests.\(UUID().uuidString)")!
+        let defaults = freshDefaults()
         let session = makeSession(authenticates: true, defaults: defaults)
         session.isFaceIDEnabled = true
         await session.restore()
@@ -136,7 +132,7 @@ struct FaceIDTests {
     }
 
     @Test func withoutFaceIDTheSessionRestoresDirectly() async {
-        let defaults = UserDefaults(suiteName: "tests.\(UUID().uuidString)")!
+        let defaults = freshDefaults()
         let session = makeSession(authenticates: false, defaults: defaults)
         await session.restore()
         #expect(session.patron == SampleData.patron)
@@ -152,7 +148,7 @@ struct RelockTests {
         now: LockIsolated<Date>,
         restores: LockIsolated<Int>
     ) async -> SessionStore {
-        let defaults = UserDefaults(suiteName: "tests.\(UUID().uuidString)")!
+        let defaults = freshDefaults()
         let session = withDependencies {
             $0.keychainClient.load = { Credentials(cardNumber: "0012345", password: "x") }
             $0.biometricClient.authenticate = { _ in authenticates.value }

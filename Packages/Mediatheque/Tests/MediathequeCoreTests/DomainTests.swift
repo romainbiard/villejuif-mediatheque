@@ -168,7 +168,7 @@ struct Code39Tests {
         #expect(elements.count == 9 * 9 + 8)
         #expect(elements.first?.isBar == true)
         #expect(elements.last?.isBar == true)
-        let star = Code39.patterns["*"]!.map { $0 == "w" }
+        let star = try #require(Code39.patterns["*"]?.map { $0 == "w" })
         #expect(elements.prefix(9).map(\.isWide) == star)
         #expect(elements.suffix(9).map(\.isWide) == star)
         // Digit "1" right after the start and its space: w n n w n n n n w.

@@ -10,10 +10,6 @@ import Testing
 @testable import AgendaFeature
 @testable import InfoFeature
 
-private func paris(_ year: Int, _ month: Int, _ day: Int, _ hour: Int = 0, _ minute: Int = 0) -> Date {
-    Calendar.paris.date(from: DateComponents(year: year, month: month, day: day, hour: hour, minute: minute))!
-}
-
 @MainActor
 struct AgendaViewModelTests {
     func makeViewModel(now: Date) async -> AgendaViewModel {
@@ -33,15 +29,15 @@ struct AgendaViewModelTests {
         #expect(viewModel.eventsOfSelectedDay.map(\.id) == [990])
         #expect(viewModel.ongoingEvents.map(\.id) == [983])
         #expect(viewModel.days.count == 14)
-        #expect(viewModel.hasEvents(on: paris(2026, 11, 4)))
+        #expect(viewModel.hasEvents(on: paris(2026, 11, 4, 0)))
     }
 
     @Test func emptyDaySuggestsNextDayWithEvents() async {
         let viewModel = await makeViewModel(now: paris(2026, 10, 31, 9))
-        viewModel.select(day: paris(2026, 11, 2))
+        viewModel.select(day: paris(2026, 11, 2, 0))
         #expect(viewModel.eventsOfSelectedDay.isEmpty)
         #expect(viewModel.isLibraryClosingDay(viewModel.selectedDay))
-        #expect(viewModel.nextDayWithEvents == paris(2026, 11, 4))
+        #expect(viewModel.nextDayWithEvents == paris(2026, 11, 4, 0))
         #expect(viewModel.feedback == .selection)
     }
 
@@ -59,28 +55,25 @@ struct AgendaViewModelTests {
     @Test func monthCalendarStartsOnMondayAndStaysInTheFuture() async {
         let viewModel = await makeViewModel(now: paris(2026, 10, 31, 9))
         // 1 October 2026 is a Thursday: 3 empty cells (Monday to Wednesday).
-        #expect(viewModel.displayedMonth == paris(2026, 10, 1))
+        #expect(viewModel.displayedMonth == paris(2026, 10, 1, 0))
         #expect(viewModel.monthGrid.prefix(3).allSatisfy { $0 == nil })
         #expect(viewModel.monthGrid.count == 3 + 31)
         #expect(!viewModel.canShowPreviousMonth)
-        #expect(!viewModel.isSelectable(paris(2026, 10, 30)))
-        #expect(viewModel.isSelectable(paris(2026, 10, 31)))
+        #expect(!viewModel.isSelectable(paris(2026, 10, 30, 0)))
+        #expect(viewModel.isSelectable(paris(2026, 10, 31, 0)))
 
         viewModel.showNextMonth()
         // 1 November 2026 is a Sunday: 6 empty cells.
-        #expect(viewModel.displayedMonth == paris(2026, 11, 1))
+        #expect(viewModel.displayedMonth == paris(2026, 11, 1, 0))
         #expect(viewModel.monthGrid.prefix(6).allSatisfy { $0 == nil })
-        #expect(viewModel.monthGrid[6] == paris(2026, 11, 1))
+        #expect(viewModel.monthGrid[6] == paris(2026, 11, 1, 0))
         #expect(viewModel.canShowPreviousMonth)
 
         viewModel.showPreviousMonth()
-        viewModel.select(day: paris(2026, 12, 2))
-        #expect(viewModel.displayedMonth == paris(2026, 12, 1))
+        viewModel.select(day: paris(2026, 12, 2, 0))
+        #expect(viewModel.displayedMonth == paris(2026, 12, 1, 0))
     }
-}
 
-@MainActor
-struct StaleAgendaTests {
     @Test func savedAgendaSaysItCouldNotUpdate() async {
         let viewModel = withDependencies {
             $0.date.now = Date(timeIntervalSince1970: 1_793_000_000)
@@ -139,31 +132,31 @@ struct AgendaPeriodTests {
     }
 
     @Test func weekendDays() {
-        #expect(AgendaPeriod.weekend.days(from: thursday, calendar: .paris) == [paris(2026, 10, 31), paris(2026, 11, 1)])
-        #expect(AgendaPeriod.weekend.days(from: paris(2026, 10, 31, 15), calendar: .paris) == [paris(2026, 10, 31), paris(2026, 11, 1)])
-        #expect(AgendaPeriod.weekend.days(from: paris(2026, 11, 1, 15), calendar: .paris) == [paris(2026, 11, 1)])
+        #expect(AgendaPeriod.weekend.days(from: thursday, calendar: .paris) == [paris(2026, 10, 31, 0), paris(2026, 11, 1, 0)])
+        #expect(AgendaPeriod.weekend.days(from: paris(2026, 10, 31, 15), calendar: .paris) == [paris(2026, 10, 31, 0), paris(2026, 11, 1, 0)])
+        #expect(AgendaPeriod.weekend.days(from: paris(2026, 11, 1, 15), calendar: .paris) == [paris(2026, 11, 1, 0)])
         #expect(AgendaPeriod.all.days(from: thursday, calendar: .paris).isEmpty)
     }
 
     @Test func wednesdaysStartAtTheNextOne() {
         let days = AgendaPeriod.wednesdays.days(from: thursday, calendar: .paris)
         #expect(days.count == AgendaPeriod.wednesdayWeeks)
-        #expect(days.first == paris(2026, 11, 4))
-        #expect(AgendaPeriod.wednesdays.days(from: paris(2026, 11, 4, 8), calendar: .paris).first == paris(2026, 11, 4))
+        #expect(days.first == paris(2026, 11, 4, 0))
+        #expect(AgendaPeriod.wednesdays.days(from: paris(2026, 11, 4, 8), calendar: .paris).first == paris(2026, 11, 4, 0))
     }
 
     @Test func schoolHolidaysAreTheCurrentOrNextOnes() {
         let toussaint = AgendaPeriod.schoolHolidays.days(from: thursday, calendar: .paris)
-        #expect(toussaint == [paris(2026, 10, 29), paris(2026, 10, 30), paris(2026, 10, 31), paris(2026, 11, 1)])
+        #expect(toussaint == [paris(2026, 10, 29, 0), paris(2026, 10, 30, 0), paris(2026, 10, 31, 0), paris(2026, 11, 1, 0)])
 
-        let christmas = AgendaPeriod.schoolHolidays.days(from: paris(2026, 11, 3), calendar: .paris)
-        #expect(christmas.first == paris(2026, 12, 19))
-        #expect(christmas.last == paris(2027, 1, 3))
+        let christmas = AgendaPeriod.schoolHolidays.days(from: paris(2026, 11, 3, 0), calendar: .paris)
+        #expect(christmas.first == paris(2026, 12, 19, 0))
+        #expect(christmas.last == paris(2027, 1, 3, 0))
     }
 
     @Test func weekendGroupsEventsByDay() async {
         let viewModel = await makeViewModel(period: .weekend)
-        #expect(viewModel.periodDays.map(\.day) == [paris(2026, 10, 31)])
+        #expect(viewModel.periodDays.map(\.day) == [paris(2026, 10, 31, 0)])
         #expect(viewModel.periodDays.first?.events.map(\.id) == [990])
         #expect(viewModel.periodOngoingEvents.map(\.id) == [983])
         #expect(viewModel.filters.count == 1)

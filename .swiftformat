@@ -21,7 +21,5 @@
 --disable numberFormatting
 # Test names stay in lowerCamelCase.
 --disable swiftTestingTestCaseNames
-# Force unwraps in tests: step 5 of the cleanup turns them into #require.
---disable noForceUnwrapInTests
 # `private extension` and members marked one by one are both fine.
 --disable extensionAccessControl

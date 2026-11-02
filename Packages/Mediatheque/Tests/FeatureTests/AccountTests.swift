@@ -11,15 +11,6 @@ import Testing
 @testable import AccountFeature
 @testable import SearchFeature
 
-func freshDefaults() -> UserDefaults {
-    let name = "tests.\(UUID().uuidString)"
-    return UserDefaults(suiteName: name)!
-}
-
-private func paris(_ year: Int, _ month: Int, _ day: Int, _ hour: Int = 12) -> Date {
-    Calendar.paris.date(from: DateComponents(year: year, month: month, day: day, hour: hour))!
-}
-
 @MainActor
 struct SessionAndLoginTests {
     @Test func restoreWithoutCredentialsIsLoggedOut() async {

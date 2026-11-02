@@ -94,7 +94,7 @@ struct OpenAgendaIntent: AppIntent {
 
 // MARK: - Shortcuts (Siri, Spotlight, Action button)
 
-struct VillejuifShortcuts: AppShortcutsProvider {
+struct MediathequeShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
             intent: NextReturnsIntent(),
