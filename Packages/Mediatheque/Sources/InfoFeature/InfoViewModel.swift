@@ -11,6 +11,8 @@ import Observation
 @Observable
 public final class InfoViewModel {
     public private(set) var state: LoadState<[LibraryInfo]> = .idle
+    /// The portal didn't answer: the opening hours on screen are the last ones saved.
+    public private(set) var staleError: LoadError?
 
     @ObservationIgnored @Dependency(\.libraryClient) private var libraryClient
     @ObservationIgnored @Dependency(\.date.now) private var now
@@ -24,9 +26,14 @@ public final class InfoViewModel {
         do {
             let libraries = try await libraryClient.libraries(policy)
             // The 3 libraries in network order.
-            state = .loaded(libraries.sorted { ($0.library?.rawValue ?? "9") < ($1.library?.rawValue ?? "9") })
+            state = .loaded(libraries.value.sorted { ($0.library?.rawValue ?? "9") < ($1.library?.rawValue ?? "9") })
+            staleError = libraries.refreshError
         } catch {
-            if state.value == nil { state = .failed(LoadError(error)) }
+            if state.value == nil {
+                state = .failed(LoadError(error))
+            } else {
+                staleError = LoadError(error)
+            }
         }
     }
 

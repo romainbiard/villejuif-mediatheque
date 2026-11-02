@@ -25,6 +25,9 @@ public struct AgendaView: View {
                 } else {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 16) {
+                            if let error = viewModel.staleError {
+                                StaleBanner(error.staleText, systemImage: error.staleSystemImage)
+                            }
                             if viewModel.filters.period == .all {
                                 DayStrip(viewModel: viewModel)
                                 content
@@ -79,6 +82,9 @@ public struct AgendaView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
+                    if let error = viewModel.staleError {
+                        StaleBanner(error.staleText, systemImage: error.staleSystemImage)
+                    }
                     if viewModel.filters.period == .all {
                         Text(viewModel.selectedDay.formatted(EventFormatting.dayTitle))
                             .font(.title2.weight(.heavy))

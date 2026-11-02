@@ -19,7 +19,7 @@ struct AgendaViewModelTests {
     func makeViewModel(now: Date) async -> AgendaViewModel {
         let viewModel = withDependencies {
             $0.date.now = now
-            $0.agendaClient.events = { _ in SampleData.events }
+            $0.agendaClient.events = { _ in Cached(SampleData.events) }
         } operation: {
             AgendaViewModel()
         }
@@ -80,11 +80,24 @@ struct AgendaViewModelTests {
 }
 
 @MainActor
+struct StaleAgendaTests {
+    @Test func savedAgendaSaysItCouldNotUpdate() async {
+        let viewModel = withDependencies {
+            $0.date.now = Date(timeIntervalSince1970: 1_793_000_000)
+            $0.agendaClient.events = { _ in Cached(SampleData.events, refreshError: .siteUnavailable) }
+        } operation: { AgendaViewModel() }
+        await viewModel.load()
+        #expect(viewModel.state.value == SampleData.events)
+        #expect(viewModel.staleError?.staleText == "Mise à jour impossible · dernières données enregistrées")
+    }
+}
+
+@MainActor
 struct InfoViewModelTests {
     func makeViewModel(now: Date) async -> InfoViewModel {
         let viewModel = withDependencies {
             $0.date.now = now
-            $0.libraryClient.libraries = { _ in SampleData.libraries.reversed() }
+            $0.libraryClient.libraries = { _ in Cached(SampleData.libraries.reversed()) }
         } operation: {
             InfoViewModel()
         }
@@ -118,7 +131,7 @@ struct AgendaPeriodTests {
     func makeViewModel(period: AgendaPeriod) async -> AgendaViewModel {
         let viewModel = withDependencies {
             $0.date.now = thursday
-            $0.agendaClient.events = { _ in SampleData.events }
+            $0.agendaClient.events = { _ in Cached(SampleData.events) }
         } operation: { AgendaViewModel() }
         await viewModel.load()
         viewModel.filters.period = period

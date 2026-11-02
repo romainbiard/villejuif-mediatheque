@@ -31,6 +31,29 @@ struct SessionAndLoginTests {
         #expect(session.state == .loggedOut)
     }
 
+    @Test func lastKnownAccountShowsWhenTheSessionCannotReopen() async {
+        let session = withDependencies {
+            $0.keychainClient.load = { Credentials(cardNumber: "0012345", password: "x") }
+            $0.patronCache.load = { SampleData.patron }
+            $0.authClient.restore = { throw URLError(.notConnectedToInternet) }
+        } operation: { SessionStore(defaults: freshDefaults()) }
+        await session.restore()
+        #expect(session.patron == SampleData.patron)
+    }
+
+    @Test func refusedCredentialsForgetTheLastKnownAccount() async {
+        let cleared = LockIsolated(false)
+        let session = withDependencies {
+            $0.keychainClient.load = { Credentials(cardNumber: "0012345", password: "x") }
+            $0.patronCache.load = { SampleData.patron }
+            $0.patronCache.clear = { cleared.setValue(true) }
+            $0.authClient.restore = { throw AuthError.invalidCredentials }
+        } operation: { SessionStore(defaults: freshDefaults()) }
+        await session.restore()
+        #expect(session.state == .loggedOut)
+        #expect(cleared.value)
+    }
+
     @Test func successfulLoginOpensSession() async {
         let (session, viewModel) = withDependencies {
             $0.authClient.login = { credentials in
@@ -89,6 +112,18 @@ struct LoansViewModelTests {
         return viewModel
     }
 
+    @Test func savedLoansStayWithABannerWhenTheRefreshFails() async {
+        let viewModel = withDependencies {
+            $0.date.now = paris(2026, 10, 30)
+            $0.snapshotClient.load = { AccountSnapshot(loans: SampleData.loans, holds: [], updatedAt: paris(2026, 10, 29)) }
+            $0.accountClient.loans = { throw URLError(.notConnectedToInternet) }
+        } operation: { LoansViewModel() }
+        await viewModel.load()
+        #expect(viewModel.state.value?.count == SampleData.loans.count)
+        #expect(viewModel.staleError == .offline)
+        #expect(viewModel.staleError?.staleText == "Hors ligne · dernières données enregistrées")
+    }
+
     @Test func loansAreGroupedByDueState() async {
         let viewModel = await makeViewModel(renew: { _ in [] })
         #expect(viewModel.sections.map(\.kind) == [.late, .thisWeek, .later])
@@ -119,6 +154,7 @@ struct HoldsTests {
     @Test func holdsAreSplitAndCancelled() async {
         let cancelled = LockIsolated<[Hold.ID]>([])
         let viewModel = withDependencies {
+            $0.snapshotClient.load = { nil }
             $0.accountClient.holds = { SampleData.holds }
             $0.accountClient.cancelHold = { id in cancelled.withValue { $0.append(id) } }
         } operation: { HoldsViewModel() }

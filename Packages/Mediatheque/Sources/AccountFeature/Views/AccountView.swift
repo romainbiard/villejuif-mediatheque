@@ -156,6 +156,7 @@ struct AccountHomeView: View {
                         .frame(maxWidth: .infinity)
                 } else {
                     VStack(alignment: .leading, spacing: 14) {
+                        staleBanner
                         expiryBanner
                         card
                         counters
@@ -235,6 +236,7 @@ struct AccountHomeView: View {
     /// so the menu only appears when there is no sidebar (narrow window).
     private var dashboard: some View {
         VStack(alignment: .leading, spacing: 18) {
+            staleBanner
             expiryBanner
             if isWide {
                 HStack(alignment: .top, spacing: 18) {
@@ -411,6 +413,14 @@ struct AccountHomeView: View {
     }
 
     // MARK: Shared
+
+    /// The account couldn't be refreshed: what is on screen is the last one read.
+    @ViewBuilder
+    private var staleBanner: some View {
+        if let error = viewModel.error, error != .notLoggedIn {
+            StaleBanner(error.staleText, systemImage: error.staleSystemImage)
+        }
+    }
 
     @ViewBuilder
     private var expiryBanner: some View {

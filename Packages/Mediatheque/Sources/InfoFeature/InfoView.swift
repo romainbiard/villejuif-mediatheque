@@ -18,6 +18,9 @@ public struct InfoView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
+                    if let error = viewModel.staleError {
+                        StaleBanner(error.staleText, systemImage: error.staleSystemImage)
+                    }
                     map
                     content
                 }

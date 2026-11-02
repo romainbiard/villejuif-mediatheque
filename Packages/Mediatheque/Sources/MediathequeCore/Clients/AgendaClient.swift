@@ -11,7 +11,7 @@ import Foundation
 /// the details from each event's iCal.
 @DependencyClient
 public struct AgendaClient: Sendable {
-    public var events: @Sendable (_ policy: CachePolicy) async throws -> [Event]
+    public var events: @Sendable (_ policy: CachePolicy) async throws -> Cached<[Event]>
     public var detail: @Sendable (_ event: Event) async throws -> EventDetail
 }
 
@@ -21,7 +21,7 @@ extension AgendaClient: DependencyKey {
         return AgendaClient(
             events: { policy in
                 // The site publishes the agenda once and for all: 30 min is enough, and the agenda stays readable offline.
-                try await DataCache.shared.value(for: "agenda-events", maxAge: 30 * 60, policy: policy) {
+                try await DataCache.shared.cached(for: "agenda-events", maxAge: 30 * 60, policy: policy) {
                     try HTMLParsers.calendarEvents(in: try await http.string(for: .calendar()))
                         .map(Event.init(dto:))
                         .sorted { ($0.start ?? .distantFuture) < ($1.start ?? .distantFuture) }
@@ -41,7 +41,7 @@ extension AgendaClient: DependencyKey {
     }
 
     public static let previewValue = AgendaClient(
-        events: { _ in SampleData.events },
+        events: { _ in Cached(SampleData.events) },
         detail: { event in
             EventDetail(event: event, descriptionText: "Un moment de lecture partagé, en accès libre.", latitude: 48.7926, longitude: 2.3628)
         }
@@ -53,7 +53,7 @@ extension AgendaClient: DependencyKey {
 /// Practical info for the 3 libraries.
 @DependencyClient
 public struct LibraryClient: Sendable {
-    public var libraries: @Sendable (_ policy: CachePolicy) async throws -> [LibraryInfo]
+    public var libraries: @Sendable (_ policy: CachePolicy) async throws -> Cached<[LibraryInfo]>
 }
 
 extension LibraryClient: DependencyKey {
@@ -62,14 +62,14 @@ extension LibraryClient: DependencyKey {
         return LibraryClient(
             libraries: { policy in
                 // Opening hours rarely change (holidays, works): 12 h, and always viewable offline.
-                try await DataCache.shared.value(for: "libraries", maxAge: 12 * 3600, policy: policy) {
+                try await DataCache.shared.cached(for: "libraries", maxAge: 12 * 3600, policy: policy) {
                     try HTMLParsers.libraries(in: try await http.string(for: .practicalInfo)).map(LibraryInfo.init(dto:))
                 }
             }
         )
     }
 
-    public static let previewValue = LibraryClient(libraries: { _ in SampleData.libraries })
+    public static let previewValue = LibraryClient(libraries: { _ in Cached(SampleData.libraries) })
     public static let testValue = LibraryClient()
 }
 

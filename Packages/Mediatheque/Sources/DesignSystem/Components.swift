@@ -186,6 +186,29 @@ public struct EmptyStateView: View {
     }
 }
 
+// MARK: - Errors
+
+/// Line above the data already on screen when the refresh failed ("Hors ligne · dernières données enregistrées").
+public struct StaleBanner: View {
+    let text: String
+    let systemImage: String
+
+    public init(_ text: String, systemImage: String) {
+        self.text = text
+        self.systemImage = systemImage
+    }
+
+    public var body: some View {
+        Label(text, systemImage: systemImage)
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(Color.statusWarning)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.brandYellow.opacity(0.3), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+    }
+}
+
 // MARK: - Card
 
 public extension View {

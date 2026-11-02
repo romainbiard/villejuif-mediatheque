@@ -169,7 +169,11 @@ public enum AccountSync {
         @Dependency(\.inboxClient) var inboxClient
         @Dependency(\.date.now) var now
 
-        let snapshot = AccountSnapshot(loans: try await account.loans(), holds: try await account.holds(), updatedAt: now)
+        // Side by side: each list is one or two requests to the portal.
+        let client = account
+        async let loans = client.loans()
+        async let holds = client.holds()
+        let snapshot = AccountSnapshot(loans: try await loans, holds: try await holds, updatedAt: now)
         let previous = snapshots.load()
         snapshots.save(snapshot)
         #if canImport(WidgetKit)

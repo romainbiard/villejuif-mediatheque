@@ -4,15 +4,15 @@
 
 import Foundation
 
-public struct Patron: Hashable, Sendable {
-    public struct Permissions: Hashable, Sendable {
+public struct Patron: Hashable, Sendable, Codable {
+    public struct Permissions: Hashable, Sendable, Codable {
         public let blocked: Bool
         public let loanForbidden: Bool
         public let holdForbidden: Bool
         public let digitalResourcesForbidden: Bool
     }
 
-    public struct Counters: Hashable, Sendable {
+    public struct Counters: Hashable, Sendable, Codable {
         public let loans: Int
         public let lateLoans: Int
         public let holds: Int

@@ -12,6 +12,7 @@ import Observation
 @Observable
 public final class AccountHomeViewModel {
     public private(set) var isRefreshing = false
+    /// The refresh failed: the account on screen is the last one read ("Mise à jour impossible" banner).
     public private(set) var error: LoadError?
     /// Bell badge.
     public private(set) var unreadNotifications = 0
@@ -27,14 +28,17 @@ public final class AccountHomeViewModel {
             isRefreshing = false
             refreshUnreadCount()
         }
+        // Snapshot for the widget and offline use, reminders rescheduled, notification center updated.
+        // Started alongside the record: each is a few requests to the portal.
+        async let sync = try? withDependencies(from: self) { try await AccountSync.run(settings: .current()) }
         do {
             let patron = try await account.patron()
             session.update(patron)
             error = nil
-            // Snapshot for the widget and offline use, reminders rescheduled, notification center updated.
             withDependencies(from: self) { AccountSync.record(libraryMessage: patron.message) }
-            _ = try? await withDependencies(from: self) { try await AccountSync.run(settings: .current()) }
+            _ = await sync
         } catch {
+            _ = await sync
             let loadError = LoadError(error)
             if loadError == .notLoggedIn { await session.logout() }
             self.error = loadError
@@ -65,6 +69,8 @@ public final class LoansViewModel {
     }
 
     public private(set) var state: LoadState<[Loan]> = .idle
+    /// The refresh failed: the loans on screen are the last ones read.
+    public private(set) var staleError: LoadError?
     public private(set) var renewing: Set<Loan.ID> = []
     /// Loans the site refused to renew during this screen session.
     public private(set) var refused: Set<Loan.ID> = []
@@ -72,17 +78,26 @@ public final class LoansViewModel {
     public private(set) var feedback: FeedbackEvent?
 
     @ObservationIgnored @Dependency(\.accountClient) private var account
+    @ObservationIgnored @Dependency(\.snapshotClient) private var snapshots
     @ObservationIgnored @Dependency(\.date.now) private var now
     @ObservationIgnored private let calendar = Calendar.paris
 
     public init() {}
 
+    /// The last snapshot shows at once, then the portal's list replaces it.
     public func load() async {
-        if state.value == nil { state = .loading }
+        if state.value == nil {
+            state = snapshots.load().map { .loaded($0.upcomingLoans) } ?? .loading
+        }
         do {
             state = .loaded(try await account.loans().sorted { $0.dueDate < $1.dueDate })
+            staleError = nil
         } catch {
-            if state.value == nil { state = .failed(LoadError(error)) }
+            if state.value == nil {
+                state = .failed(LoadError(error))
+            } else {
+                staleError = LoadError(error)
+            }
         }
     }
 
@@ -155,20 +170,31 @@ public final class LoansViewModel {
 @Observable
 public final class HoldsViewModel {
     public private(set) var state: LoadState<[Hold]> = .idle
+    /// The refresh failed: the holds on screen are the last ones read.
+    public private(set) var staleError: LoadError?
     public private(set) var cancelling: Set<Hold.ID> = []
     public private(set) var message: String?
     public private(set) var feedback: FeedbackEvent?
 
     @ObservationIgnored @Dependency(\.accountClient) private var account
+    @ObservationIgnored @Dependency(\.snapshotClient) private var snapshots
 
     public init() {}
 
+    /// The last snapshot shows at once, then the portal's list replaces it.
     public func load() async {
-        if state.value == nil { state = .loading }
+        if state.value == nil {
+            state = snapshots.load().map { .loaded($0.holds) } ?? .loading
+        }
         do {
             state = .loaded(try await account.holds())
+            staleError = nil
         } catch {
-            if state.value == nil { state = .failed(LoadError(error)) }
+            if state.value == nil {
+                state = .failed(LoadError(error))
+            } else {
+                staleError = LoadError(error)
+            }
         }
     }
 

@@ -12,6 +12,9 @@ struct LoansView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
+                if let error = viewModel.staleError {
+                    StaleBanner(error.staleText, systemImage: error.staleSystemImage)
+                }
                 content
             }
             .padding(.horizontal, 16)
@@ -128,6 +131,9 @@ struct HoldsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
+                if let error = viewModel.staleError {
+                    StaleBanner(error.staleText, systemImage: error.staleSystemImage)
+                }
                 content
             }
             .padding(.horizontal, 16)

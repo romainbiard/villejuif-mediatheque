@@ -160,6 +160,17 @@
         }
       }
     },
+    "Hors ligne · dernières données enregistrées": {
+      "comment": "Banner above data already on screen when the device is offline",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offline · last saved data"
+          }
+        }
+      }
+    },
     "Indifférent": {
       "comment": "Preferred contact channel for library notices",
       "localizations": {
@@ -244,6 +255,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Message from the library"
+          }
+        }
+      }
+    },
+    "Mise à jour impossible · dernières données enregistrées": {
+      "comment": "Banner above data already on screen when the portal couldn't be reached",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't update · last saved data"
           }
         }
       }

@@ -27,7 +27,7 @@ struct LiveSmokeTests {
     }
 
     @Test func agendaEvents() async throws {
-        let events = try await AgendaClient.liveValue.events(.reload)
+        let events = try await AgendaClient.liveValue.events(.reload).value
         #expect(!events.isEmpty)
         #expect(events.contains { $0.start != nil })
         let detail = try await AgendaClient.liveValue.detail(try #require(events.first { !$0.isAllDay }))
@@ -42,7 +42,7 @@ struct LiveSmokeTests {
     }
 
     @Test func libraries() async throws {
-        let libraries = try await LibraryClient.liveValue.libraries(.reload)
+        let libraries = try await LibraryClient.liveValue.libraries(.reload).value
         #expect(Set(libraries.compactMap(\.library)) == Set(Library.allCases))
         #expect(libraries.allSatisfy { !$0.hours.slotsByWeekday.isEmpty })
     }

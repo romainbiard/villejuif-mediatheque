@@ -223,6 +223,18 @@ struct DataCacheTests {
         }
     }
 
+    @Test func fallbackSaysTheRefreshFailed() async throws {
+        let (cache, _) = makeCache()
+        let start = Date(timeIntervalSince1970: 1_000)
+        let fresh = try await cache.cached(for: "k", maxAge: 60, now: { start }) { "hier" }
+        let offline: Cached<String> = try await cache.cached(for: "k", maxAge: 60, policy: .reload, now: { start + 3600 }) {
+            throw URLError(.notConnectedToInternet)
+        }
+        #expect(fresh.refreshError == nil)
+        #expect(offline.value == "hier")
+        #expect(offline.refreshError == .offline)
+    }
+
     @Test func valuesSurviveOnDiskButNotWhenMemoryOnly() async throws {
         let (cache, directory) = makeCache()
         let start = Date(timeIntervalSince1970: 1_000)

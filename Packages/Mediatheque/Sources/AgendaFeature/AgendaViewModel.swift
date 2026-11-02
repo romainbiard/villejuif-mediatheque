@@ -78,6 +78,8 @@ public struct AgendaFilters: Hashable, Sendable {
 @Observable
 public final class AgendaViewModel {
     public private(set) var state: LoadState<[Event]> = .idle
+    /// The portal didn't answer: the agenda on screen is the last one saved.
+    public private(set) var staleError: LoadError?
     public private(set) var selectedDay: Date
     /// First day of the month shown by the mini calendar (iPad).
     public private(set) var displayedMonth: Date
@@ -102,9 +104,15 @@ public final class AgendaViewModel {
     public func load(_ policy: CachePolicy = .useCache) async {
         if state.value == nil { state = .loading }
         do {
-            state = .loaded(try await agenda.events(policy))
+            let events = try await agenda.events(policy)
+            state = .loaded(events.value)
+            staleError = events.refreshError
         } catch {
-            if state.value == nil { state = .failed(LoadError(error)) }
+            if state.value == nil {
+                state = .failed(LoadError(error))
+            } else {
+                staleError = LoadError(error)
+            }
         }
     }
 

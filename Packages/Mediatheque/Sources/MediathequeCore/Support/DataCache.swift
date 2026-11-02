@@ -10,6 +10,18 @@ public enum CachePolicy: Sendable {
     case reload
 }
 
+/// A value from the cache or the portal. `refreshError` when the portal failed
+/// and the value is the last one saved ("Mise à jour impossible" banner).
+public struct Cached<Value: Sendable>: Sendable {
+    public let value: Value
+    public let refreshError: LoadError?
+
+    public init(_ value: Value, refreshError: LoadError? = nil) {
+        self.value = value
+        self.refreshError = refreshError
+    }
+}
+
 /// Cache for the portal's public data (agenda, opening hours, searches, availability).
 /// Never account data here: it lives in the App Group snapshot, erased on sign-out.
 ///
@@ -49,16 +61,28 @@ public actor DataCache {
         now: @Sendable () -> Date = { .now },
         load: @Sendable () async throws -> Value
     ) async throws -> Value {
+        try await cached(for: key, maxAge: maxAge, policy: policy, persist: persist, now: now, load: load).value
+    }
+
+    /// Same as `value`, saying when the value is a stale one served because `load` failed.
+    public func cached<Value: Codable & Sendable>(
+        for key: String,
+        maxAge: TimeInterval,
+        policy: CachePolicy = .useCache,
+        persist: Bool = true,
+        now: @Sendable () -> Date = { .now },
+        load: @Sendable () async throws -> Value
+    ) async throws -> Cached<Value> {
         let cached: Entry<Value>? = entry(for: key, persist: persist)
         if policy == .useCache, let cached, now().timeIntervalSince(cached.savedAt) < maxAge {
-            return cached.value
+            return Cached(cached.value)
         }
         do {
             let value = try await load()
             store(Entry(savedAt: now(), value: value), for: key, persist: persist)
-            return value
+            return Cached(value)
         } catch {
-            if let cached { return cached.value }
+            if let cached { return Cached(cached.value, refreshError: LoadError(error)) }
             throw error
         }
     }

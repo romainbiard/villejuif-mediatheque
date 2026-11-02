@@ -71,6 +71,7 @@ public final class SessionStore {
     @ObservationIgnored @Dependency(\.date) private var date
     @ObservationIgnored @Dependency(\.biometricClient) private var biometrics
     @ObservationIgnored @Dependency(\.keychainClient) private var keychain
+    @ObservationIgnored @Dependency(\.patronCache) private var patronCache
     @ObservationIgnored private let defaults: UserDefaults
 
     public init(defaults: UserDefaults = .shared) {
@@ -88,27 +89,42 @@ public final class SessionStore {
     }
 
     /// At launch: reopens the session if credentials are in the keychain.
+    /// The last known account shows at once: reopening the session takes several requests.
     public func restore() async {
         let hasCredentials = (try? keychain.load()) != nil
         if hasCredentials, isFaceIDEnabled {
             state = .locked
             guard await biometrics.authenticate(.local("Ouvrir votre compte lecteur")) else { return }
         }
+        if hasCredentials, let cached = patronCache.load() {
+            state = .loggedIn(cached)
+        }
         do {
-            state = (try await auth.restore()).map(State.loggedIn) ?? .loggedOut
+            if let patron = try await auth.restore() {
+                didLogIn(patron)
+            } else {
+                patronCache.clear()
+                state = .loggedOut
+            }
         } catch {
-            // Offline at launch: stay signed out, the next action will retry.
+            // Offline or site down: keep the last known account, the Account tab says it couldn't refresh.
+            // Without one, stay signed out: the next action will retry.
+            if patron != nil, LoadError(error) != .notLoggedIn { return }
+            patronCache.clear()
             state = .loggedOut
         }
     }
 
     public func didLogIn(_ patron: Patron) {
         state = .loggedIn(patron)
+        patronCache.save(patron)
     }
 
     /// Refreshes the account (counters, card) after an action.
     public func update(_ patron: Patron) {
-        if case .loggedIn = state { state = .loggedIn(patron) }
+        guard case .loggedIn = state else { return }
+        state = .loggedIn(patron)
+        patronCache.save(patron)
     }
 
     public func didEnterBackground() {
@@ -146,6 +162,7 @@ public final class SessionStore {
         lockedPatron = nil
         backgroundedAt = nil
         await auth.logout()
+        patronCache.clear()
         await AccountSync.reset()
         isFaceIDEnabled = false
         // The next patron to sign in on this device will see the default settings again.

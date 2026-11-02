@@ -72,6 +72,58 @@ extension KeychainClient: DependencyKey {
     }
 }
 
+/// Last account read from the portal, in the keychain next to the credentials: at launch the Account tab
+/// shows it at once, while the web session reopens (three requests to the portal).
+public struct PatronCacheClient: Sendable {
+    public var load: @Sendable () -> Patron?
+    public var save: @Sendable (_ patron: Patron) -> Void
+    public var clear: @Sendable () -> Void
+
+    public init(
+        load: @escaping @Sendable () -> Patron?,
+        save: @escaping @Sendable (_ patron: Patron) -> Void,
+        clear: @escaping @Sendable () -> Void
+    ) {
+        self.load = load
+        self.save = save
+        self.clear = clear
+    }
+}
+
+extension PatronCacheClient: DependencyKey {
+    public static let liveValue = PatronCacheClient(
+        load: {
+            var query = baseQuery
+            query[kSecReturnData as String] = true
+            query[kSecMatchLimit as String] = kSecMatchLimitOne
+            var item: CFTypeRef?
+            guard SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess, let data = item as? Data else { return nil }
+            return try? JSONDecoder().decode(Patron.self, from: data)
+        },
+        save: { patron in
+            guard let data = try? JSONEncoder().encode(patron) else { return }
+            SecItemDelete(baseQuery as CFDictionary)
+            var attributes = baseQuery
+            attributes[kSecValueData as String] = data
+            attributes[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+            SecItemAdd(attributes as CFDictionary, nil)
+        },
+        clear: { SecItemDelete(baseQuery as CFDictionary) }
+    )
+
+    public static let previewValue = PatronCacheClient(load: { nil }, save: { _ in }, clear: {})
+    /// A cache that stays empty: tests opt in by overriding `load`.
+    public static let testValue = previewValue
+
+    private static var baseQuery: [String: Any] {
+        [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: KeychainClient.service,
+            kSecAttrAccount as String: "fiche",
+        ]
+    }
+}
+
 public struct KeychainError: Error, Equatable {
     public let status: OSStatus
 }
@@ -80,5 +132,10 @@ extension DependencyValues {
     public var keychainClient: KeychainClient {
         get { self[KeychainClient.self] }
         set { self[KeychainClient.self] = newValue }
+    }
+
+    public var patronCache: PatronCacheClient {
+        get { self[PatronCacheClient.self] }
+        set { self[PatronCacheClient.self] = newValue }
     }
 }
