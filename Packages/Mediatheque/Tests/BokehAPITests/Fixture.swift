@@ -11,7 +11,7 @@ enum Fixture {
     }
 
     static func string(_ name: String) throws -> String {
-        String(decoding: try data(name), as: UTF8.self)
+        try String(decoding: data(name), as: UTF8.self)
     }
 }
 

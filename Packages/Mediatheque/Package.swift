@@ -12,7 +12,7 @@ let package = Package(
     defaultLocalization: "fr",
     platforms: [
         .iOS(.v26),
-        .macOS(.v26),
+        .macOS(.v26)
     ],
     products: [
         .library(name: "BokehAPI", targets: ["BokehAPI"]),
@@ -22,18 +22,18 @@ let package = Package(
         .library(name: "AgendaFeature", targets: ["AgendaFeature"]),
         .library(name: "InfoFeature", targets: ["InfoFeature"]),
         .library(name: "AccountFeature", targets: ["AccountFeature"]),
-        .library(name: "DigitalFeature", targets: ["DigitalFeature"]),
+        .library(name: "DigitalFeature", targets: ["DigitalFeature"])
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.17.0"),
         .package(url: "https://github.com/pointfreeco/swift-clocks", from: "1.0.0"),
-        .package(url: "https://github.com/scinfu/SwiftSoup", from: "2.14.0"),
+        .package(url: "https://github.com/scinfu/SwiftSoup", from: "2.14.0")
     ],
     targets: [
         .target(
             name: "BokehAPI",
             dependencies: [
-                .product(name: "SwiftSoup", package: "SwiftSoup"),
+                .product(name: "SwiftSoup", package: "SwiftSoup")
             ]
         ),
         .target(
@@ -41,16 +41,36 @@ let package = Package(
             dependencies: [
                 "BokehAPI",
                 dependencies,
-                .product(name: "DependenciesMacros", package: "swift-dependencies"),
+                .product(name: "DependenciesMacros", package: "swift-dependencies")
             ],
             resources: [.process("Localization/Localizable.xcstrings")]
         ),
         .target(name: "DesignSystem", resources: [.process("Resources"), .process("Localization/Localizable.xcstrings")]),
-        .target(name: "SearchFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies], resources: [.process("Localization/Localizable.xcstrings")]),
-        .target(name: "AgendaFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies], resources: [.process("Localization/Localizable.xcstrings")]),
-        .target(name: "InfoFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies], resources: [.process("Localization/Localizable.xcstrings")]),
-        .target(name: "AccountFeature", dependencies: ["MediathequeCore", "DesignSystem", "SearchFeature", dependencies], resources: [.process("Localization/Localizable.xcstrings")]),
-        .target(name: "DigitalFeature", dependencies: ["MediathequeCore", "DesignSystem", dependencies], resources: [.process("Localization/Localizable.xcstrings")]),
+        .target(
+            name: "SearchFeature",
+            dependencies: ["MediathequeCore", "DesignSystem", dependencies],
+            resources: [.process("Localization/Localizable.xcstrings")]
+        ),
+        .target(
+            name: "AgendaFeature",
+            dependencies: ["MediathequeCore", "DesignSystem", dependencies],
+            resources: [.process("Localization/Localizable.xcstrings")]
+        ),
+        .target(
+            name: "InfoFeature",
+            dependencies: ["MediathequeCore", "DesignSystem", dependencies],
+            resources: [.process("Localization/Localizable.xcstrings")]
+        ),
+        .target(
+            name: "AccountFeature",
+            dependencies: ["MediathequeCore", "DesignSystem", "SearchFeature", dependencies],
+            resources: [.process("Localization/Localizable.xcstrings")]
+        ),
+        .target(
+            name: "DigitalFeature",
+            dependencies: ["MediathequeCore", "DesignSystem", dependencies],
+            resources: [.process("Localization/Localizable.xcstrings")]
+        ),
         .testTarget(
             name: "BokehAPITests",
             dependencies: ["BokehAPI"],
@@ -61,7 +81,7 @@ let package = Package(
             dependencies: [
                 "BokehAPI",
                 "MediathequeCore",
-                .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
+                .product(name: "DependenciesTestSupport", package: "swift-dependencies")
             ]
         ),
         .testTarget(
@@ -73,9 +93,9 @@ let package = Package(
                 "AccountFeature",
                 "DigitalFeature",
                 .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
-                .product(name: "Clocks", package: "swift-clocks"),
+                .product(name: "Clocks", package: "swift-clocks")
             ]
-        ),
+        )
     ],
     swiftLanguageModes: [.v6]
 )

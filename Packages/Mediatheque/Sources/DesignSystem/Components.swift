@@ -100,7 +100,7 @@ public struct CoverImage: View {
                 }
             }
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-        .accessibilityHidden(true)
+            .accessibilityHidden(true)
     }
 }
 

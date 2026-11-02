@@ -125,7 +125,7 @@ struct InfoViewModelTests {
 
 @MainActor
 struct AgendaPeriodTests {
-    // Thursday 29 October 2026, during the All Saints' holidays.
+    /// Thursday 29 October 2026, during the All Saints' holidays.
     let thursday = paris(2026, 10, 29, 9)
 
     func makeViewModel(period: AgendaPeriod) async -> AgendaViewModel {

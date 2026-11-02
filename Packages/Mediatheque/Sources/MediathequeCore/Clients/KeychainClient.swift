@@ -67,7 +67,7 @@ extension KeychainClient: DependencyKey {
         [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
-            kSecAttrAccount as String: "abonne",
+            kSecAttrAccount as String: "abonne"
         ]
     }
 }
@@ -119,7 +119,7 @@ extension PatronCacheClient: DependencyKey {
         [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: KeychainClient.service,
-            kSecAttrAccount as String: "fiche",
+            kSecAttrAccount as String: "fiche"
         ]
     }
 }

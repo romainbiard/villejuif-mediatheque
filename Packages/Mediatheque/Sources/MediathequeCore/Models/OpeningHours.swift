@@ -20,7 +20,7 @@ public struct OpeningHours: Hashable, Sendable, Codable {
     }
 
     static let weekdays: [String: Int] = [
-        "dimanche": 1, "lundi": 2, "mardi": 3, "mercredi": 4, "jeudi": 5, "vendredi": 6, "samedi": 7,
+        "dimanche": 1, "lundi": 2, "mardi": 3, "mercredi": 4, "jeudi": 5, "vendredi": 6, "samedi": 7
     ]
 
     /// Lines from the site: "Mardi : 13h - 19h", "Samedi : 10h - 12h30 / 14h - 18h".
@@ -39,7 +39,7 @@ public struct OpeningHours: Hashable, Sendable, Codable {
                 )
             }
         }
-        self.slotsByWeekday = slots
+        slotsByWeekday = slots
     }
 
     public enum Status: Hashable, Sendable {

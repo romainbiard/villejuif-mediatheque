@@ -93,21 +93,21 @@ public enum HTMLParsers {
         for card in try document.select("div.card_Intonation_Library_View_Wrapper_Article") {
             guard
                 let link = try card.select(".card-title a[href*=articleview]").first(),
-                let articleID = Int(try link.attr("href").split(separator: "/").last ?? ""),
+                let articleID = try Int(link.attr("href").split(separator: "/").last ?? ""),
                 seen.insert(articleID).inserted
             else { continue }
 
             try link.select(".sr-only").remove()
-            events.append(CalendarEventDTO(
+            try events.append(CalendarEventDTO(
                 articleID: articleID,
-                title: try link.text(),
-                imageURL: URL(string: try card.select("img.card-img").first()?.attr("abs:src") ?? ""),
-                location: try badgeText(card, ".badge_article_location"),
-                startText: try badgeText(card, ".badge_event_start"),
-                endText: try badgeText(card, ".badge_event_end"),
-                eventType: try badgeText(card, ".custom_field_meta_2"),
-                audience: try badgeText(card, ".custom_field_meta_3"),
-                dateSentence: try card.select("span.calendar_event_date").first()?.text()
+                title: link.text(),
+                imageURL: URL(string: card.select("img.card-img").first()?.attr("abs:src") ?? ""),
+                location: badgeText(card, ".badge_article_location"),
+                startText: badgeText(card, ".badge_event_start"),
+                endText: badgeText(card, ".badge_event_end"),
+                eventType: badgeText(card, ".custom_field_meta_2"),
+                audience: badgeText(card, ".custom_field_meta_3"),
+                dateSentence: card.select("span.calendar_event_date").first()?.text()
             ))
         }
         return events
@@ -116,17 +116,17 @@ public enum HTMLParsers {
     public static func copies(in html: String) throws -> [CopyDTO] {
         let document = try SwiftSoup.parse(html)
         return try document.select("div.card_Intonation_Library_View_Wrapper_Item").map { card in
-            CopyDTO(
-                libraryName: try card.select(".card-title a").first()?.ownText().trimmingCharacters(in: .whitespaces) ?? "",
-                availability: try card.select(".item_availability").first()?.text() ?? "",
-                section: try badgeText(card, ".badge_section"),
-                location: try badgeText(card, ".badge_emplacement"),
-                shelfMark: try badgeText(card, ".badge_cote"),
-                dueDateText: try badgeText(card, ".badge_retour"),
-                holdsText: try badgeText(card, ".item_hold_rank"),
-                medium: try badgeText(card, ".datas_items_995_r"),
-                pickupPath: try card.select("a[href*=reservation-pickup-ajax]").first()
-                    .map { String(try $0.attr("href").drop { $0 == "/" }) }
+            try CopyDTO(
+                libraryName: card.select(".card-title a").first()?.ownText().trimmingCharacters(in: .whitespaces) ?? "",
+                availability: card.select(".item_availability").first()?.text() ?? "",
+                section: badgeText(card, ".badge_section"),
+                location: badgeText(card, ".badge_emplacement"),
+                shelfMark: badgeText(card, ".badge_cote"),
+                dueDateText: badgeText(card, ".badge_retour"),
+                holdsText: badgeText(card, ".item_hold_rank"),
+                medium: badgeText(card, ".datas_items_995_r"),
+                pickupPath: card.select("a[href*=reservation-pickup-ajax]").first()
+                    .map { try String($0.attr("href").drop { $0 == "/" }) }
             )
         }
     }
@@ -137,7 +137,7 @@ public enum HTMLParsers {
         guard let badge = try document.select(".badge_record_availability").first() else {
             throw BokehError.unexpectedFormat("badge de disponibilité introuvable")
         }
-        return (try badge.text(), !badge.hasClass("record_not_available"))
+        return try (badge.text(), !badge.hasClass("record_not_available"))
     }
 
     public static func libraries(in html: String) throws -> [LibraryDTO] {
@@ -146,23 +146,23 @@ public enum HTMLParsers {
         var libraries: [LibraryDTO] = []
         for card in try document.select("div.card_Intonation_Library_View_Wrapper_Library") {
             guard let link = try card.select(".card-title a").first() else { continue }
-            let slug = String(try link.attr("href").drop { $0 == "/" })
+            let slug = try String(link.attr("href").drop { $0 == "/" })
             guard seen.insert(slug).inserted else { continue }
 
             // The site separates lines with an invalid `</br>`: we read the text nodes one by one.
-            let addressLines = (try card.select(".badge_address .badge_text").first()?.textNodes() ?? [])
+            let addressLines = try (card.select(".badge_address .badge_text").first()?.textNodes() ?? [])
                 .map { $0.text().trimmingCharacters(in: .whitespacesAndNewlines) }
                 .filter { !$0.isEmpty }
 
-            libraries.append(LibraryDTO(
+            try libraries.append(LibraryDTO(
                 slug: slug,
                 name: link.ownText(),
                 addressLines: addressLines,
-                phone: try badgeText(card, ".badge_phone"),
-                contactURL: try contactURL(in: card),
-                openingHours: try card.select(".default_opening_hours ul li").map { try $0.text() },
-                bookmarkLibraryID: try card.select("a[href*=add-library-to-bookmarks]").first()
-                    .flatMap { Int(try $0.attr("href").split(separator: "/").last ?? "") }
+                phone: badgeText(card, ".badge_phone"),
+                contactURL: contactURL(in: card),
+                openingHours: card.select(".default_opening_hours ul li").map { try $0.text() },
+                bookmarkLibraryID: card.select("a[href*=add-library-to-bookmarks]").first()
+                    .flatMap { try Int($0.attr("href").split(separator: "/").last ?? "") }
             ))
         }
         return libraries
@@ -175,9 +175,9 @@ public enum HTMLParsers {
             let id = try input.attr("id")
             let label = try (id.isEmpty ? nil : document.select("label[for=\(id)]").first())
                 ?? input.parent()
-            return PickupOptionDTO(
-                code: try input.attr("value"),
-                label: try label?.text() ?? "",
+            return try PickupOptionDTO(
+                code: input.attr("value"),
+                label: label?.text() ?? "",
                 isSelected: input.hasAttr("checked")
             )
         }
@@ -187,7 +187,7 @@ public enum HTMLParsers {
     public static func holdPickupPaths(in html: String) throws -> [String] {
         let document = try SwiftSoup.parse(html)
         let paths = try document.select("a[href*=reservation-pickup-ajax]").map {
-            String(try $0.attr("href").drop { $0 == "/" })
+            try String($0.attr("href").drop { $0 == "/" })
         }
         var seen = Set<String>()
         return paths.filter { seen.insert($0).inserted }

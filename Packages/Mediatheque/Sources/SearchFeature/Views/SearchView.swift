@@ -258,12 +258,15 @@ struct ScopeBar: View {
                         Button(library.name) { viewModel.select(library: library) }
                     }
                 } label: {
-                    Label(viewModel.library?.shortName ?? String.local("Médiathèque", comment: "Library filter menu, when no library is selected"), systemImage: "mappin.and.ellipse")
-                        .font(.subheadline.weight(viewModel.library == nil ? .medium : .bold))
-                        .padding(.horizontal, 14)
-                        .frame(height: 36)
-                        .background(viewModel.library == nil ? Color.surfaceCard : Color.brandViolet, in: Capsule())
-                        .foregroundStyle(viewModel.library == nil ? Color.ink : .white)
+                    Label(
+                        viewModel.library?.shortName ?? String.local("Médiathèque", comment: "Library filter menu, when no library is selected"),
+                        systemImage: "mappin.and.ellipse"
+                    )
+                    .font(.subheadline.weight(viewModel.library == nil ? .medium : .bold))
+                    .padding(.horizontal, 14)
+                    .frame(height: 36)
+                    .background(viewModel.library == nil ? Color.surfaceCard : Color.brandViolet, in: Capsule())
+                    .foregroundStyle(viewModel.library == nil ? Color.ink : .white)
                 }
             }
         }
@@ -319,7 +322,7 @@ struct SearchResultRow: View {
     }
 
     private var subtitle: String {
-        ([document.authors.first, document.kind.label, document.year].compactMap { $0 }).joined(separator: " · ")
+        ([document.authors.first, document.kind.label, document.year].compactMap(\.self)).joined(separator: " · ")
     }
 
     @ViewBuilder
@@ -355,7 +358,8 @@ struct SearchLandingView: View {
                 if !viewModel.recentSearches.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
                         SectionHeader(String.local("Récentes", comment: "Section: recent searches")) {
-                            Button(.local("Effacer", comment: "Clears the search field or the recent searches")) { viewModel.clearRecentSearches() }.font(.subheadline.weight(.semibold))
+                            Button(.local("Effacer", comment: "Clears the search field or the recent searches")) { viewModel.clearRecentSearches() }
+                                .font(.subheadline.weight(.semibold))
                         }
                         VStack(spacing: 0) {
                             ForEach(viewModel.recentSearches, id: \.self) { search in

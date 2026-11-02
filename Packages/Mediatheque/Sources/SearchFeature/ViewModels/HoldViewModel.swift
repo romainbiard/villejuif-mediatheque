@@ -24,6 +24,7 @@ public final class HoldViewModel {
     public var pickup: Library? {
         didSet { if oldValue != nil, pickup != oldValue { feedback = .selection } }
     }
+
     public private(set) var feedback: FeedbackEvent?
 
     public var isSubmitting: Bool {
@@ -34,7 +35,7 @@ public final class HoldViewModel {
 
     public init(notice: Notice, defaultPickup: Library?) {
         self.notice = notice
-        self.pickup = defaultPickup
+        pickup = defaultPickup
     }
 
     public func prepare() async {

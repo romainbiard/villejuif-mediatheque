@@ -51,7 +51,8 @@ public enum ReminderPlanner {
             let dayText = day.formatted(.dateTime.weekday(.wide).day().month(.wide))
             var reminders: [Reminder] = []
             if let before = calendar.date(byAdding: .day, value: -daysBefore, to: day),
-               let fire = calendar.date(bySettingHour: hour, minute: 0, second: 0, of: before) {
+               let fire = calendar.date(bySettingHour: hour, minute: 0, second: 0, of: before)
+            {
                 reminders.append(Reminder(
                     id: "loan-before-\(Int(day.timeIntervalSince1970))",
                     title: .local("À rendre dans \(daysBefore) jours"),

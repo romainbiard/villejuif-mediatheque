@@ -104,7 +104,8 @@ public final class DigitalViewModel {
             installOffer = offer
             feedback = .lightImpact
         } else if let app = offer.app, app.role == .required, availability(of: app) == .installed,
-                  let url = app.launchURL, await installedApps.open(url) {
+                  let url = app.launchURL, await installedApps.open(url)
+        {
             // Portal sign-in does not open the app (Arte): launch the app itself, which keeps its session.
             feedback = .lightImpact
         } else {

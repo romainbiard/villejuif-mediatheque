@@ -216,7 +216,7 @@ struct SelectionNoticeRow: View {
                 .frame(width: 44, height: 64)
             VStack(alignment: .leading, spacing: 3) {
                 Text(notice.title).font(.headline).lineLimit(2)
-                Text([notice.authors.first, notice.year].compactMap { $0 }.joined(separator: " · "))
+                Text([notice.authors.first, notice.year].compactMap(\.self).joined(separator: " · "))
                     .font(.subheadline)
                     .foregroundStyle(Color.inkSecondary)
                     .lineLimit(1)

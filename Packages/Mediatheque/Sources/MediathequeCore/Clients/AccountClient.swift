@@ -56,7 +56,7 @@ extension AccountClient: DependencyKey {
         return AccountClient(
             patron: {
                 try await session.perform {
-                    Patron(dto: try await http.decode(AccountResponseDTO.self, from: .account).account)
+                    try await Patron(dto: http.decode(AccountResponseDTO.self, from: .account).account)
                 }
             },
             loans: fetchLoans,
@@ -65,7 +65,7 @@ extension AccountClient: DependencyKey {
                     let dtos = try await http.decode(HoldsResponseDTO.self, from: .holds).holds
                     guard let patronID = dtos.first?.id.split(separator: "_").first else { return [] }
                     // The rank only exists in the HTML; we do without it if it can't be read.
-                    let ranks = (try? HTMLParsers.holdRanks(in: await http.string(for: .holdsPage(patronID: String(patronID))))) ?? []
+                    let ranks = await (try? HTMLParsers.holdRanks(in: http.string(for: .holdsPage(patronID: String(patronID))))) ?? []
                     return dtos.enumerated().map { index, dto in
                         Hold(dto: dto, rank: ranks.indices.contains(index) ? ranks[index] : nil)
                     }
@@ -73,11 +73,11 @@ extension AccountClient: DependencyKey {
             },
             renew: { loanIDs in
                 guard let patronID = loanIDs.first?.split(separator: "_").first else { return [] }
-                let before = Dictionary(uniqueKeysWithValues: try await fetchLoans().map { ($0.id, $0.dueDate) })
+                let before = try await Dictionary(uniqueKeysWithValues: fetchLoans().map { ($0.id, $0.dueDate) })
                 _ = try await session.perform {
                     try await http.data(for: .renewLoans(patronID: String(patronID), loanIDs: loanIDs))
                 }
-                let after = Dictionary(uniqueKeysWithValues: try await fetchLoans().map { ($0.id, $0.dueDate) })
+                let after = try await Dictionary(uniqueKeysWithValues: fetchLoans().map { ($0.id, $0.dueDate) })
                 return loanIDs.map { id in
                     if let newDue = after[id], let oldDue = before[id], newDue > oldDue {
                         return .renewed(loanID: id, newDueDate: newDue)

@@ -280,11 +280,29 @@ struct ProfileSettingsView: View {
                     libraries
                 }
                 group(.local("Notifications"), footer: nil) {
-                    SettingToggleRow(title: .local("Rappels de retour"), detail: .local("3 jours avant, puis le jour même"), systemImage: "bell.badge", tint: .statusDanger, isOn: reminderBinding($loanReminders))
+                    SettingToggleRow(
+                        title: .local("Rappels de retour"),
+                        detail: .local("3 jours avant, puis le jour même"),
+                        systemImage: "bell.badge",
+                        tint: .statusDanger,
+                        isOn: reminderBinding($loanReminders)
+                    )
                     Divider().padding(.leading, 62)
-                    SettingToggleRow(title: .local("Réservations disponibles"), detail: .local("Quand un document vous attend"), systemImage: "shippingbox", tint: .statusSuccess, isOn: reminderBinding($holdAlerts))
+                    SettingToggleRow(
+                        title: .local("Réservations disponibles"),
+                        detail: .local("Quand un document vous attend"),
+                        systemImage: "shippingbox",
+                        tint: .statusSuccess,
+                        isOn: reminderBinding($holdAlerts)
+                    )
                     Divider().padding(.leading, 62)
-                    SettingToggleRow(title: .local("Agenda de la semaine"), detail: .local("Les animations, le lundi matin"), systemImage: "calendar", tint: .brandVioletDeep, isOn: reminderBinding($agendaDigest))
+                    SettingToggleRow(
+                        title: .local("Agenda de la semaine"),
+                        detail: .local("Les animations, le lundi matin"),
+                        systemImage: "calendar",
+                        tint: .brandVioletDeep,
+                        isOn: reminderBinding($agendaDigest)
+                    )
                 }
                 group(.local("Lettre d'information"), footer: .local("L'actualité du réseau des médiathèques, par e-mail.")) {
                     SettingToggleRow(
@@ -345,13 +363,13 @@ struct ProfileSettingsView: View {
             set: { isOn in
                 storage.wrappedValue = isOn
                 Task {
-                    if !(await viewModel.remindersChanged(enabling: isOn)) { storage.wrappedValue = false }
+                    if await !(viewModel.remindersChanged(enabling: isOn)) { storage.wrappedValue = false }
                 }
             }
         )
     }
 
-    private func group<Content: View>(_ title: String, footer: String?, @ViewBuilder content: () -> Content) -> some View {
+    private func group(_ title: String, footer: String?, @ViewBuilder content: () -> some View) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             SectionHeader(title)
             VStack(spacing: 0, content: content).cardStyle(padding: 0)

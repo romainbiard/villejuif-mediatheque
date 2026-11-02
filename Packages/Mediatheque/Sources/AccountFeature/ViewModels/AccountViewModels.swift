@@ -90,7 +90,7 @@ public final class LoansViewModel {
             state = snapshots.load().map { .loaded($0.upcomingLoans) } ?? .loading
         }
         do {
-            state = .loaded(try await account.loans().sorted { $0.dueDate < $1.dueDate })
+            state = try await .loaded(account.loans().sorted { $0.dueDate < $1.dueDate })
             staleError = nil
         } catch {
             if state.value == nil {
@@ -187,7 +187,7 @@ public final class HoldsViewModel {
             state = snapshots.load().map { .loaded($0.holds) } ?? .loading
         }
         do {
-            state = .loaded(try await account.holds())
+            state = try await .loaded(account.holds())
             staleError = nil
         } catch {
             if state.value == nil {

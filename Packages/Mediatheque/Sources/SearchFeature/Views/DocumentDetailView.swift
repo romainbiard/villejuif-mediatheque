@@ -95,16 +95,18 @@ public struct DocumentDetailView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 6) {
                 StatusPill(document.kind.label, style: .accent)
-                if let volume = document.volume, !volume.isEmpty { StatusPill(String.local("Tome \(volume)", comment: "Volume number in a series"), style: .accent) }
+                if let volume = document.volume, !volume.isEmpty { StatusPill(
+                    String.local("Tome \(volume)", comment: "Volume number in a series"),
+                    style: .accent
+                ) }
             }
             Text(document.title).font(.title.weight(.heavy)).foregroundStyle(Color.ink)
-            Text([document.authors.joined(separator: ", "), document.publisher].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " · "))
+            Text([document.authors.joined(separator: ", "), document.publisher].compactMap(\.self).filter { !$0.isEmpty }.joined(separator: " · "))
                 .font(.body)
                 .foregroundStyle(Color.inkSecondary)
         }
     }
 
-    @ViewBuilder
     private var whereToFind: some View {
         VStack(alignment: .leading, spacing: 10) {
             SectionHeader(String.local("Où le trouver"))
@@ -148,7 +150,11 @@ public struct DocumentDetailView: View {
                 if let publisher = document.publisher { InfoLine(label: .local("Éditeur"), value: publisher) }
                 if let year = document.year { InfoLine(label: .local("Année"), value: year) }
                 if let series = document.series {
-                    InfoLine(label: .local("Série"), value: [series, document.volume.map { String.local("tome \($0)", comment: "Volume number, after the series name") }].compactMap { $0 }.joined(separator: ", "))
+                    InfoLine(
+                        label: .local("Série"),
+                        value: [series, document.volume.map { String.local("tome \($0)", comment: "Volume number, after the series name") }].compactMap(\.self)
+                            .joined(separator: ", ")
+                    )
                 }
             }
             .cardStyle(padding: 0)
@@ -180,7 +186,7 @@ struct CopyRow: View {
         if case let .onLoan(dueDate?) = copy.status {
             parts = [String.local("En prêt · retour prévu le \(dueDate.formatted(.dateTime.day().month(.wide)))")]
         }
-        parts += [copy.section, copy.shelfMark].compactMap { $0 }
+        parts += [copy.section, copy.shelfMark].compactMap(\.self)
         if copy.holdCount > 0 { parts.append(String.local("\(copy.holdCount) réservations", comment: "Number of holds on a copy")) }
         return parts.joined(separator: " · ")
     }

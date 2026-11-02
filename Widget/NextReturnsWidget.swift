@@ -69,7 +69,7 @@ struct NextReturnsView: View {
     var body: some View {
         if entry.snapshot == nil {
             empty("Connectez-vous dans l'app pour voir vos retours.")
-        } else if loans.isEmpty && readyHolds.isEmpty {
+        } else if loans.isEmpty, readyHolds.isEmpty {
             empty("Rien à rendre pour l'instant.")
         } else {
             switch family {

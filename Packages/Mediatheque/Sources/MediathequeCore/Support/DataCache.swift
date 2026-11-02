@@ -108,7 +108,7 @@ public actor DataCache {
         return entry
     }
 
-    private func store<Value: Codable & Sendable>(_ entry: Entry<Value>, for key: String, persist: Bool) {
+    private func store(_ entry: Entry<some Codable & Sendable>, for key: String, persist: Bool) {
         memory[key] = (entry.savedAt, entry.value)
         guard persist, let url = fileURL(for: key), let data = try? JSONEncoder().encode(entry) else { return }
         try? data.write(to: url, options: .atomic)

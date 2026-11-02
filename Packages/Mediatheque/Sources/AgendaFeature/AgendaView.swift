@@ -20,7 +20,7 @@ public struct AgendaView: View {
     public var body: some View {
         NavigationStack {
             Group {
-                if sizeClass == .regular && contentWidth >= Self.columnsMinWidth {
+                if sizeClass == .regular, contentWidth >= Self.columnsMinWidth {
                     regularLayout
                 } else {
                     ScrollView {
@@ -49,7 +49,10 @@ public struct AgendaView: View {
                         showsFilters = true
                     } label: {
                         Label(
-                            viewModel.filters.isEmpty ? LocalizedStringResource.local("Filtres") : .local("Filtres · \(viewModel.filters.count)", comment: "Button; number of active filters"),
+                            viewModel.filters.isEmpty ? LocalizedStringResource.local("Filtres") : .local(
+                                "Filtres · \(viewModel.filters.count)",
+                                comment: "Button; number of active filters"
+                            ),
                             systemImage: "line.3.horizontal.decrease"
                         )
                         .labelStyle(.titleAndIcon)
@@ -125,7 +128,7 @@ public struct AgendaView: View {
         case .idle, .loading, .failed:
             periodContent
         case .loaded:
-            if viewModel.periodDays.isEmpty && viewModel.periodOngoingEvents.isEmpty {
+            if viewModel.periodDays.isEmpty, viewModel.periodOngoingEvents.isEmpty {
                 periodContent
             }
             ForEach(viewModel.periodDays) { periodDay in
@@ -179,7 +182,7 @@ public struct AgendaView: View {
             content
         case .loaded:
             let days = viewModel.periodDays
-            if days.isEmpty && viewModel.periodOngoingEvents.isEmpty {
+            if days.isEmpty, viewModel.periodOngoingEvents.isEmpty {
                 EmptyStateView(
                     systemImage: "calendar.badge.exclamationmark",
                     title: String.local("Rien de prévu sur cette période"),
@@ -209,7 +212,14 @@ public struct AgendaView: View {
                 : String.local("Essayez un autre jour, ou élargissez vos filtres."),
             tint: .brandMagenta,
             primary: viewModel.nextDayWithEvents.map { day in
-                (String.local("Voir le \(day.formatted(.dateTime.weekday(.wide).day().month(.wide)))", comment: "Button; %@ is a day, e.g. Saturday, November 7"), { viewModel.select(day: day) })
+                (
+                    String
+                        .local(
+                            "Voir le \(day.formatted(.dateTime.weekday(.wide).day().month(.wide)))",
+                            comment: "Button; %@ is a day, e.g. Saturday, November 7"
+                        ),
+                    { viewModel.select(day: day) }
+                )
             },
             secondary: viewModel.filters.isEmpty ? nil : (String.local("Retirer les filtres"), { viewModel.clearFilters() })
         )
@@ -236,9 +246,11 @@ struct PeriodHeader: View {
                 }
             }
             Spacer(minLength: 0)
-            Button(.local("Revenir aux jours", comment: "Leaves the period view and goes back to the day picker"), systemImage: "xmark") { viewModel.clearPeriod() }
-                .labelStyle(.iconOnly)
-                .buttonStyle(.glass)
+            Button(.local("Revenir aux jours", comment: "Leaves the period view and goes back to the day picker"), systemImage: "xmark") {
+                viewModel.clearPeriod()
+            }
+            .labelStyle(.iconOnly)
+            .buttonStyle(.glass)
         }
         .padding(12)
         .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 26, style: .continuous))

@@ -73,7 +73,8 @@ public struct ProminentButtonStyle: ButtonStyle {
                 in: Capsule()
             )
             .animation(.easeOut(duration: 0.2), value: isActive)
-            .accessibilityValue(isLoading ? Text(.local("En cours", comment: "Accessibility value of a button while its action is loading")) : Text(verbatim: ""))
+            .accessibilityValue(isLoading ? Text(.local("En cours", comment: "Accessibility value of a button while its action is loading")) :
+                Text(verbatim: ""))
     }
 }
 

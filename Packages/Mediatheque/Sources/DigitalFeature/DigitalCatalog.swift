@@ -92,13 +92,13 @@ public enum DigitalCatalog {
                 highlights: [
                     .init("play.rectangle", .local("Cinéma, séries et documentaires")),
                     .init("ticket", .local("6 crédits par mois, sans publicité")),
-                    .init("lock", .local("Connecté avec votre carte, sans mot de passe")),
+                    .init("lock", .local("Connecté avec votre carte, sans mot de passe"))
                 ]
             ),
             firstUseSteps: [
                 .local("Installez l'app Médiathèque Numérique."),
                 .local("Revenez ici et touchez « Ouvrir » : la plateforme vous reconnaît."),
-                .local("L'app reste connectée ensuite, vous n'aurez plus à le refaire."),
+                .local("L'app reste connectée ensuite, vous n'aurez plus à le refaire.")
             ],
             tutorialURL: tutorial("arte-vod-univers-cine"), copyableHint: nil,
             systemImage: "film", colorSeed: 5
@@ -113,12 +113,12 @@ public enum DigitalCatalog {
                 highlights: [
                     .init("newspaper", .local("Journaux et magazines, numéros archivés compris")),
                     .init("infinity", .local("Lecture illimitée")),
-                    .init("lock", .local("Connecté avec votre carte, sans mot de passe")),
+                    .init("lock", .local("Connecté avec votre carte, sans mot de passe"))
                 ]
             ),
             firstUseSteps: [
                 .local("Installez l'app Cafeyn."),
-                .local("Revenez ici et touchez « Ouvrir » : Cafeyn s'ouvre déjà connecté."),
+                .local("Revenez ici et touchez « Ouvrir » : Cafeyn s'ouvre déjà connecté.")
             ],
             tutorialURL: tutorial("cafeyn"), copyableHint: nil,
             systemImage: "newspaper", colorSeed: 0
@@ -133,13 +133,13 @@ public enum DigitalCatalog {
                 highlights: [
                     .init("graduationcap", .local("Langues, code de la route, soutien scolaire…")),
                     .init("infinity", .local("Cours illimités, à votre rythme")),
-                    .init("lock", .local("Connecté avec votre carte, sans mot de passe")),
+                    .init("lock", .local("Connecté avec votre carte, sans mot de passe"))
                 ]
             ),
             firstUseSteps: [
                 .local("Installez l'app Mozaik."),
                 .local("Touchez « Ouvrir » ici : si l'app ne s'ouvre pas connectée, allez dans « Mon compte » sur Mozaik."),
-                .local("Le QR code de « Mon compte » se scanne depuis l'app Mozaik d'un autre appareil."),
+                .local("Le QR code de « Mon compte » se scanne depuis l'app Mozaik d'un autre appareil.")
             ],
             tutorialURL: tutorial("mozaik"), copyableHint: nil,
             systemImage: "graduationcap", colorSeed: 2
@@ -155,7 +155,7 @@ public enum DigitalCatalog {
             firstUseSteps: [
                 .local("Empruntez un livre sur BiblioAccess (bouton « Emprunter »)."),
                 .local("Choisissez le téléchargement « LCP » et ouvrez-le dans Louise Reader."),
-                .local("Au premier livre, Louise demande la phrase de déverrouillage ci-dessous."),
+                .local("Au premier livre, Louise demande la phrase de déverrouillage ci-dessous.")
             ],
             tutorialURL: tutorial("biblioaccess"), copyableHint: (String.local("Phrase de déverrouillage LCP"), "300005"),
             systemImage: "book", colorSeed: 3, webActionLabel: .local("Emprunter")
@@ -184,10 +184,10 @@ public enum DigitalCatalog {
             ),
             firstUseSteps: [
                 .local("Touchez « Ouvrir » : Eurêka s'ouvre déjà connecté."),
-                .local("Pour l'app musicMe : sur le site musicMe, menu « Appli mobile », puis suivez l'e-mail d'activation."),
+                .local("Pour l'app musicMe : sur le site musicMe, menu « Appli mobile », puis suivez l'e-mail d'activation.")
             ],
             tutorialURL: tutorial("musicme"), copyableHint: nil,
             systemImage: "music.note", colorSeed: 4
-        ),
+        )
     ]
 }

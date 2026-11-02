@@ -27,7 +27,7 @@ public enum Code39 {
         "U": "wwnnnnnnw", "V": "nwwnnnnnw", "W": "wwwnnnnnn", "X": "nwnnwnnnw",
         "Y": "wwnnwnnnn", "Z": "nwwnwnnnn",
         "-": "nwnnnnwnw", ".": "wwnnnnwnn", " ": "nwwnnnwnn", "$": "nwnwnwnnn",
-        "/": "nwnwnnnwn", "+": "nwnnnwnwn", "%": "nnnwnwnwn", "*": "nwnnwnwnn",
+        "/": "nwnwnnnwn", "+": "nwnnnwnwn", "%": "nnnwnwnwn", "*": "nwnnwnwnn"
     ]
 
     /// Elements of `value` wrapped in the start and stop `*`, with a narrow space

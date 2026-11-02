@@ -61,7 +61,7 @@ public final class SessionStore {
     public private(set) var state: State = .restoring
 
     /// With Face ID on, the account locks again after this long in the background.
-    nonisolated public static let relockDelay: TimeInterval = 120
+    public nonisolated static let relockDelay: TimeInterval = 120
 
     @ObservationIgnored private var backgroundedAt: Date?
     /// Account kept while locked again after the background: Face ID reopens it without signing in.

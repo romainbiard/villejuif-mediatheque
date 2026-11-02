@@ -19,7 +19,7 @@ struct ParserTests {
 
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = try #require(TimeZone(identifier: "Europe/Paris"))
-        let start = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: try #require(event.start))
+        let start = try calendar.dateComponents([.year, .month, .day, .hour, .minute], from: #require(event.start))
         #expect(start == DateComponents(year: 2026, month: 11, day: 4, hour: 16, minute: 0))
     }
 
@@ -28,7 +28,8 @@ struct ParserTests {
         // A blank sign-in form or any other page is not a refusal.
         #expect(try !HTMLParsers.loginRejected(in: Fixture.string("login.html")))
         #expect(try !HTMLParsers.loginRejected(in: "<html><body><p>Service indisponible</p></body></html>"))
-        #expect(try !HTMLParsers.loginRejected(in: #"<ul class="errors element_error_messages"><li class="element_error_message">Une valeur est requise.</li></ul>"#))
+        #expect(try !HTMLParsers
+            .loginRejected(in: #"<ul class="errors element_error_messages"><li class="element_error_message">Une valeur est requise.</li></ul>"#))
     }
 
     @Test func iCalUnfoldsContinuationLines() {

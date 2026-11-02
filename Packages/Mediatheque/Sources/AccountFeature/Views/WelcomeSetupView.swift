@@ -182,12 +182,27 @@ struct OnboardingSettingsView: View {
                 SectionHeader(.local("Notifications")).padding(.top, 24).padding(.bottom, 8)
                 if viewModel.notificationsAllowed {
                     SettingsCard {
-                        SettingRow(.local("Rappels de retour"), detail: .local("3 jours avant et le jour J"),
-                                   systemImage: "calendar.badge.clock", tint: .brandMagenta, isOn: $loanReminders)
-                        SettingRow(.local("Réservations"), detail: .local("Dès qu'un document arrive"),
-                                   systemImage: "shippingbox.fill", tint: .statusSuccess, isOn: $holdAlerts)
-                        SettingRow(.local("Agenda"), detail: .local("Les animations du lundi"),
-                                   systemImage: "calendar", tint: .brandVioletDeep, isOn: $agendaDigest)
+                        SettingRow(
+                            .local("Rappels de retour"),
+                            detail: .local("3 jours avant et le jour J"),
+                            systemImage: "calendar.badge.clock",
+                            tint: .brandMagenta,
+                            isOn: $loanReminders
+                        )
+                        SettingRow(
+                            .local("Réservations"),
+                            detail: .local("Dès qu'un document arrive"),
+                            systemImage: "shippingbox.fill",
+                            tint: .statusSuccess,
+                            isOn: $holdAlerts
+                        )
+                        SettingRow(
+                            .local("Agenda"),
+                            detail: .local("Les animations du lundi"),
+                            systemImage: "calendar",
+                            tint: .brandVioletDeep,
+                            isOn: $agendaDigest
+                        )
                     }
                 } else {
                     notificationsOff
@@ -196,9 +211,13 @@ struct OnboardingSettingsView: View {
                 if let biometricKind {
                     SectionHeader(.local("Sécurité")).padding(.top, 24).padding(.bottom, 8)
                     SettingsCard {
-                        SettingRow(biometricKind, detail: .local("Sans mot de passe"),
-                                   systemImage: biometricKind == "Touch ID" ? "touchid" : "faceid",
-                                   tint: Color(hex: 0x1C1B22), isOn: $faceID)
+                        SettingRow(
+                            biometricKind,
+                            detail: .local("Sans mot de passe"),
+                            systemImage: biometricKind == "Touch ID" ? "touchid" : "faceid",
+                            tint: Color(hex: 0x1C1B22),
+                            isOn: $faceID
+                        )
                     }
                 }
             }
@@ -306,7 +325,6 @@ struct SettingRow: View {
         .frame(minHeight: 56)
     }
 }
-
 
 /// Face ID is enabled: the account opens after authentication.
 struct LockedView: View {

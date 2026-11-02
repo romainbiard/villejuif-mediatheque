@@ -56,18 +56,17 @@ extension LiveCopy {
     init(dto: CopyDTO) {
         let label = dto.availability
         let normalized = label.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
-        let status: CopyStatus
-        if normalized.contains("bientot") {
+        let status: CopyStatus = if normalized.contains("bientot") {
             // "Bientôt disponible": returned but not yet back on the shelf.
-            status = .other(label)
+            .other(label)
         } else if normalized.contains("pret") {
-            status = .onLoan(dueDate: dto.dueDateText.flatMap(BokehDates.firstDate))
+            .onLoan(dueDate: dto.dueDateText.flatMap(BokehDates.firstDate))
         } else if normalized.contains("disponible") || normalized.contains("en rayon") {
-            status = .available
+            .available
         } else if normalized.contains("reserve") || normalized.contains("demander") {
-            status = .onRequest
+            .onRequest
         } else {
-            status = .other(label)
+            .other(label)
         }
         self.init(
             library: Library(label: dto.libraryName),
@@ -97,7 +96,7 @@ extension Patron {
             firstName: dto.identity.firstName,
             lastName: dto.identity.lastName,
             email: dto.contact.email.nilIfEmpty,
-            phone: (dto.contact.mobile.nilIfEmpty ?? dto.contact.phone.nilIfEmpty),
+            phone: dto.contact.mobile.nilIfEmpty ?? dto.contact.phone.nilIfEmpty,
             homeLibrary: Library(rawValue: String(dto.libraryDetails.id)) ?? Library(label: dto.libraryDetails.label),
             cardExpiry: BokehDates.isoDay(dto.card.expireAt),
             cardExpired: dto.card.expired,

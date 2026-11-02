@@ -277,11 +277,11 @@ struct SuggestionsView: View {
         .overlay(alignment: .bottom) { MessageToast(message: viewModel.message) { viewModel.dismissMessage() } }
         .sensoryFeedback(trigger: viewModel.feedback) { _, event in event.map(\.sensoryFeedback) }
         #if canImport(VisionKit) && os(iOS)
-        .fullScreenCover(isPresented: $showsScanner) {
-            CardScannerView(prompt: .local("Visez le code-barres au dos du livre"), detectedTitle: .local("ISBN détecté")) { value in
-                viewModel.draft.isbn = value
+            .fullScreenCover(isPresented: $showsScanner) {
+                CardScannerView(prompt: .local("Visez le code-barres au dos du livre"), detectedTitle: .local("ISBN détecté")) { value in
+                    viewModel.draft.isbn = value
+                }
             }
-        }
         #endif
     }
 

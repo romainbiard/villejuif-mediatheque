@@ -15,7 +15,14 @@ struct SelectionsTests {
     @Test func creatingASelectionReloadsTheList() async {
         let created = LockIsolated<[String]>([])
         let viewModel = withDependencies {
-            $0.profileClient.selections = { SampleData.selections + created.value.map { Selection(id: 99, basketID: nil, name: $0, count: 0, updatedAt: nil, coverURLs: []) } }
+            $0.profileClient.selections = { SampleData.selections + created.value.map { Selection(
+                id: 99,
+                basketID: nil,
+                name: $0,
+                count: 0,
+                updatedAt: nil,
+                coverURLs: []
+            ) } }
             $0.profileClient.createSelection = { name in created.withValue { $0.append(name) } }
         } operation: { SelectionsViewModel() }
 

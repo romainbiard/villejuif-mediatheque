@@ -33,7 +33,7 @@ public struct DigitalView: View {
                     banner
                     // At accessibility text sizes, one column everywhere (iPad mosaic included):
                     // two or three columns would break words in the middle.
-                    if sizeClass == .regular && !typeSize.isAccessibilitySize {
+                    if sizeClass == .regular, !typeSize.isAccessibilitySize {
                         mosaic
                     } else {
                         if let featured = viewModel.offers.first { featuredCard(featured) }
@@ -243,10 +243,13 @@ public struct DigitalView: View {
                 .foregroundStyle(Color.brandVioletDeep)
                 .cardStyle()
         } else if session.patron?.permissions.digitalResourcesForbidden == true {
-            Label(.local("L'accès au numérique est suspendu sur votre compte. Renseignez-vous à l'accueil d'une médiathèque."), systemImage: "exclamationmark.triangle.fill")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(Color.statusDanger)
-                .cardStyle()
+            Label(
+                .local("L'accès au numérique est suspendu sur votre compte. Renseignez-vous à l'accueil d'une médiathèque."),
+                systemImage: "exclamationmark.triangle.fill"
+            )
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(Color.statusDanger)
+            .cardStyle()
         }
     }
 }
@@ -274,7 +277,7 @@ struct AccessLine: View {
                 .foregroundStyle(onDark ? Color.brandCyan : Color(light: 0x0B6B70, dark: 0x84DADE))
                 .lineLimit(typeSize.isAccessibilitySize ? nil : 1)
         case .inApp: plain(.local("Se consulte dans l'app"))
-        case .reader(let app): plain(.local("À lire dans \(app)"))
+        case let .reader(app): plain(.local("À lire dans \(app)"))
         case .web: plain(.local("Sur le web"))
         }
     }

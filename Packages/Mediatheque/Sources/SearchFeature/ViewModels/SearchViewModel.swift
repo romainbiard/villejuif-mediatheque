@@ -53,7 +53,7 @@ public struct ExploreShortcut: Identifiable, Hashable, Sendable {
         ExploreShortcut(id: "music", title: .local("Musique"), systemImage: "music.note", scope: .cd, sort: .newest),
         ExploreShortcut(id: "ebooks", title: .local("E-books"), systemImage: "ipad", scope: .ebooks, sort: .newest),
         ExploreShortcut(id: "audio", title: .local("Livres audio"), systemImage: "headphones", scope: .audiobooks, sort: .newest),
-        ExploreShortcut(id: "online", title: .local("Films en ligne"), systemImage: "play.tv", scope: .onlineFilms, sort: .newest),
+        ExploreShortcut(id: "online", title: .local("Films en ligne"), systemImage: "play.tv", scope: .onlineFilms, sort: .newest)
     ]
 }
 

@@ -154,7 +154,7 @@ struct LoginView: View {
 
 extension View {
     func fieldStyle(isFocused: Bool) -> some View {
-        self.font(.body.weight(.medium))
+        font(.body.weight(.medium))
             .padding(.leading, 16)
             .padding(.trailing, 6)
             // Minimum only: the field grows with large text sizes instead of clipping what is typed.
@@ -183,8 +183,12 @@ struct LostPasswordView: View {
                     .foregroundStyle(Color.brandVioletDeep)
                     .frame(width: 64, height: 64)
                     .background(Color.soft(.brandViolet), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-                Text(.local("Indiquez votre numéro de carte. Vous recevrez un e-mail pour choisir un nouveau mot de passe, à l'adresse enregistrée sur votre compte."))
-                    .foregroundStyle(Color.inkSecondary)
+                Text(
+                    .local(
+                        "Indiquez votre numéro de carte. Vous recevrez un e-mail pour choisir un nouveau mot de passe, à l'adresse enregistrée sur votre compte."
+                    )
+                )
+                .foregroundStyle(Color.inkSecondary)
 
                 TextField(text: $viewModel.cardNumber) { Text(.local("Numéro de carte")) }
                     .textContentType(.username)

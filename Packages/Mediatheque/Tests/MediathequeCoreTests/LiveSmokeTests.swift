@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: MIT
 // See LICENSE in the project root for the full license text and copyright notice.
 
+import BokehAPI
 import Dependencies
 import DependenciesTestSupport
 import Foundation
 import Testing
-import BokehAPI
 @testable import MediathequeCore
 
 /// Real calls to the portal, on public routes only.
@@ -30,7 +30,7 @@ struct LiveSmokeTests {
         let events = try await AgendaClient.liveValue.events(.reload).value
         #expect(!events.isEmpty)
         #expect(events.contains { $0.start != nil })
-        let detail = try await AgendaClient.liveValue.detail(try #require(events.first { !$0.isAllDay }))
+        let detail = try await AgendaClient.liveValue.detail(#require(events.first { !$0.isAllDay }))
         #expect(detail.descriptionText != nil)
     }
 

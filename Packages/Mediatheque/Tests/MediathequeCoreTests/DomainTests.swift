@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: MIT
 // See LICENSE in the project root for the full license text and copyright notice.
 
-@testable import BokehAPI
 import Foundation
 import Testing
+@testable import BokehAPI
 @testable import MediathequeCore
 
 struct MapperTests {
@@ -158,7 +158,7 @@ struct Code39Tests {
     @Test func everyCharacterHasThreeWideElementsOutOfNine() {
         for (character, pattern) in Code39.patterns {
             #expect(pattern.count == 9, "\(character)")
-            #expect(pattern.filter { $0 == "w" }.count == 3, "\(character)")
+            #expect(pattern.count(where: { $0 == "w" }) == 3, "\(character)")
         }
     }
 

@@ -29,7 +29,7 @@ extension BiometricClient: DependencyKey {
         },
         authenticate: { reason in
             // The device passcode remains an option if biometrics fail.
-            (try? await LAContext().evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason)) ?? false
+            await (try? LAContext().evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason)) ?? false
         }
     )
 

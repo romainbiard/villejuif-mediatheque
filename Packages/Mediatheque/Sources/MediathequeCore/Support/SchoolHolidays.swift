@@ -31,7 +31,7 @@ public enum SchoolHolidays {
         holiday(.local("Vacances de printemps"), (2028, 4, 15), (2028, 5, 2)),
         holiday(.local("Pont de l'Ascension"), (2028, 5, 25), (2028, 5, 29)),
         // Only the start is published: the 2028 school year is assumed to start on September 1.
-        holiday(.local("Vacances d'été"), (2028, 7, 4), (2028, 9, 1)),
+        holiday(.local("Vacances d'été"), (2028, 7, 4), (2028, 9, 1))
     ]
 
     /// The holidays in progress at `date`, otherwise the next ones.

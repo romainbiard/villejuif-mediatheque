@@ -28,8 +28,16 @@ struct ReminderPlannerTests {
     @Test func loansDueTheSameDayShareOneReminder() {
         let due = paris(2026, 11, 20)
         let loans = (1...3).map {
-            Loan(id: "1_\($0)", title: "Livre \($0)", author: "", dueDate: due, library: .pulpNord,
-                 libraryName: "PULP Nord", recordID: nil, coverURL: nil)
+            Loan(
+                id: "1_\($0)",
+                title: "Livre \($0)",
+                author: "",
+                dueDate: due,
+                library: .pulpNord,
+                libraryName: "PULP Nord",
+                recordID: nil,
+                coverURL: nil
+            )
         }
         let reminders = ReminderPlanner.loanReminders(for: loans, daysBefore: 3, now: paris(2026, 10, 30), calendar: .paris)
         #expect(reminders.count == 2)

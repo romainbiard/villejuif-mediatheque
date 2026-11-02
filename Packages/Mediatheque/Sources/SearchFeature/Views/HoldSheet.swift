@@ -93,9 +93,12 @@ struct HoldSheet: View {
                     .frame(width: 72, height: 72)
                     .background(Color.statusSuccess, in: Circle())
                 Text(.local("Réservation enregistrée")).font(.title2.weight(.heavy))
-                Text(.local("Retrait à \(pickup.shortName). \(message.components(separatedBy: "\n").dropFirst().joined(separator: " "))", comment: "Pickup library, then the website's confirmation message (in French)"))
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(Color.inkSecondary)
+                Text(.local(
+                    "Retrait à \(pickup.shortName). \(message.components(separatedBy: "\n").dropFirst().joined(separator: " "))",
+                    comment: "Pickup library, then the website's confirmation message (in French)"
+                ))
+                .multilineTextAlignment(.center)
+                .foregroundStyle(Color.inkSecondary)
                 Button(.local("Fermer")) { dismiss() }
                     .buttonStyle(.prominent(size: .large))
             }

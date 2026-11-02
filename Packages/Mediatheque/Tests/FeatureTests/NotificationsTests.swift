@@ -37,11 +37,11 @@ struct InboxPlannerTests {
         let now = paris(2026, 11, 2)
         var inbox = Inbox(items: [
             InboxItem(id: "a", kind: .holdReady, title: "A", body: "", date: paris(2026, 11, 1), isRead: true),
-            InboxItem(id: "old", kind: .holdReady, title: "Vieux", body: "", date: paris(2026, 9, 1)),
+            InboxItem(id: "old", kind: .holdReady, title: "Vieux", body: "", date: paris(2026, 9, 1))
         ])
         let added = inbox.merge([
             InboxItem(id: "a", kind: .holdReady, title: "A", body: "", date: now),
-            InboxItem(id: "b", kind: .loanLate, title: "B", body: "", date: now),
+            InboxItem(id: "b", kind: .loanLate, title: "B", body: "", date: now)
         ], now: now, calendar: .paris)
 
         #expect(added.map(\.id) == ["b"])

@@ -140,7 +140,7 @@ extension Endpoint {
             FormField("username", cardNumber),
             FormField("password", password),
             FormField("login", "Se connecter"),
-            FormField("csrftoken", csrfToken),
+            FormField("csrftoken", csrfToken)
         ])
     }
 
@@ -153,7 +153,7 @@ extension Endpoint {
             FormField("lost_username", cardNumber),
             FormField("website", ""),
             FormField("minimum_time", "2"),
-            FormField("csrftoken", csrfToken),
+            FormField("csrftoken", csrfToken)
         ])
     }
 
@@ -172,7 +172,7 @@ extension Endpoint {
     public static func renewLoans(patronID: String, loanIDs: [String]) -> Endpoint {
         Endpoint(pathSegments: [
             "abonne", "prolongerPret", "id_profil", "1", "id", patronID,
-            "id_pret", loanIDs.joined(separator: ";"),
+            "id_pret", loanIDs.joined(separator: ";")
         ])
     }
 
@@ -207,8 +207,12 @@ extension Endpoint {
     }
 
     public static func submitPickup(path: String, pickupLibraryCode: String) -> Endpoint {
-        Endpoint(method: .post, pathSegments: path.split(separator: "/").map(String.init),
-                 form: [FormField("code_annexe", pickupLibraryCode)], isAjax: true)
+        Endpoint(
+            method: .post,
+            pathSegments: path.split(separator: "/").map(String.init),
+            form: [FormField("code_annexe", pickupLibraryCode)],
+            isAjax: true
+        )
     }
 }
 
@@ -248,7 +252,7 @@ extension Endpoint {
     public static func removeFromSelection(patronID: String, selectionID: Int, recordID: Int) -> Endpoint {
         Endpoint(pathSegments: [
             "abonne", "supprimer-de-la-selection", "id_profil", "1", "id", patronID,
-            "selection_id", String(selectionID), "record_id", String(recordID), "delete", "1",
+            "selection_id", String(selectionID), "record_id", String(recordID), "delete", "1"
         ])
     }
 

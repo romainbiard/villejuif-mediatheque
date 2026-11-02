@@ -56,14 +56,14 @@ extension HTMLParsers {
 
             let link = try title.select("a").first()
             try link?.select(".sr-only").remove()
-            return SelectionDTO(
+            return try SelectionDTO(
                 id: id,
                 basketID: hrefs.lazy.compactMap { firstInt(after: "id_panier/", in: $0) }.first,
-                title: try link?.text() ?? "",
-                count: Int(try card.select(".selection_count_records .badge").first()?.text() ?? "") ?? 0,
-                updatedText: try card.select(".selection_date_maj .badge").first()?.text(),
-                coverURLs: try card.select(".cardify_horizontal_img img").compactMap { URL(string: try $0.attr("abs:src")) },
-                previewTitles: try card.select("p.model_description_Class_PanierNotice").map { try $0.text() }
+                title: link?.text() ?? "",
+                count: Int(card.select(".selection_count_records .badge").first()?.text() ?? "") ?? 0,
+                updatedText: card.select(".selection_date_maj .badge").first()?.text(),
+                coverURLs: card.select(".cardify_horizontal_img img").compactMap { try URL(string: $0.attr("abs:src")) },
+                previewTitles: card.select("p.model_description_Class_PanierNotice").map { try $0.text() }
             )
         }
     }
@@ -83,12 +83,12 @@ extension HTMLParsers {
             try title?.select(".sr-only").remove()
             let author = try card.select(".card-subtitle .d-inline").first()
             try author?.select(".sr-only").remove()
-            return RecordToRateDTO(
+            return try RecordToRateDTO(
                 recordID: recordID,
                 recordKey: key.removingPercentEncoding ?? key,
-                title: try title?.text() ?? "",
-                author: try author?.text().nilIfBlank,
-                coverURL: URL(string: try card.select(".cardify_horizontal_img img").first()?.attr("abs:src") ?? "")
+                title: title?.text() ?? "",
+                author: author?.text().nilIfBlank,
+                coverURL: URL(string: card.select(".cardify_horizontal_img img").first()?.attr("abs:src") ?? "")
             )
         }
     }
@@ -100,10 +100,10 @@ extension HTMLParsers {
             guard let link = try card.select(".card-title a, a[href*=viewnotice]").first() else { return nil }
             try link.select(".sr-only").remove()
             let filledStars = try card.select(".fa-star.fas, .fas.fa-star, .star_on").size()
-            return ReviewDTO(
-                recordID: firstInt(after: "/id/", in: try link.attr("href")),
-                title: try link.text(),
-                text: try card.select(".card-text").first()?.text() ?? "",
+            return try ReviewDTO(
+                recordID: firstInt(after: "/id/", in: link.attr("href")),
+                title: link.text(),
+                text: card.select(".card-text").first()?.text() ?? "",
                 rating: filledStars > 0 ? filledStars : nil
             )
         }
@@ -121,15 +121,15 @@ extension HTMLParsers {
         }
         return try content.select(".card").compactMap { card in
             guard let title = try card.select(".card-title").first()?.text().nilIfBlank else { return nil }
-            return SuggestionDTO(title: title, detail: try card.select(".card-text").first()?.text().nilIfBlank)
+            return try SuggestionDTO(title: title, detail: card.select(".card-text").first()?.text().nilIfBlank)
         }
     }
 
     /// Favorite libraries: those that offer the "retirer des favoris" link.
     public static func bookmarkedLibraryIDs(in html: String) throws -> Set<Int> {
         let document = try SwiftSoup.parse(html)
-        return Set(try document.select("a[href*=remove-library-from-bookmarks]").compactMap {
-            firstInt(after: "library_id/", in: try $0.attr("href"))
+        return try Set(document.select("a[href*=remove-library-from-bookmarks]").compactMap {
+            try firstInt(after: "library_id/", in: $0.attr("href"))
         })
     }
 

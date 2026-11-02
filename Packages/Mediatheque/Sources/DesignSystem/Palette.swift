@@ -42,7 +42,7 @@ public extension Color {
         )
     }
 
-    public init(light: UInt32, dark: UInt32) {
+    init(light: UInt32, dark: UInt32) {
         #if canImport(UIKit)
         self.init(uiColor: UIColor { traits in
             UIColor(Color(hex: traits.userInterfaceStyle == .dark ? dark : light))
@@ -64,7 +64,7 @@ public enum BrandArtwork {
         (.brandCyan, .brandVioletDeep),
         (.brandVioletDeep, .brandCyan),
         (Color(hex: 0xA60A3D), .brandYellow),
-        (Color(hex: 0x1C1B22), .brandMagenta),
+        (Color(hex: 0x1C1B22), .brandMagenta)
     ]
 
     /// Stable colors for a given identifier.

@@ -37,7 +37,7 @@ public enum AgendaPeriod: String, CaseIterable, Hashable, Sendable, Identifiable
             let weekday = calendar.component(.weekday, from: today)
             if weekday == 1 { return [today] }
             guard let saturday = adding((7 - weekday) % 7, to: today) else { return [] }
-            return [saturday, adding(1, to: saturday)].compactMap { $0 }
+            return [saturday, adding(1, to: saturday)].compactMap(\.self)
         case .wednesdays:
             let weekday = calendar.component(.weekday, from: today)
             guard let first = adding((4 - weekday + 7) % 7, to: today) else { return [] }
@@ -86,6 +86,7 @@ public final class AgendaViewModel {
     public var filters = AgendaFilters() {
         didSet { feedback = .selection }
     }
+
     public private(set) var feedback: FeedbackEvent?
 
     @ObservationIgnored @Dependency(\.agendaClient) private var agenda
@@ -206,10 +207,10 @@ public final class AgendaViewModel {
     public func upcomingCount(with filters: AgendaFilters) -> Int {
         let today = calendar.startOfDay(for: now)
         let periodDays = filters.period.days(from: now, calendar: calendar)
-        return (state.value ?? []).filter { event in
+        return (state.value ?? []).count(where: { event in
             guard filters.matches(event), (event.end ?? event.start).map({ $0 >= today }) == true else { return false }
             return filters.period == .all || periodDays.contains { event.occurs(on: $0, calendar: calendar) }
-        }.count
+        })
     }
 
     // MARK: Period ("Quand")
@@ -293,7 +294,7 @@ public final class EventDetailViewModel {
     public func load() async {
         detail = .loading
         do {
-            detail = .loaded(try await agenda.detail(event))
+            detail = try await .loaded(agenda.detail(event))
         } catch {
             detail = .failed(LoadError(error))
         }

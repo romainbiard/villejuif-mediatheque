@@ -47,27 +47,27 @@ extension ProfileClient: DependencyKey {
         }
 
         @Sendable func page(_ name: String) async throws -> String {
-            try await session.perform { try await http.string(for: .patronPage(name, patronID: try await patronID())) }
+            try await session.perform { try await http.string(for: .patronPage(name, patronID: patronID())) }
         }
 
         /// Submits a form and surfaces the first error message shown by the site.
         @Sendable func submit(_ name: String, _ fields: [Endpoint.FormField]) async throws {
             try await session.perform {
-                let html = try await http.string(for: .patronForm(name, patronID: try await patronID(), fields: fields))
+                let html = try await http.string(for: .patronForm(name, patronID: patronID(), fields: fields))
                 if let error = try HTMLParsers.formErrors(in: html).first { throw ProfileError.rejected(error) }
             }
         }
 
         return ProfileClient(
             selections: {
-                try HTMLParsers.selections(in: try await page("selections")).map(Selection.init(dto:))
+                try await HTMLParsers.selections(in: page("selections")).map(Selection.init(dto:))
             },
             selectionNotices: { selection, pageNumber in
                 guard let basketID = selection.basketID else {
                     return SearchPage(total: 0, page: 1, pageSize: 10, documents: [])
                 }
                 return try await session.perform {
-                    SearchPage(dto: try await http.decode(SearchResponseDTO.self, from: .selectionRecords(basketID: basketID, page: pageNumber)))
+                    try await SearchPage(dto: http.decode(SearchResponseDTO.self, from: .selectionRecords(basketID: basketID, page: pageNumber)))
                 }
             },
             createSelection: { name in
@@ -75,14 +75,14 @@ extension ProfileClient: DependencyKey {
             },
             removeFromSelection: { selection, recordID in
                 _ = try await session.perform {
-                    try await http.data(for: .removeFromSelection(patronID: try await patronID(), selectionID: selection.id, recordID: recordID))
+                    try await http.data(for: .removeFromSelection(patronID: patronID(), selectionID: selection.id, recordID: recordID))
                 }
             },
             recordsToRate: {
-                try HTMLParsers.recordsToRate(in: try await page("donner-des-avis")).map(RecordToRate.init(dto:))
+                try await HTMLParsers.recordsToRate(in: page("donner-des-avis")).map(RecordToRate.init(dto:))
             },
             reviews: {
-                try HTMLParsers.reviews(in: try await page("mes-avis")).enumerated().map { index, dto in
+                try await HTMLParsers.reviews(in: page("mes-avis")).enumerated().map { index, dto in
                     Review(id: "\(dto.recordID ?? 0)-\(index)", recordID: dto.recordID, title: dto.title, text: dto.text, rating: dto.rating)
                 }
             },
@@ -92,13 +92,13 @@ extension ProfileClient: DependencyKey {
                 }
             },
             suggestions: {
-                try HTMLParsers.suggestions(in: try await page("suggestions")).enumerated().map { index, dto in
+                try await HTMLParsers.suggestions(in: page("suggestions")).enumerated().map { index, dto in
                     Suggestion(id: "\(index)-\(dto.title)", title: dto.title, detail: dto.detail)
                 }
             },
             sendSuggestion: { draft in
                 // The "Site" field is prefilled with the patron's library: we send its value back.
-                let library = try HTMLParsers.fieldValue("Library", in: try await page("suggestion-achat-add")) ?? ""
+                let library = try await HTMLParsers.fieldValue("Library", in: page("suggestion-achat-add")) ?? ""
                 let comment = draft.kind == .comic ? ["Bande dessinée", draft.comment].filter { !$0.isEmpty }.joined(separator: ". ") : draft.comment
                 try await submit("suggestion-achat-add", [
                     .init("DocType", draft.kind.docTypeCode),
@@ -108,16 +108,16 @@ extension ProfileClient: DependencyKey {
                     .init("Library", library),
                     .init("Url", ""),
                     .init("Comment", comment),
-                    .init("submit", "Envoyer"),
+                    .init("submit", "Envoyer")
                 ])
             },
             contactDetails: {
                 let html = try await page("modifier")
-                return ContactDetails(
-                    nickname: try HTMLParsers.fieldValue("pseudo", in: html) ?? "",
-                    email: try HTMLParsers.fieldValue("mail", in: html) ?? "",
-                    phone: try HTMLParsers.fieldValue("telephone", in: html) ?? "",
-                    channel: SendingChannel(rawValue: try HTMLParsers.checkedValue("favoriteSendingChannel", in: html) ?? "") ?? .any
+                return try ContactDetails(
+                    nickname: HTMLParsers.fieldValue("pseudo", in: html) ?? "",
+                    email: HTMLParsers.fieldValue("mail", in: html) ?? "",
+                    phone: HTMLParsers.fieldValue("telephone", in: html) ?? "",
+                    channel: SendingChannel(rawValue: HTMLParsers.checkedValue("favoriteSendingChannel", in: html) ?? "") ?? .any
                 )
             },
             updateContactDetails: { details in
@@ -125,17 +125,17 @@ extension ProfileClient: DependencyKey {
                     .init("pseudo", details.nickname),
                     .init("mail", details.email),
                     .init("telephone", details.phone),
-                    .init("favoriteSendingChannel", details.channel.rawValue),
+                    .init("favoriteSendingChannel", details.channel.rawValue)
                 ])
             },
             changePassword: { newPassword in
                 try await submit("changer-mon-mot-de-passe", [
                     .init("new_password", newPassword),
-                    .init("confirm_new_password", newPassword),
+                    .init("confirm_new_password", newPassword)
                 ])
             },
             bookmarkedLibraries: {
-                let ids = try HTMLParsers.bookmarkedLibraryIDs(in: try await page("configurations"))
+                let ids = try await HTMLParsers.bookmarkedLibraryIDs(in: page("configurations"))
                 return Set(ids.compactMap { Library(rawValue: String($0)) })
             },
             setLibraryBookmarked: { library, isBookmarked in
@@ -148,7 +148,7 @@ extension ProfileClient: DependencyKey {
                 _ = try await session.perform {
                     try await http.data(for: isSubscribed
                         ? .subscribeNewsletter(id: newsletterID)
-                        : .patronPage("disable-newsletter", patronID: try await patronID()))
+                        : .patronPage("disable-newsletter", patronID: patronID()))
                 }
             }
         )

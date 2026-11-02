@@ -1,0 +1,27 @@
+# SwiftFormat: the project's style. `swiftformat .` formats, `swiftformat --lint .` checks.
+--swift-version 6.2
+--exclude build,Packages/Mediatheque/.build,Mediatheque.xcodeproj
+
+--indent 4
+--ifdef no-indent
+--max-width 160
+--wraparguments before-first
+--wrapparameters before-first
+--wrapcollections before-first
+--ranges no-space
+--commas inline
+--extensionacl on-declarations
+--importgrouping testable-last
+--stripunusedargs closure-only
+--header ignore
+
+# One-line bodies (`var id: String { rawValue }`) are part of the style.
+--disable wrapPropertyBodies,wrapFunctionBodies,wrapLoopBodies
+# Literals stay as written (2600 m, coordinates, hex colors).
+--disable numberFormatting
+# Test names stay in lowerCamelCase.
+--disable swiftTestingTestCaseNames
+# Force unwraps in tests: step 5 of the cleanup turns them into #require.
+--disable noForceUnwrapInTests
+# `private extension` and members marked one by one are both fine.
+--disable extensionAccessControl

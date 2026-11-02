@@ -22,7 +22,7 @@ extension AgendaClient: DependencyKey {
             events: { policy in
                 // The site publishes the agenda once and for all: 30 min is enough, and the agenda stays readable offline.
                 try await DataCache.shared.cached(for: "agenda-events", maxAge: 30 * 60, policy: policy) {
-                    try HTMLParsers.calendarEvents(in: try await http.string(for: .calendar()))
+                    try await HTMLParsers.calendarEvents(in: http.string(for: .calendar()))
                         .map(Event.init(dto:))
                         .sorted { ($0.start ?? .distantFuture) < ($1.start ?? .distantFuture) }
                 }
@@ -63,7 +63,7 @@ extension LibraryClient: DependencyKey {
             libraries: { policy in
                 // Opening hours rarely change (holidays, works): 12 h, and always viewable offline.
                 try await DataCache.shared.cached(for: "libraries", maxAge: 12 * 3600, policy: policy) {
-                    try HTMLParsers.libraries(in: try await http.string(for: .practicalInfo)).map(LibraryInfo.init(dto:))
+                    try await HTMLParsers.libraries(in: http.string(for: .practicalInfo)).map(LibraryInfo.init(dto:))
                 }
             }
         )

@@ -97,7 +97,7 @@ struct VillejuifShortcuts: AppShortcutsProvider {
             phrases: [
                 "Quand dois-je rendre mes livres dans \(.applicationName) ?",
                 "Mes prochains retours \(.applicationName)",
-                "Quels prêts rendre avec \(.applicationName) ?",
+                "Quels prêts rendre avec \(.applicationName) ?"
             ],
             shortTitle: "Prochains retours",
             systemImageName: "books.vertical"
@@ -106,7 +106,7 @@ struct VillejuifShortcuts: AppShortcutsProvider {
             intent: ShowLibraryCardIntent(),
             phrases: [
                 "Montre ma carte \(.applicationName)",
-                "Ma carte d'abonné \(.applicationName)",
+                "Ma carte d'abonné \(.applicationName)"
             ],
             shortTitle: "Ma carte",
             systemImageName: "barcode"
@@ -115,7 +115,7 @@ struct VillejuifShortcuts: AppShortcutsProvider {
             intent: SearchCatalogIntent(),
             phrases: [
                 "Chercher un livre dans \(.applicationName)",
-                "Recherche dans \(.applicationName)",
+                "Recherche dans \(.applicationName)"
             ],
             shortTitle: "Chercher",
             systemImageName: "magnifyingglass"
@@ -124,7 +124,7 @@ struct VillejuifShortcuts: AppShortcutsProvider {
             intent: OpenAgendaIntent(),
             phrases: [
                 "Agenda \(.applicationName)",
-                "Quelles animations dans \(.applicationName) ?",
+                "Quelles animations dans \(.applicationName) ?"
             ],
             shortTitle: "Agenda",
             systemImageName: "calendar"

@@ -173,7 +173,7 @@ public enum AccountSync {
         let client = account
         async let loans = client.loans()
         async let holds = client.holds()
-        let snapshot = AccountSnapshot(loans: try await loans, holds: try await holds, updatedAt: now)
+        let snapshot = try await AccountSnapshot(loans: loans, holds: holds, updatedAt: now)
         let previous = snapshots.load()
         snapshots.save(snapshot)
         #if canImport(WidgetKit)

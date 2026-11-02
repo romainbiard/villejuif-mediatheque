@@ -27,7 +27,10 @@ struct AgendaFiltersView: View {
                     periodGroup
                     group(.local("Lieu", comment: "Filter group: event venue"), values: visiblePlaces, selection: $draft.places)
                     if hiddenPlaceCount > 0 {
-                        Button(showsAllPlaces ? LocalizedStringResource.local("Moins de lieux") : .local("+ \(hiddenPlaceCount) autres lieux", comment: "Shows the collapsed venues")) {
+                        Button(showsAllPlaces ? LocalizedStringResource.local("Moins de lieux") : .local(
+                            "+ \(hiddenPlaceCount) autres lieux",
+                            comment: "Shows the collapsed venues"
+                        )) {
                             withAnimation { showsAllPlaces.toggle() }
                         }
                         .font(.subheadline.weight(.semibold))
@@ -54,8 +57,11 @@ struct AgendaFiltersView: View {
                     dismiss()
                 } label: {
                     let count = viewModel.upcomingCount(with: draft)
-                    Text(count == 0 ? LocalizedStringResource.local("Aucun événement") : .local("Voir \(count) événements", comment: "Button applying the filters"))
-                        .frame(maxWidth: .infinity)
+                    Text(count == 0 ? LocalizedStringResource.local("Aucun événement") : .local(
+                        "Voir \(count) événements",
+                        comment: "Button applying the filters"
+                    ))
+                    .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.prominent())
                 .padding(16)

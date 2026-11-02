@@ -25,18 +25,18 @@ extension CatalogClient: DependencyKey {
                 let endpoint = Endpoint.search(query.text, facets: query.facets, sort: query.sort.rawValue, page: query.page)
                 // Kept in memory for 5 min: switching filters and back, or reopening a recent search, is instant.
                 return try await DataCache.shared.value(for: "search-\(endpoint.cacheKey)", maxAge: 5 * 60, persist: false) {
-                    SearchPage(dto: try await http.decode(SearchResponseDTO.self, from: endpoint))
+                    try await SearchPage(dto: http.decode(SearchResponseDTO.self, from: endpoint))
                 }
             },
             availability: { recordID in
                 // The badge must stay close to real time: 2 min, just enough to avoid re-fetching it while scrolling.
                 try await DataCache.shared.value(for: "availability-\(recordID)", maxAge: 2 * 60, persist: false) {
-                    let badge = try HTMLParsers.availability(in: try await http.string(for: .availability(recordID: recordID)))
+                    let badge = try await HTMLParsers.availability(in: http.string(for: .availability(recordID: recordID)))
                     return Availability(label: badge.label, isAvailable: badge.isAvailable)
                 }
             },
             copies: { recordID in
-                try HTMLParsers.copies(in: try await http.string(for: .copies(recordID: recordID))).map(LiveCopy.init(dto:))
+                try await HTMLParsers.copies(in: http.string(for: .copies(recordID: recordID))).map(LiveCopy.init(dto:))
             }
         )
     }

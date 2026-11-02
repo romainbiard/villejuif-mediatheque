@@ -79,7 +79,8 @@ struct PortalWebView: UIViewRepresentable {
             if let scheme = url.scheme?.lowercased(), !["http", "https", "about", "blob", "data"].contains(scheme) {
                 let isMainFrame = action.targetFrame?.isMainFrame ?? false
                 if PortalWebView.mayOpenExternally(url, isMainFrame: isMainFrame, userTapped: action.navigationType == .linkActivated),
-                   await UIApplication.shared.open(url) {
+                   await UIApplication.shared.open(url)
+                {
                     parent.handedOffToApp = true
                 }
                 return .cancel

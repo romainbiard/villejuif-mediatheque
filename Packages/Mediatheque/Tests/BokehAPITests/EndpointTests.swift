@@ -37,7 +37,7 @@ struct EndpointTests {
     @Test func loginIsFormEncodedPost() throws {
         let request = HTTPClient(baseURL: base).request(for: .login(cardNumber: "0012345", password: "a b&c", csrfToken: "tok"))
         #expect(request.httpMethod == "POST")
-        let body = String(decoding: try #require(request.httpBody), as: UTF8.self)
+        let body = try String(decoding: #require(request.httpBody), as: UTF8.self)
         #expect(body == "username=0012345&password=a+b%26c&login=Se+connecter&csrftoken=tok")
     }
 
@@ -47,6 +47,6 @@ struct EndpointTests {
     }
 
     @Test func unauthorizedMessageIsRecognised() throws {
-        #expect(BokehError.from(json: try Fixture.data("api-error.json")) == .unauthorized)
+        #expect(try BokehError.from(json: Fixture.data("api-error.json")) == .unauthorized)
     }
 }

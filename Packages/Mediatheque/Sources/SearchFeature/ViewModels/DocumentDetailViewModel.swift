@@ -26,7 +26,7 @@ public final class DocumentDetailViewModel {
         }
         if copies.value == nil { copies = .loading }
         do {
-            copies = .loaded(try await catalog.copies(document.id))
+            copies = try await .loaded(catalog.copies(document.id))
         } catch {
             copies = .failed(LoadError(error))
         }

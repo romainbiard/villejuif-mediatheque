@@ -25,7 +25,7 @@ public final class SelectionsViewModel {
     public func load() async {
         if state.value == nil { state = .loading }
         do {
-            state = .loaded(try await profile.selections())
+            state = try await .loaded(profile.selections())
         } catch {
             if state.value == nil { state = .failed(LoadError(error)) }
         }
@@ -124,12 +124,12 @@ public final class ReviewsViewModel {
         if toRate.value == nil { toRate = .loading }
         if published.value == nil { published = .loading }
         do {
-            toRate = .loaded(try await profile.recordsToRate())
+            toRate = try await .loaded(profile.recordsToRate())
         } catch {
             if toRate.value == nil { toRate = .failed(LoadError(error)) }
         }
         do {
-            published = .loaded(try await profile.reviews())
+            published = try await .loaded(profile.reviews())
         } catch {
             if published.value == nil { published = .failed(LoadError(error)) }
         }
@@ -141,7 +141,12 @@ public final class ReviewsViewModel {
         isSubmitting = true
         defer { isSubmitting = false }
         do {
-            try await profile.submitReview(record, rating, title.trimmingCharacters(in: .whitespacesAndNewlines), text.trimmingCharacters(in: .whitespacesAndNewlines))
+            try await profile.submitReview(
+                record,
+                rating,
+                title.trimmingCharacters(in: .whitespacesAndNewlines),
+                text.trimmingCharacters(in: .whitespacesAndNewlines)
+            )
             if case let .loaded(records) = toRate { toRate = .loaded(records.filter { $0.id != record.id }) }
             message = String.local("Merci ! Votre avis sera publié après validation.")
             feedback = .success
@@ -175,7 +180,7 @@ public final class SuggestionsViewModel {
     public func load() async {
         if sent.value == nil { sent = .loading }
         do {
-            sent = .loaded(try await profile.suggestions())
+            sent = try await .loaded(profile.suggestions())
         } catch {
             if sent.value == nil { sent = .failed(LoadError(error)) }
         }
@@ -222,7 +227,7 @@ public final class InformationViewModel {
     public func load() async {
         if contact.value == nil { contact = .loading }
         do {
-            contact = .loaded(try await profile.contactDetails())
+            contact = try await .loaded(profile.contactDetails())
         } catch {
             if contact.value == nil { contact = .failed(LoadError(error)) }
         }
@@ -324,7 +329,7 @@ public final class ProfileSettingsViewModel {
     /// After a reminder change: authorization requested on enabling, reminders rescheduled.
     /// Returns `false` if iOS refuses notifications.
     public func remindersChanged(enabling: Bool) async -> Bool {
-        if enabling, !(await notifications.requestAuthorization()) {
+        if enabling, await !(notifications.requestAuthorization()) {
             message = String.local("Autorisez les notifications dans Réglages pour recevoir les rappels")
             feedback = .error
             return false
@@ -337,7 +342,7 @@ public final class ProfileSettingsViewModel {
     public func load() async {
         if bookmarks.value == nil { bookmarks = .loading }
         do {
-            bookmarks = .loaded(try await profile.bookmarkedLibraries())
+            bookmarks = try await .loaded(profile.bookmarkedLibraries())
         } catch {
             if bookmarks.value == nil { bookmarks = .failed(LoadError(error)) }
         }

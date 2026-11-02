@@ -26,7 +26,7 @@ struct BokehErrorBody: Decodable {
 extension BokehError {
     static let unauthorizedMessages: Set<String> = [
         "Autorisation non spécifiée",
-        "Jeton d'autorisation invalide",
+        "Jeton d'autorisation invalide"
     ]
 
     /// Detects a Bokeh error in a JSON body, `nil` if the body isn't one.

@@ -23,10 +23,10 @@ public actor HTTPClient {
         configuration.timeoutIntervalForRequest = 20
         configuration.httpAdditionalHeaders = [
             "User-Agent": userAgent,
-            "Accept-Language": "fr-FR,fr;q=0.9",
+            "Accept-Language": "fr-FR,fr;q=0.9"
         ]
         self.cookieStorage = cookieStorage
-        self.session = URLSession(configuration: configuration)
+        session = URLSession(configuration: configuration)
     }
 
     public static let defaultUserAgent = "MediathequesVillejuif-iOS/1.0"

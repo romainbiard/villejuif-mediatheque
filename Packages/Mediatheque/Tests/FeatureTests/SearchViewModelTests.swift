@@ -63,7 +63,7 @@ struct SearchViewModelTests {
         #expect(viewModel.hasActiveFilters)
     }
 
-    @Test func submitRemembersRecentSearch() async {
+    @Test func submitRemembersRecentSearch() {
         let saved = LockIsolated<[String]>([])
         let viewModel = withDependencies {
             $0.continuousClock = ImmediateClock()
