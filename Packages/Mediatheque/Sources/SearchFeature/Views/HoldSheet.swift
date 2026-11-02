@@ -17,22 +17,26 @@ struct HoldSheet: View {
 
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 16) {
-                HStack(spacing: 12) {
-                    CoverImage(url: viewModel.notice.coverURL, title: viewModel.notice.title, seed: viewModel.notice.id)
-                        .frame(width: 44, height: 64)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(viewModel.notice.title).font(.headline).lineLimit(2)
-                        Text(viewModel.notice.authors.first ?? viewModel.notice.kind.label)
-                            .font(.subheadline).foregroundStyle(Color.inkSecondary)
+            // Scrolls when the content is taller than the medium detent (error state, large text),
+            // instead of being centered and sliding under the navigation bar.
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    HStack(spacing: 12) {
+                        CoverImage(url: viewModel.notice.coverURL, title: viewModel.notice.title, seed: viewModel.notice.id)
+                            .frame(width: 44, height: 64)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(viewModel.notice.title).font(.headline).lineLimit(2)
+                            Text(viewModel.notice.authors.first ?? viewModel.notice.kind.label)
+                                .font(.subheadline).foregroundStyle(Color.inkSecondary)
+                        }
                     }
-                }
-                .cardStyle(padding: 12)
+                    .cardStyle(padding: 12)
 
-                content
-                Spacer(minLength: 0)
+                    content
+                }
+                .padding(16)
             }
-            .padding(16)
+            .scrollBounceBehavior(.basedOnSize)
             .background(Color.surfaceGrouped)
             .navigationTitle(Text(.local("Réserver", comment: "Sheet title: place a hold on the item")))
             .navigationBarTitleDisplayMode(.inline)
