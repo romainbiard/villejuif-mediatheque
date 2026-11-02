@@ -161,12 +161,7 @@ public struct SearchView: View {
             VStack(spacing: 18) { ForEach(0..<5, id: \.self) { _ in SkeletonRow() } }
                 .cardStyle()
         case let .failed(error):
-            EmptyStateView(
-                systemImage: error == .offline ? "wifi.slash" : "exclamationmark.triangle",
-                title: error == .offline ? String.local("Pas de connexion") : String.local("Le site de la médiathèque ne répond pas"),
-                message: String.local("Vérifiez votre connexion, puis réessayez."),
-                primary: (String.local("Réessayer"), { viewModel.submit() })
-            )
+            EmptyStateView(error: error) { viewModel.submit() }
         case let .loaded(documents) where documents.isEmpty:
             EmptyStateView(
                 systemImage: "text.magnifyingglass",

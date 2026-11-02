@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 // See LICENSE in the project root for the full license text and copyright notice.
 
+import MediathequeCore
 import SwiftUI
 
 // MARK: - Section title
@@ -188,6 +189,18 @@ public struct EmptyStateView: View {
 
 // MARK: - Errors
 
+public extension EmptyStateView {
+    /// Nothing to show because loading failed: what went wrong, and a retry button.
+    init(error: LoadError, retry: @escaping () async -> Void) {
+        self.init(
+            systemImage: error.systemImage,
+            title: error.title,
+            message: error.message,
+            primary: (String.local("Réessayer"), { Task { await retry() } })
+        )
+    }
+}
+
 /// Line above the data already on screen when the refresh failed ("Hors ligne · dernières données enregistrées").
 public struct StaleBanner: View {
     let text: String
@@ -196,6 +209,11 @@ public struct StaleBanner: View {
     public init(_ text: String, systemImage: String) {
         self.text = text
         self.systemImage = systemImage
+    }
+
+    /// The refresh failed over data already on screen.
+    public init(error: LoadError) {
+        self.init(error.staleText, systemImage: error.staleSystemImage)
     }
 
     public var body: some View {

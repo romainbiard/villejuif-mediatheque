@@ -183,6 +183,20 @@ struct Code39Tests {
     }
 }
 
+struct LoadErrorTextTests {
+    @Test func eachErrorSaysWhatToDo() {
+        let offline = LoadError(URLError(.notConnectedToInternet))
+        #expect(offline.title == "Pas de connexion")
+        #expect(offline.message == "Vérifiez votre connexion, puis réessayez.")
+        #expect(offline.systemImage == "wifi.slash")
+
+        let siteDown = LoadError(URLError(.timedOut))
+        #expect(siteDown.title == "Le site de la médiathèque ne répond pas")
+        #expect(siteDown.message == "Réessayez dans un instant.")
+        #expect(siteDown.staleText == "Mise à jour impossible · dernières données enregistrées")
+    }
+}
+
 struct DataCacheTests {
     private struct Failure: Error {}
 

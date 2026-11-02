@@ -202,16 +202,6 @@
       },
       "comment" : "Last day of an exhibition"
     },
-    "L'agenda ne répond pas" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Events Aren't Loading"
-          }
-        }
-      }
-    },
     "Les %lld prochains mercredis" : {
       "localizations" : {
         "fr" : {
@@ -324,16 +314,6 @@
         }
       }
     },
-    "Pas de connexion" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No Connection"
-          }
-        }
-      }
-    },
     "Pendant cette période" : {
       "localizations" : {
         "en" : {
@@ -403,16 +383,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nothing Scheduled for This Period"
-          }
-        }
-      }
-    },
-    "Réessayer" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Try Again"
           }
         }
       }
@@ -517,16 +487,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "See All Events"
-          }
-        }
-      }
-    },
-    "Vérifiez votre connexion, puis réessayez." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Check your connection, then try again."
           }
         }
       }

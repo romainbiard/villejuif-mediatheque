@@ -13,7 +13,7 @@ struct LoansView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 if let error = viewModel.staleError {
-                    StaleBanner(error.staleText, systemImage: error.staleSystemImage)
+                    StaleBanner(error: error)
                 }
                 content
             }
@@ -43,12 +43,7 @@ struct LoansView: View {
         case .idle, .loading:
             VStack(spacing: 14) { ForEach(0..<3, id: \.self) { _ in SkeletonRow() } }.cardStyle()
         case let .failed(error):
-            EmptyStateView(
-                systemImage: error == .offline ? "wifi.slash" : "exclamationmark.triangle",
-                title: error == .offline ? String.local("Pas de connexion") : String.local("Le site de la médiathèque ne répond pas"),
-                message: .local("Vérifiez votre connexion, puis réessayez."),
-                primary: (String.local("Réessayer"), { Task { await viewModel.load() } })
-            )
+            EmptyStateView(error: error) { await viewModel.load() }
         case let .loaded(loans) where loans.isEmpty:
             EmptyStateView(
                 systemImage: "books.vertical",
@@ -132,7 +127,7 @@ struct HoldsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 if let error = viewModel.staleError {
-                    StaleBanner(error.staleText, systemImage: error.staleSystemImage)
+                    StaleBanner(error: error)
                 }
                 content
             }
@@ -164,12 +159,7 @@ struct HoldsView: View {
         case .idle, .loading:
             VStack(spacing: 14) { ForEach(0..<2, id: \.self) { _ in SkeletonRow() } }.cardStyle()
         case let .failed(error):
-            EmptyStateView(
-                systemImage: error == .offline ? "wifi.slash" : "exclamationmark.triangle",
-                title: error == .offline ? String.local("Pas de connexion") : String.local("Le site de la médiathèque ne répond pas"),
-                message: .local("Vérifiez votre connexion, puis réessayez."),
-                primary: (String.local("Réessayer"), { Task { await viewModel.load() } })
-            )
+            EmptyStateView(error: error) { await viewModel.load() }
         case let .loaded(holds) where holds.isEmpty:
             EmptyStateView(
                 systemImage: "bookmark",

@@ -319,16 +319,6 @@
         }
       }
     },
-    "Le site de la médiathèque ne répond pas" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The Library Website Isn't Responding"
-          }
-        }
-      }
-    },
     "Les réservations sont suspendues sur votre compte. Renseignez-vous à l'accueil." : {
       "localizations" : {
         "en" : {
@@ -437,16 +427,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Share"
-          }
-        }
-      }
-    },
-    "Pas de connexion" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No Connection"
           }
         }
       }
@@ -656,16 +636,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Check the spelling, try fewer words, or search all 3 libraries."
-          }
-        }
-      }
-    },
-    "Vérifiez votre connexion, puis réessayez." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Check your connection, then try again."
           }
         }
       }

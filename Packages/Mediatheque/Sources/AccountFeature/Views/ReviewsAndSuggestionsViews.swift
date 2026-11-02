@@ -54,7 +54,7 @@ struct ReviewsView: View {
         case .idle, .loading:
             VStack(spacing: 14) { ForEach(0..<3, id: \.self) { _ in SkeletonRow() } }.cardStyle()
         case let .failed(error):
-            ProfileErrorState(error: error) { await viewModel.load() }
+            EmptyStateView(error: error) { await viewModel.load() }
         case let .loaded(records) where records.isEmpty:
             EmptyStateView(
                 systemImage: "star.bubble",
@@ -82,7 +82,7 @@ struct ReviewsView: View {
         case .idle, .loading:
             VStack(spacing: 14) { ForEach(0..<2, id: \.self) { _ in SkeletonRow() } }.cardStyle()
         case let .failed(error):
-            ProfileErrorState(error: error) { await viewModel.load() }
+            EmptyStateView(error: error) { await viewModel.load() }
         case let .loaded(reviews) where reviews.isEmpty:
             EmptyStateView(
                 systemImage: "heart.text.square",

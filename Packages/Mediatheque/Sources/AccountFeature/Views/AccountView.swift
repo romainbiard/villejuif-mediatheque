@@ -349,9 +349,9 @@ struct AccountHomeView: View {
                 }
             case let .failed(error):
                 HStack(spacing: 12) {
-                    Image(systemName: error == .offline ? "wifi.slash" : "exclamationmark.triangle")
+                    Image(systemName: error.systemImage)
                         .foregroundStyle(Color.statusWarning)
-                    Text(error == .offline ? String.local("Pas de connexion") : String.local("Impossible de charger vos prêts."))
+                    Text(error.title)
                         .font(.subheadline)
                         .foregroundStyle(Color.ink)
                     Spacer(minLength: 8)
@@ -418,7 +418,7 @@ struct AccountHomeView: View {
     @ViewBuilder
     private var staleBanner: some View {
         if let error = viewModel.error, error != .notLoggedIn {
-            StaleBanner(error.staleText, systemImage: error.staleSystemImage)
+            StaleBanner(error: error)
         }
     }
 

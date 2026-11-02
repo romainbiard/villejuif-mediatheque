@@ -66,16 +66,6 @@
       },
       "comment" : "Library status; %@ is a time today"
     },
-    "Horaires indisponibles" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Opening Hours Unavailable"
-          }
-        }
-      }
-    },
     "Infos pratiques" : {
       "localizations" : {
         "en" : {
@@ -107,26 +97,6 @@
         }
       },
       "comment" : "Library status; %@ is a time"
-    },
-    "Réessayer" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Try Again"
-          }
-        }
-      }
-    },
-    "Vérifiez votre connexion, puis réessayez." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Check your connection, then try again."
-          }
-        }
-      }
     },
     "Écrire" : {
       "localizations" : {

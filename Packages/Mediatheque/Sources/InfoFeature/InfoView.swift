@@ -18,7 +18,7 @@ public struct InfoView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     if let error = viewModel.staleError {
-                        StaleBanner(error.staleText, systemImage: error.staleSystemImage)
+                        StaleBanner(error: error)
                     }
                     map
                     content
@@ -56,12 +56,7 @@ public struct InfoView: View {
         case .idle, .loading:
             ForEach(0..<3, id: \.self) { _ in SkeletonRow().cardStyle() }
         case let .failed(error):
-            EmptyStateView(
-                systemImage: error == .offline ? "wifi.slash" : "exclamationmark.triangle",
-                title: String.local("Horaires indisponibles"),
-                message: String.local("Vérifiez votre connexion, puis réessayez."),
-                primary: (String.local("Réessayer"), { Task { await viewModel.load() } })
-            )
+            EmptyStateView(error: error) { await viewModel.load() }
         case let .loaded(libraries):
             ForEach(libraries) { library in
                 LibraryCard(library: library, viewModel: viewModel, openURL: { openURL($0) })

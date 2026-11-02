@@ -58,7 +58,7 @@ struct SelectionsView: View {
             }
             .redacted(reason: .placeholder)
         case let .failed(error):
-            ProfileErrorState(error: error) { await viewModel.load() }
+            EmptyStateView(error: error) { await viewModel.load() }
         case let .loaded(selections):
             if selections.allSatisfy({ $0.count == 0 }) {
                 HStack(alignment: .top, spacing: 12) {
@@ -162,7 +162,7 @@ struct SelectionDetailView: View {
                         .padding(16)
                 }
             case let .failed(error):
-                ScrollView { ProfileErrorState(error: error) { await viewModel.load() }.padding(16) }
+                ScrollView { EmptyStateView(error: error) { await viewModel.load() }.padding(16) }
             case let .loaded(notices) where notices.isEmpty:
                 ScrollView {
                     EmptyStateView(
@@ -225,22 +225,5 @@ struct SelectionNoticeRow: View {
             if isRemoving { ProgressView() }
         }
         .opacity(isRemoving ? 0.5 : 1)
-    }
-}
-
-// MARK: - Shared
-
-/// Loading error for an account section, with a retry button.
-struct ProfileErrorState: View {
-    let error: LoadError
-    let retry: () async -> Void
-
-    var body: some View {
-        EmptyStateView(
-            systemImage: error == .offline ? "wifi.slash" : "exclamationmark.triangle",
-            title: error == .offline ? String.local("Pas de connexion") : String.local("Le site de la médiathèque ne répond pas"),
-            message: .local("Vérifiez votre connexion, puis réessayez."),
-            primary: (String.local("Réessayer"), { Task { await retry() } })
-        )
     }
 }

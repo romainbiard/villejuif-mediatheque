@@ -954,17 +954,6 @@
       },
       "comment": "Form field"
     },
-    "Impossible de charger vos prêts.": {
-      "comment": "iPad account home: loans failed to load",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Couldn't load your loans."
-          }
-        }
-      }
-    },
     "Indiquez votre numéro de carte. Vous recevrez un e-mail pour choisir un nouveau mot de passe, à l'adresse enregistrée sur votre compte.": {
       "localizations": {
         "en": {
@@ -1172,16 +1161,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Couldn't remove the item"
-          }
-        }
-      }
-    },
-    "Le site de la médiathèque ne répond pas": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The library website isn't responding"
           }
         }
       }
@@ -1792,16 +1771,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "No email on your account? Staff can reset your password at the front desk when you show your card."
-          }
-        }
-      }
-    },
-    "Pas de connexion": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No connection"
           }
         }
       }
@@ -2787,16 +2756,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "You can turn them on later in Settings."
-          }
-        }
-      }
-    },
-    "Vérifiez votre connexion, puis réessayez.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Check your connection, then try again."
           }
         }
       }

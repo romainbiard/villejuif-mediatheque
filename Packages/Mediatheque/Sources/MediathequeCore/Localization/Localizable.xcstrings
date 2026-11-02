@@ -193,6 +193,17 @@
         }
       }
     },
+    "Le site de la médiathèque ne répond pas": {
+      "comment": "Error screen title: the library's website failed or timed out",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Library Website Isn't Responding"
+          }
+        }
+      }
+    },
     "Lectures, ateliers, projections : découvrez les animations à venir dans l'agenda.": {
       "comment": "Body of the weekly agenda notification",
       "localizations": {
@@ -292,6 +303,17 @@
         }
       }
     },
+    "Pas de connexion": {
+      "comment": "Error screen title: the device is offline",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Connection"
+          }
+        }
+      }
+    },
     "Pont de l'Ascension": {
       "comment": "School holiday period name (France, zone C), shown in the agenda",
       "localizations": {
@@ -355,6 +377,17 @@
         }
       }
     },
+    "Reconnectez-vous pour continuer.": {
+      "comment": "Error screen message when signed out",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in again to continue."
+          }
+        }
+      }
+    },
     "Retour prévu le %@ à %@.": {
       "comment": "Notification inbox body; first %@ is the due date (weekday, day, month), second %@ is the library",
       "localizations": {
@@ -362,6 +395,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Due back on %@ at %@."
+          }
+        }
+      }
+    },
+    "Réessayez dans un instant.": {
+      "comment": "Error screen message when the website doesn't respond",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try again in a moment."
+          }
+        }
+      }
+    },
+    "Session fermée": {
+      "comment": "Error screen title: the patron is signed out",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signed Out"
           }
         }
       }
@@ -483,6 +538,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "tomorrow, %@"
+          }
+        }
+      }
+    },
+    "Vérifiez votre connexion, puis réessayez.": {
+      "comment": "Error screen message when offline",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check your connection, then try again."
           }
         }
       }

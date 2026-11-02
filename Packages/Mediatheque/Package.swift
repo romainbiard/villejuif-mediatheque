@@ -45,7 +45,11 @@ let package = Package(
             ],
             resources: [.process("Localization/Localizable.xcstrings")]
         ),
-        .target(name: "DesignSystem", resources: [.process("Resources"), .process("Localization/Localizable.xcstrings")]),
+        .target(
+            name: "DesignSystem",
+            dependencies: ["MediathequeCore"],
+            resources: [.process("Resources"), .process("Localization/Localizable.xcstrings")]
+        ),
         .target(
             name: "SearchFeature",
             dependencies: ["MediathequeCore", "DesignSystem", dependencies],

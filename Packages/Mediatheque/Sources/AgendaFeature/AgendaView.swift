@@ -26,7 +26,7 @@ public struct AgendaView: View {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 16) {
                             if let error = viewModel.staleError {
-                                StaleBanner(error.staleText, systemImage: error.staleSystemImage)
+                                StaleBanner(error: error)
                             }
                             if viewModel.filters.period == .all {
                                 DayStrip(viewModel: viewModel)
@@ -86,7 +86,7 @@ public struct AgendaView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     if let error = viewModel.staleError {
-                        StaleBanner(error.staleText, systemImage: error.staleSystemImage)
+                        StaleBanner(error: error)
                     }
                     if viewModel.filters.period == .all {
                         Text(viewModel.selectedDay.formatted(EventFormatting.dayTitle))
@@ -149,12 +149,7 @@ public struct AgendaView: View {
             RoundedRectangle(cornerRadius: 30).fill(Color.inkSecondary.opacity(0.12)).frame(height: 300)
             VStack(spacing: 14) { ForEach(0..<3, id: \.self) { _ in SkeletonRow() } }.cardStyle()
         case let .failed(error):
-            EmptyStateView(
-                systemImage: error == .offline ? "wifi.slash" : "exclamationmark.triangle",
-                title: error == .offline ? String.local("Pas de connexion") : String.local("L'agenda ne répond pas"),
-                message: String.local("Vérifiez votre connexion, puis réessayez."),
-                primary: (String.local("Réessayer"), { Task { await viewModel.load() } })
-            )
+            EmptyStateView(error: error) { await viewModel.load() }
         case .loaded:
             let events = viewModel.eventsOfSelectedDay
             if let featured = events.first {
