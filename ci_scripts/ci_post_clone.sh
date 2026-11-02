@@ -10,6 +10,14 @@ set -eu
 
 cd "$CI_PRIMARY_REPOSITORY_PATH"
 
+# Package versions are pinned by the package's Package.resolved: without it, Xcode Cloud can't
+# resolve the dependencies. Opening the project in Xcode can delete it locally; restore it with
+# `git checkout -- Packages/Mediatheque/Package.resolved` before committing.
+test -f Packages/Mediatheque/Package.resolved || {
+    echo "error: Packages/Mediatheque/Package.resolved is missing from the commit" >&2
+    exit 1
+}
+
 # Required workflow environment variables (Xcode Cloud › workflow › Environment).
 : "${BUNDLE_ID_PREFIX:?Set BUNDLE_ID_PREFIX in the Xcode Cloud workflow environment}"
 : "${DEVELOPMENT_TEAM:?Set DEVELOPMENT_TEAM in the Xcode Cloud workflow environment}"

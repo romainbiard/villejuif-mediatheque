@@ -109,6 +109,7 @@ flowchart LR
     App --> Features
     Features --> DS
     Features --> Core
+    DS --> Core
     Core --> API
 ```
 
@@ -116,17 +117,21 @@ flowchart LR
 .
 ├── App/                     # point d'entrée, onglets, écran de lancement, raccourcis Siri
 ├── Config/                  # identifiants et signature (xcconfig ; Local.xcconfig non versionné)
-├── ci_scripts/              # Xcode Cloud : génération du projet et identifiants avant le build
-├── Widget/                  # widget « Prochains retours »
+├── Docs/                    # captures et icône du README
 ├── Packages/Mediatheque/    # Swift Package local, une target par couche
 │   ├── Sources/
 │   │   ├── BokehAPI/        # transport et formats du portail
-│   │   ├── MediathequeCore/ # domaine, clients de dépendances, cache, notifications
-│   │   ├── DesignSystem/    # charte de Villejuif, composants, boutons
+│   │   ├── MediathequeCore/ # domaine, clients de dépendances, cache, notifications, textes d'erreur
+│   │   ├── DesignSystem/    # charte de Villejuif, composants, écrans d'erreur
 │   │   └── …Feature/        # un module par onglet : vues et ViewModels
 │   └── Tests/               # Swift Testing, sur des fixtures réelles anonymisées
-├── Docs/                    # captures et icône du README
-└── project.yml              # projet Xcode généré par XcodeGen
+├── Widget/                  # widget « Prochains retours »
+├── ci_scripts/              # Xcode Cloud : vérification du style, génération du projet, identifiants
+├── project.yml              # projet Xcode généré par XcodeGen
+├── .swiftformat             # format du code
+├── .swiftlint.yml           # règles de SwiftLint
+├── .periphery.yml           # recherche du code mort
+└── .git-blame-ignore-revs   # commits de formatage ignorés par git blame
 ```
 
 - **ViewModels** `@MainActor @Observable` : ils exposent un état et des intentions, et déclarent leurs dépendances avec `@Dependency`.
@@ -162,7 +167,7 @@ Sans compte, la recherche, l'agenda, les infos pratiques et la présentation du 
 
 ### Tests
 
-Plus de 120 tests, sur des fixtures JSON, HTML et iCal tirées du portail réel et anonymisées.
+Plus de 140 tests, sur des fixtures JSON, HTML et iCal tirées du portail réel et anonymisées.
 
 ```bash
 cd Packages/Mediatheque && xcodebuild test -scheme Mediatheque-Package -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -testLanguage fr -testRegion FR -skipMacroValidation
