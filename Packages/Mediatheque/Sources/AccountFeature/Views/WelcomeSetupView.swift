@@ -1,4 +1,4 @@
-// Ma médiathèque
+// Médiathèque
 // SPDX-License-Identifier: MIT
 // See LICENSE in the project root for the full license text and copyright notice.
 
@@ -115,7 +115,7 @@ struct NotificationPreview: View {
                 .background(Color.brandMagenta, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
-                    Text(verbatim: "Ma médiathèque").font(.footnote.weight(.semibold))
+                    Text(verbatim: "Médiathèque").font(.footnote.weight(.semibold))
                     Spacer()
                     Text(time).font(.caption).foregroundStyle(.secondary)
                 }

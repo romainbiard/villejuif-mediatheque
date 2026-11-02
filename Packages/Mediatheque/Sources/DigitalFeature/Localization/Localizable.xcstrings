@@ -12,13 +12,13 @@
         }
       }
     },
-    "%@ a sa propre app. Installez-la une fois : Ma médiathèque vous y connecte ensuite à chaque fois." : {
+    "%@ a sa propre app. Installez-la une fois : Médiathèque vous y connecte ensuite à chaque fois." : {
       "comment" : "%@ is a service name",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ has its own app. Install it once: Ma médiathèque will then sign you in every time."
+            "value" : "%@ has its own app. Install it once: Médiathèque will then sign you in every time."
           }
         }
       }

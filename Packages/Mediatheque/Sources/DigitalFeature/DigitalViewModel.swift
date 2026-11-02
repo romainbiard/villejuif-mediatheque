@@ -1,4 +1,4 @@
-// Ma médiathèque
+// Médiathèque
 // SPDX-License-Identifier: MIT
 // See LICENSE in the project root for the full license text and copyright notice.
 
@@ -49,7 +49,7 @@ public final class DigitalViewModel {
     /// "Installer l'app" sheet, before the App Store sheet.
     public var installOffer: DigitalOffer?
     public var storeProduct: StoreProduct?
-    /// The app was just installed from Ma médiathèque: "L'app est installée" banner.
+    /// The app was just installed from Médiathèque: "L'app est installée" banner.
     public private(set) var justInstalled: DigitalOffer.ID?
     private var installedSchemes: Set<String> = []
     /// Service whose app the patron went to get: open it as soon as it is there.
@@ -117,7 +117,7 @@ public final class DigitalViewModel {
         await open(offer)
     }
 
-    /// "Obtenir l'app": App Store sheet in the app, without leaving Ma médiathèque.
+    /// "Obtenir l'app": App Store sheet in the app, without leaving Médiathèque.
     public func getApp(for offer: DigitalOffer) {
         guard let app = offer.app else { return }
         installOffer = nil

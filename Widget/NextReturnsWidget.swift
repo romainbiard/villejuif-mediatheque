@@ -1,4 +1,4 @@
-// Ma médiathèque
+// Médiathèque
 // SPDX-License-Identifier: MIT
 // See LICENSE in the project root for the full license text and copyright notice.
 
@@ -8,7 +8,7 @@ import WidgetKit
 
 /// "Prochains retours" widget: reads the account snapshot from the App Group.
 @main
-struct VillejuifWidgetBundle: WidgetBundle {
+struct MediathequeWidgetBundle: WidgetBundle {
     var body: some Widget {
         NextReturnsWidget()
     }
@@ -77,7 +77,7 @@ struct NextReturnsView: View {
                 Text(inlineText).privacySensitive()
             case .accessoryRectangular:
                 VStack(alignment: .leading, spacing: 1) {
-                    Text(verbatim: "Ma médiathèque").font(.caption2.weight(.bold))
+                    Text(verbatim: "Médiathèque").font(.caption2.weight(.bold))
                     ForEach(loans.prefix(2)) { loan in
                         Text(verbatim: "\(loan.title) · \(dueText(loan))").font(.caption2).lineLimit(1)
                             // Titles are redacted on the Lock Screen while the iPhone is locked.

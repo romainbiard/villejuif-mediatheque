@@ -1,4 +1,4 @@
-name: Villejuif
+name: Mediatheque
 options:
   deploymentTarget:
     iOS: "26.0"
@@ -23,7 +23,7 @@ packages:
     path: Packages/Mediatheque
 
 targets:
-  Villejuif:
+  Mediatheque:
     type: application
     platform: iOS
     supportedDestinations: [iOS]
@@ -33,7 +33,7 @@ targets:
     info:
       path: App/Info.plist
       properties:
-        CFBundleDisplayName: Ma médiathèque
+        CFBundleDisplayName: Médiathèque
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         # System launch screen: white crest on the brand magenta, centered on the whole screen.
@@ -68,11 +68,11 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).mediatheques-villejuif
         # No accents: with "é", usernotificationsd doesn't link the bundle to its executable
         # (Unicode normalization) and rejects every notification request.
-        PRODUCT_NAME: MaMediatheque
+        PRODUCT_NAME: Mediatheque
         TARGETED_DEVICE_FAMILY: "1,2"
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
     dependencies:
-      - target: VillejuifWidget
+      - target: MediathequeWidget
       - package: Mediatheque
         product: MediathequeCore
       - package: Mediatheque
@@ -88,7 +88,7 @@ targets:
       - package: Mediatheque
         product: DigitalFeature
 
-  VillejuifWidget:
+  MediathequeWidget:
     type: app-extension
     platform: iOS
     supportedDestinations: [iOS]
@@ -98,7 +98,7 @@ targets:
     info:
       path: Widget/Info.plist
       properties:
-        CFBundleDisplayName: Ma médiathèque
+        CFBundleDisplayName: Médiathèque
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         AppGroupIdentifier: $(APP_GROUP_IDENTIFIER)
@@ -112,7 +112,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).mediatheques-villejuif.widget
-        PRODUCT_NAME: VillejuifWidget
+        PRODUCT_NAME: MediathequeWidget
         TARGETED_DEVICE_FAMILY: "1,2"
         SKIP_INSTALL: YES
     dependencies:
@@ -121,10 +121,10 @@ targets:
 
 # Shared scheme: Xcode Cloud only sees schemes stored in xcshareddata.
 schemes:
-  Villejuif:
+  Mediatheque:
     build:
       targets:
-        Villejuif: all
+        Mediatheque: all
     test:
       config: Debug
       # The tests check French texts: same as -testLanguage fr -testRegion FR.

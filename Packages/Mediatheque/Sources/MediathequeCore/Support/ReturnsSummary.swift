@@ -1,4 +1,4 @@
-// Ma médiathèque
+// Médiathèque
 // SPDX-License-Identifier: MIT
 // See LICENSE in the project root for the full license text and copyright notice.
 
@@ -10,7 +10,7 @@ public enum ReturnsSummary {
     /// Without a snapshot (never signed in, or signed out), prompts to sign in.
     public static func sentence(for snapshot: AccountSnapshot?, now: Date, calendar: Calendar) -> String {
         guard let snapshot else {
-            return .local("Connectez-vous dans l'app Ma médiathèque pour suivre vos prêts.")
+            return .local("Connectez-vous dans l'app Médiathèque pour suivre vos prêts.")
         }
         let loans = snapshot.upcomingLoans
         guard let first = loans.first else {

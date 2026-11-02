@@ -1,4 +1,4 @@
-// Ma médiathèque
+// Médiathèque
 // SPDX-License-Identifier: MIT
 // See LICENSE in the project root for the full license text and copyright notice.
 
@@ -148,7 +148,7 @@ struct ReturnsSummaryTests {
 
     @Test func noSnapshotOrNoLoans() {
         #expect(ReturnsSummary.sentence(for: nil, now: paris(10, 31), calendar: .paris)
-            == "Connectez-vous dans l'app Ma médiathèque pour suivre vos prêts.")
+            == "Connectez-vous dans l'app Médiathèque pour suivre vos prêts.")
         let empty = AccountSnapshot(loans: [], holds: [], updatedAt: paris(10, 31))
         #expect(ReturnsSummary.sentence(for: empty, now: paris(10, 31), calendar: .paris) == "Vous n'avez aucun prêt en cours.")
     }

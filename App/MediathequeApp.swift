@@ -1,4 +1,4 @@
-// Ma médiathèque
+// Médiathèque
 // SPDX-License-Identifier: MIT
 // See LICENSE in the project root for the full license text and copyright notice.
 
@@ -7,7 +7,7 @@ import MediathequeCore
 import SwiftUI
 
 @main
-struct VillejuifApp: App {
+struct MediathequeApp: App {
     @State private var session = SessionStore()
     @State private var showsSplash = true
     @Environment(\.scenePhase) private var scenePhase

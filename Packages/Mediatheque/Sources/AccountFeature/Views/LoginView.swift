@@ -1,4 +1,4 @@
-// Ma médiathèque
+// Médiathèque
 // SPDX-License-Identifier: MIT
 // See LICENSE in the project root for the full license text and copyright notice.
 
@@ -47,7 +47,7 @@ struct LoginView: View {
                     .scaledToFit()
                     .frame(height: 56)
                     .accessibilityLabel(Text(.local("Ville de Villejuif")))
-                Text(verbatim: "Ma médiathèque").font(.largeTitle.weight(.heavy)).foregroundStyle(.white)
+                Text(verbatim: "Médiathèque").font(.largeTitle.weight(.heavy)).foregroundStyle(.white)
                 Text(.local("Vos prêts, vos réservations et la médiathèque numérique, dans votre poche."))
                     .font(.body)
                     .foregroundStyle(.white.opacity(0.92))

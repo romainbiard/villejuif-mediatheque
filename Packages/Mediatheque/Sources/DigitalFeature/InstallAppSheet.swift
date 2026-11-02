@@ -1,4 +1,4 @@
-// Ma médiathèque
+// Médiathèque
 // SPDX-License-Identifier: MIT
 // See LICENSE in the project root for the full license text and copyright notice.
 
@@ -37,7 +37,7 @@ struct InstallAppSheet: View {
             Text(title)
                 .font(.title2.weight(.heavy))
                 .padding(.top, 22)
-            Text(.local("\(offer.provider) a sa propre app. Installez-la une fois : Ma médiathèque vous y connecte ensuite à chaque fois."))
+            Text(.local("\(offer.provider) a sa propre app. Installez-la une fois : Médiathèque vous y connecte ensuite à chaque fois."))
                 .font(.subheadline)
                 .foregroundStyle(Color.inkSecondary)
                 .padding(.top, 6)
@@ -89,7 +89,7 @@ struct InstallAppSheet: View {
     }
 }
 
-/// In-app App Store sheet (`SKStoreProductViewController`): the patron installs without leaving Ma médiathèque.
+/// In-app App Store sheet (`SKStoreProductViewController`): the patron installs without leaving Médiathèque.
 @MainActor
 enum AppStorePresenter {
     @MainActor

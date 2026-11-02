@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="docs/icon.png" width="128" alt="Icône de Ma médiathèque : le blason de Villejuif en blanc sur magenta">
+<img src="docs/icon.png" width="128" alt="Icône de Médiathèque : le blason de Villejuif en blanc sur magenta">
 
-# Ma médiathèque
+# Médiathèque
 
 **Les médiathèques de Villejuif dans la poche.**<br>
 Vos prêts, vos réservations, l'agenda, le catalogue et la médiathèque numérique, dans une app iOS native.
@@ -30,7 +30,7 @@ Vos prêts, vos réservations, l'agenda, le catalogue et la médiathèque numér
 
 ## Pourquoi
 
-Le portail des médiathèques de Villejuif est complet, mais pensé pour un ordinateur. *Ma médiathèque* reprend ce qu'on y fait le plus souvent depuis un téléphone : vérifier ce qu'il faut rendre, prolonger un prêt, réserver un livre, voir ce qui se passe mercredi, ouvrir un film du catalogue numérique. Tout se fait en quelques gestes, aux couleurs de la ville et avec le design Liquid Glass d'iOS 26.
+Le portail des médiathèques de Villejuif est complet, mais pensé pour un ordinateur. *Médiathèque* reprend ce qu'on y fait le plus souvent depuis un téléphone : vérifier ce qu'il faut rendre, prolonger un prêt, réserver un livre, voir ce qui se passe mercredi, ouvrir un film du catalogue numérique. Tout se fait en quelques gestes, aux couleurs de la ville et avec le design Liquid Glass d'iOS 26.
 
 ## Fonctionnalités
 
@@ -55,7 +55,7 @@ Le portail des médiathèques de Villejuif est complet, mais pensé pour un ordi
 
 ### ▶️ Numérique
 - Arte VOD, Cafeyn, Mozaik, BiblioAccess, Izneo, Eurêka et musicMe, déjà inclus dans l'abonnement.
-- **Ouvrir ou installer** : l'app sait si l'app du partenaire est installée. Si oui, elle l'ouvre directement. Sinon, elle la présente puis ouvre sa fiche App Store sans quitter *Ma médiathèque*.
+- **Ouvrir ou installer** : l'app sait si l'app du partenaire est installée. Si oui, elle l'ouvre directement. Sinon, elle la présente puis ouvre sa fiche App Store sans quitter *Médiathèque*.
 - La connexion aux services web se fait par le portail : pas de deuxième mot de passe à retenir.
 
 ### 🏛️ Infos pratiques
@@ -67,7 +67,7 @@ Le portail des médiathèques de Villejuif est complet, mais pensé pour un ordi
 | | |
 |---|---|
 | 📱 **Widget** | « Prochains retours » sur l'écran d'accueil |
-| 🗣️ **Siri et Raccourcis** | *« Quand dois-je rendre mes livres dans Ma médiathèque ? »*, *« Montre ma carte Ma médiathèque »*, *« Agenda Ma médiathèque »* |
+| 🗣️ **Siri et Raccourcis** | *« Quand dois-je rendre mes livres dans Médiathèque ? »*, *« Montre ma carte Médiathèque »*, *« Agenda Médiathèque »* |
 | 🖥️ **iPad** | barre latérale permanente, recherche et fiche côte à côte, raccourcis clavier (⌘F, ⌘1…5) |
 | 📳 **Retours haptiques** | discrets, seulement quand ils ont un sens (prolongation réussie, carte scannée…) |
 | 📶 **Cache** | l'agenda, les horaires et les recherches récentes restent affichés quand le réseau flanche |
@@ -147,10 +147,10 @@ git clone https://github.com/romainbiard/villejuif-mediatheque.git && cd villeju
 ```
 
 ```bash
-xcodegen generate && open Villejuif.xcodeproj
+xcodegen generate && open Mediatheque.xcodeproj
 ```
 
-Choisissez le schéma **Villejuif**, puis un simulateur ou votre iPhone.
+Choisissez le schéma **Mediatheque**, puis un simulateur ou votre iPhone.
 
 Les identifiants et la signature viennent de `Config/Shared.xcconfig`, avec des valeurs neutres (`com.example`) qui suffisent pour le simulateur. Pour installer l'app sur un appareil, copiez `Config/Local.xcconfig.example` en `Config/Local.xcconfig` et indiquez-y votre préfixe et votre équipe. Ce fichier est ignoré par git, et l'App Group suit le préfixe.
 
@@ -179,7 +179,7 @@ Le projet Xcode n'est pas versionné : sur Xcode Cloud, `ci_scripts/ci_post_clon
 | `BUNDLE_ID_PREFIX` | `com.votrenom` |
 | `DEVELOPMENT_TEAM` | identifiant d'équipe Apple Developer (10 caractères) |
 
-Le schéma partagé `Villejuif` lance les tests du package (en français) et archive l'app avec son widget.
+Le schéma partagé `Mediatheque` lance les tests du package (en français) et archive l'app avec son widget.
 
 ## Confidentialité
 

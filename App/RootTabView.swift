@@ -1,4 +1,4 @@
-// Ma médiathèque
+// Médiathèque
 // SPDX-License-Identifier: MIT
 // See LICENSE in the project root for the full license text and copyright notice.
 
@@ -159,7 +159,7 @@ struct SidebarRootView: View {
                     }
                 }
             }
-            .navigationTitle("Ma médiathèque")
+            .navigationTitle("Médiathèque")
             .navigationSplitViewColumnWidth(280)
             .toolbar(removing: .sidebarToggle)
         } detail: {

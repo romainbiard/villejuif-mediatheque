@@ -127,13 +127,13 @@
         }
       }
     },
-    "Connectez-vous dans l'app Ma médiathèque pour suivre vos prêts.": {
-      "comment": "Siri / widget answer when the user is not signed in; Ma médiathèque is the app name",
+    "Connectez-vous dans l'app Médiathèque pour suivre vos prêts.": {
+      "comment": "Siri / widget answer when the user is not signed in; Médiathèque is the app name",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sign in to the Ma médiathèque app to keep track of your loans."
+            "value": "Sign in to the Médiathèque app to keep track of your loans."
           }
         }
       }

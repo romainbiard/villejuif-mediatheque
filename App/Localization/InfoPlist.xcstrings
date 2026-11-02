@@ -8,7 +8,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Ma médiathèque"
+            "value" : "Médiathèque"
           }
         }
       }
@@ -20,7 +20,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "MaMediatheque"
+            "value" : "Mediatheque"
           }
         }
       }
