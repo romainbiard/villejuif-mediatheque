@@ -2,100 +2,54 @@
   "sourceLanguage" : "fr",
   "strings" : {
     "Agenda ${applicationName}" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
-          "stringUnit" : {
+          "stringSet" : {
             "state" : "translated",
-            "value" : "${applicationName} events"
+            "values" : [
+              "${applicationName} events",
+              "What's on at ${applicationName}?"
+            ]
           }
         }
       }
     },
     "Chercher un livre dans ${applicationName}" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
-          "stringUnit" : {
+          "stringSet" : {
             "state" : "translated",
-            "value" : "Find a book in ${applicationName}"
-          }
-        }
-      }
-    },
-    "Ma carte d'abonné ${applicationName}" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "My ${applicationName} library card"
-          }
-        }
-      }
-    },
-    "Mes prochains retours ${applicationName}" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "My upcoming returns in ${applicationName}"
+            "values" : [
+              "Find a book in ${applicationName}",
+              "Search ${applicationName}"
+            ]
           }
         }
       }
     },
     "Montre ma carte ${applicationName}" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
-          "stringUnit" : {
+          "stringSet" : {
             "state" : "translated",
-            "value" : "Show my ${applicationName} card"
+            "values" : [
+              "Show my ${applicationName} card",
+              "My ${applicationName} library card"
+            ]
           }
         }
       }
     },
     "Quand dois-je rendre mes livres dans ${applicationName} ?" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
-          "stringUnit" : {
+          "stringSet" : {
             "state" : "translated",
-            "value" : "When are my books due in ${applicationName}?"
-          }
-        }
-      }
-    },
-    "Quelles animations dans ${applicationName} ?" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "What's on at ${applicationName}?"
-          }
-        }
-      }
-    },
-    "Quels prêts rendre avec ${applicationName} ?" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Which loans are due in ${applicationName}?"
-          }
-        }
-      }
-    },
-    "Recherche dans ${applicationName}" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Search ${applicationName}"
+            "values" : [
+              "When are my books due in ${applicationName}?",
+              "My upcoming returns in ${applicationName}",
+              "Which loans are due in ${applicationName}?"
+            ]
           }
         }
       }

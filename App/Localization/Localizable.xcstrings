@@ -2,7 +2,6 @@
   "sourceLanguage" : "fr",
   "strings" : {
     "Affiche les prochaines animations des médiathèques." : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -13,7 +12,6 @@
       }
     },
     "Affiche votre carte avec son code-barres, luminosité au maximum." : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -25,7 +23,6 @@
     },
     "Agenda" : {
       "comment" : "Tab title: library events",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -37,7 +34,6 @@
     },
     "Aller à" : {
       "comment" : "Menu bar menu with tab shortcuts",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -49,7 +45,6 @@
     },
     "Chercher" : {
       "comment" : "Short shortcut title",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -61,7 +56,6 @@
     },
     "Chercher ${query} dans le catalogue" : {
       "comment" : "Shortcut summary; ${query} is the search terms",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -73,7 +67,6 @@
     },
     "Chercher dans le catalogue" : {
       "comment" : "Shortcut title",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -85,7 +78,6 @@
     },
     "Compte" : {
       "comment" : "Tab title",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -96,7 +88,6 @@
       }
     },
     "Dit quand rendre vos prochains documents, d'après la dernière synchronisation." : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -108,7 +99,6 @@
     },
     "Infos" : {
       "comment" : "Tab title: practical information",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -119,7 +109,6 @@
       }
     },
     "Lance une recherche dans le catalogue des médiathèques de Villejuif." : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -131,7 +120,6 @@
     },
     "Ma carte" : {
       "comment" : "Short shortcut title",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -143,7 +131,6 @@
     },
     "Mon compte" : {
       "comment" : "Sidebar section on iPad",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -155,7 +142,6 @@
     },
     "Montrer ma carte d'abonné" : {
       "comment" : "Shortcut title",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -167,7 +153,6 @@
     },
     "Numérique" : {
       "comment" : "Tab title: digital library",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -179,7 +164,6 @@
     },
     "Ouvrir l'agenda" : {
       "comment" : "Shortcut title",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -191,7 +175,6 @@
     },
     "Prochains retours" : {
       "comment" : "Shortcut title",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -203,7 +186,6 @@
     },
     "Que cherchez-vous ?" : {
       "comment" : "Siri asks for the search terms",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -215,7 +197,6 @@
     },
     "Recherche" : {
       "comment" : "Tab title: catalog search; also the search parameter of the Siri shortcut",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -227,7 +208,6 @@
     },
     "Rechercher dans le catalogue" : {
       "comment" : "Menu bar command (⌘F)",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -238,7 +218,15 @@
       }
     },
     "Synchronisé le %@" : {
-
+      "comment" : "Siri snippet footer; %@ is the date and time of the last sync",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synced %@"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

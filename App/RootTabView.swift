@@ -159,7 +159,7 @@ struct SidebarRootView: View {
                     }
                 }
             }
-            .navigationTitle("Médiathèque")
+            .navigationTitle(Text(verbatim: "Médiathèque"))
             .navigationSplitViewColumnWidth(280)
             .toolbar(removing: .sidebarToggle)
         } detail: {

@@ -3,7 +3,6 @@
   "strings" : {
     "%@ vous attend" : {
       "comment" : "A hold is ready; %@ is the title",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -14,7 +13,6 @@
       }
     },
     "%lld réservations à retirer" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "variations" : {
@@ -67,7 +65,6 @@
     },
     "aujourd'hui" : {
       "comment" : "A loan is due today",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -78,7 +75,6 @@
       }
     },
     "Connectez-vous dans l'app pour voir vos retours." : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -90,7 +86,6 @@
     },
     "dans %lld jours" : {
       "comment" : "A loan is due in N days",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "variations" : {
@@ -132,7 +127,6 @@
     },
     "demain" : {
       "comment" : "A loan is due tomorrow",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -144,7 +138,6 @@
     },
     "en retard de %lld j" : {
       "comment" : "Short: a loan is overdue by N days",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "variations" : {
@@ -186,7 +179,6 @@
     },
     "Prochains retours" : {
       "comment" : "Widget name",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -197,7 +189,6 @@
       }
     },
     "Rien à rendre pour l'instant." : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -209,7 +200,6 @@
     },
     "Vos prochains documents à rendre et les réservations qui vous attendent." : {
       "comment" : "Widget description",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

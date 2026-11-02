@@ -10,6 +10,10 @@ settings:
     SWIFT_VERSION: "6.0"
     SWIFT_STRICT_CONCURRENCY: complete
     DEVELOPMENT_LANGUAGE: fr
+    # Off by default in an XcodeGen project: without them, Xcode finds none of the App and Widget
+    # texts in the code and marks every key of their String Catalogs as stale.
+    SWIFT_EMIT_LOC_STRINGS: YES
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
 
 # Bundle identifiers, App Group, signing team and version: Config/Shared.xcconfig (neutral values),
 # overridden by Config/Local.xcconfig when present (ignored by git; written by
