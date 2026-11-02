@@ -16,11 +16,12 @@ Vos prêts, vos réservations, l'agenda, le catalogue et la médiathèque numér
 </div>
 
 <p align="center">
-  <img src="Docs/screenshots/connexion.png" width="19%" alt="Écran de connexion">
-  <img src="Docs/screenshots/recherche.png" width="19%" alt="Recherche dans le catalogue, avec la disponibilité par médiathèque">
-  <img src="Docs/screenshots/agenda.png" width="19%" alt="Agenda des animations du mercredi">
-  <img src="Docs/screenshots/numerique.png" width="19%" alt="Médiathèque numérique : Arte VOD, presse, formation">
-  <img src="Docs/screenshots/infos.png" width="19%" alt="Infos pratiques : carte des trois médiathèques et horaires">
+  <img src="Docs/screenshots/connexion.png" width="16%" alt="Écran de connexion">
+  <img src="Docs/screenshots/compte.png" width="16%" alt="Mon compte : carte d'abonné avec son code-barres, prêts et réservations (données fictives)">
+  <img src="Docs/screenshots/recherche.png" width="16%" alt="Recherche dans le catalogue, avec la disponibilité par médiathèque">
+  <img src="Docs/screenshots/agenda.png" width="16%" alt="Agenda des animations du mercredi">
+  <img src="Docs/screenshots/numerique.png" width="16%" alt="Médiathèque numérique : Arte VOD, presse, formation">
+  <img src="Docs/screenshots/infos.png" width="16%" alt="Infos pratiques : carte des trois médiathèques et horaires">
 </p>
 
 > [!IMPORTANT]
