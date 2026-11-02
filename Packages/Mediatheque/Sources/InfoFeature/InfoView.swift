@@ -34,10 +34,13 @@ public struct InfoView: View {
     }
 
     private var map: some View {
+        // PULP Nord and PULP Sud are 2.5 km apart north to south. The center sits a little north of their
+        // midpoint, so PULP Nord's pin clears the top edge and PULP Sud's name stays above Apple Maps'
+        // legal mention (bottom left, can't be hidden).
         Map(initialPosition: .region(MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 48.790, longitude: 2.360),
-            latitudinalMeters: 2_600,
-            longitudinalMeters: 2_600
+            center: CLLocationCoordinate2D(latitude: 48.7934, longitude: 2.3617),
+            latitudinalMeters: 3_800,
+            longitudinalMeters: 3_800
         ))) {
             ForEach(Library.allCases) { library in
                 Marker(library.shortName, systemImage: "books.vertical", coordinate: library.mapCoordinate)
@@ -45,7 +48,7 @@ public struct InfoView: View {
             }
         }
         .mapStyle(.standard(pointsOfInterest: .excludingAll))
-        .frame(height: 220)
+        .frame(height: 260)
         .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
         .accessibilityLabel(Text(.local("Carte des 3 médiathèques")))
     }

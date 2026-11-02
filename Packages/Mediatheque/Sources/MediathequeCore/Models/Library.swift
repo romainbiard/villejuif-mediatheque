@@ -40,13 +40,14 @@ public enum Library: String, CaseIterable, Sendable, Codable, Identifiable {
         }
     }
 
-    /// Embedded coordinates: the site doesn't publish them. Elsa-Triolet comes from the GEO
-    /// of an iCal from the site; the two PULPs are approximated from the address, to be confirmed.
+    /// Embedded coordinates: the site doesn't publish them. Geocoded from each library's address
+    /// (Base Adresse Nationale and Apple agree within 30 m): 1 esplanade Pierre-Yves-Cosnier,
+    /// 61 rue Pasteur, 118 rue Youri-Gagarine.
     public var coordinate: (latitude: Double, longitude: Double) {
         switch self {
-        case .elsaTriolet: (48.792636, 2.362783)
-        case .pulpNord: (48.7987, 2.3633)
-        case .pulpSud: (48.7810, 2.3541)
+        case .elsaTriolet: (48.7922, 2.3630)
+        case .pulpNord: (48.8049, 2.3663)
+        case .pulpSud: (48.7822, 2.3570)
         }
     }
 
