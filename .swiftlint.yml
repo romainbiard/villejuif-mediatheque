@@ -1,0 +1,58 @@
+# SwiftLint: what SwiftFormat doesn't fix (`swiftlint` from the project root).
+included:
+  - App
+  - Widget
+  - Packages/Mediatheque/Sources
+  - Packages/Mediatheque/Tests
+  - Packages/Mediatheque/Package.swift
+
+disabled_rules:
+  # SwiftFormat owns commas, braces and wrapping.
+  - trailing_comma
+  - opening_brace
+  - statement_position
+  # SwiftUI's `Button { … } label: { … }`.
+  - multiple_closures_with_trailing_closure
+  # Pages are decoded leniently on purpose: a stray byte mustn't hide the whole page.
+  - optional_data_string_conversion
+
+opt_in_rules:
+  - closure_spacing
+  - contains_over_filter_count
+  - empty_string
+  - first_where
+  - last_where
+  - sorted_first_last
+  - toggle_bool
+  - unneeded_parentheses_in_closure_argument
+  - vertical_whitespace_closing_braces
+  - yoda_condition
+
+# SwiftFormat wraps at 160: only what can't be wrapped (long French strings) goes beyond.
+line_length:
+  warning: 180
+  error: 220
+  ignores_comments: true
+  ignores_urls: true
+
+file_length:
+  warning: 600
+  error: 1000
+
+type_body_length:
+  warning: 400
+  error: 600
+
+nesting:
+  type_level: 2
+
+# A `switch` mapping one field per case isn't complex.
+cyclomatic_complexity:
+  ignores_case_statements: true
+
+# Dates written as (year, month, day) in the holiday tables.
+large_tuple:
+  warning: 3
+
+identifier_name:
+  excluded: [id, x, y, ok, to, cd]

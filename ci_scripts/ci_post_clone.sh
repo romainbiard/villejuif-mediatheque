@@ -25,5 +25,11 @@ DEVELOPMENT_TEAM = $DEVELOPMENT_TEAM
 CURRENT_PROJECT_VERSION = ${CI_BUILD_NUMBER:-1}
 XCCONFIG
 
-brew install xcodegen
+brew install xcodegen swiftformat swiftlint
+
+# Style first: a badly formatted commit stops here rather than reaching TestFlight.
+# SwiftLint errors stop the build; its warnings are only reported.
+swiftformat --lint .
+swiftlint lint --quiet
+
 xcodegen generate

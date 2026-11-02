@@ -74,7 +74,7 @@ struct PatronSpaceTests {
     @Test func accountExposesPatronIDAndPreferences() throws {
         let account = try JSONDecoder().decode(AccountResponseDTO.self, from: Fixture.data("account.json")).account
         #expect(account.cards?.first?.id == 100001)
-        #expect(account.identity.nickname == "")
+        #expect(account.identity.nickname?.isEmpty == true)
         #expect(account.preferences?.newsletters.isEmpty == true)
     }
 }

@@ -170,9 +170,21 @@ cd Packages/Mediatheque && xcodebuild test -scheme Mediatheque-Package -destinat
 
 Remplacez le simulateur par l'un de ceux installés sur votre Mac (`xcrun simctl list devices`). Les tests vérifient des textes en français : `-testLanguage fr` les rend indépendants de la langue du simulateur.
 
+### Style
+
+Le format est fixé par [SwiftFormat](https://github.com/nicklockwood/SwiftFormat) (`.swiftformat`) et vérifié par [SwiftLint](https://github.com/realm/SwiftLint) (`.swiftlint.yml`).
+
+```bash
+brew install swiftformat swiftlint
+swiftformat .   # met le code au format
+swiftlint       # signale ce que SwiftFormat ne corrige pas
+```
+
+Xcode Cloud lance les deux avant chaque build : un commit mal formaté n'arrive pas sur TestFlight.
+
 ### Xcode Cloud et TestFlight
 
-Le projet Xcode n'est pas versionné : sur Xcode Cloud, `ci_scripts/ci_post_clone.sh` installe XcodeGen, génère le projet et écrit `Config/Local.xcconfig` à partir des variables d'environnement du workflow. Le numéro de build suit `CI_BUILD_NUMBER`.
+Le projet Xcode n'est pas versionné : sur Xcode Cloud, `ci_scripts/ci_post_clone.sh` vérifie le style, installe XcodeGen, génère le projet et écrit `Config/Local.xcconfig` à partir des variables d'environnement du workflow. Le numéro de build suit `CI_BUILD_NUMBER`.
 
 | Variable | Exemple |
 |---|---|

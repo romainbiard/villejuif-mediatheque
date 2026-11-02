@@ -44,7 +44,7 @@ struct DecodingTests {
         #expect(loans.count == 3)
         #expect(loans[0].id == "100001_36674")
         #expect(loans[0].dateDue == "2026-11-20")
-        #expect(loans[1].record?.thumbnail == "")
+        #expect(loans[1].record?.thumbnail?.isEmpty == true)
 
         let holds = try JSONDecoder().decode(HoldsResponseDTO.self, from: Fixture.data("holds.json")).holds
         #expect(holds.first?.status == "Pas disponible avant le 14/11/2026")

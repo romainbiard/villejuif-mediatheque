@@ -1,0 +1,4 @@
+# Formatting-only commits, skipped by `git blame` (git config blame.ignoreRevsFile .git-blame-ignore-revs;
+# GitHub reads this file on its own).
+# Format the code with SwiftFormat
+746baa556fb7cf36ad69123c9d5ce3ef1c501a20

@@ -93,7 +93,7 @@ struct SearchViewModelTests {
         await Task.megaYield()
         #expect(viewModel.showsLanding == false)
         #expect(queries.value.first?.sort == .newest)
-        #expect(queries.value.first?.text == "")
+        #expect(queries.value.first?.text.isEmpty == true)
     }
 
     @Test func nextPageIsAppendedWithoutDuplicates() async {
