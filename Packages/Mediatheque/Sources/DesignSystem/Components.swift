@@ -100,6 +100,8 @@ public struct CoverImage: View {
                 }
             }
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            // Clipping hides the overflow but doesn't stop it from catching taps meant for its neighbours.
+            .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
             .accessibilityHidden(true)
     }
 }

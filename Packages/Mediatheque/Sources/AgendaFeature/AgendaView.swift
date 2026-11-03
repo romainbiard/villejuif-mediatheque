@@ -443,6 +443,8 @@ struct FeaturedEventCard: View {
         }
         .frame(height: height)
         .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+        // The whole card stays tappable, and only the card.
+        .contentShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
         .accessibilityElement(children: .combine)
     }
 }
@@ -464,6 +466,9 @@ struct EventArtwork: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .clipped()
+        // `clipped()` hides the overflow of a filled poster but still hit-tests it: on a wide iPad card, the
+        // poster spilled over the day picker above and swallowed its taps. The artwork is decoration only.
+        .allowsHitTesting(false)
         .accessibilityHidden(true)
     }
 }
