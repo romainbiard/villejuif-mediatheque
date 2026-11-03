@@ -13,12 +13,17 @@ public actor HTTPClient {
     private let session: URLSession
     private let cookieStorage: HTTPCookieStorage
 
-    public init(baseURL: URL = HTTPClient.villejuifBaseURL, userAgent: String = HTTPClient.defaultUserAgent) {
+    /// `configuration` is ephemeral by default (session cookie in memory only); tests pass one
+    /// whose `protocolClasses` answer with captured pages instead of the network.
+    public init(
+        baseURL: URL = HTTPClient.villejuifBaseURL,
+        userAgent: String = HTTPClient.defaultUserAgent,
+        configuration: URLSessionConfiguration = .ephemeral
+    ) {
         self.baseURL = baseURL
         // We keep the in-memory storage of the ephemeral configuration:
         // a hand-made `HTTPCookieStorage()` instance doesn't retain any cookie.
-        let configuration = URLSessionConfiguration.ephemeral
-        let cookieStorage = configuration.httpCookieStorage!
+        let cookieStorage = configuration.httpCookieStorage ?? HTTPCookieStorage()
         configuration.httpCookieAcceptPolicy = .always
         configuration.timeoutIntervalForRequest = 20
         configuration.httpAdditionalHeaders = [

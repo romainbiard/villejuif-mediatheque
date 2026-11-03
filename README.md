@@ -173,7 +173,7 @@ Sans compte, la recherche, l'agenda, les infos pratiques et la présentation du 
 
 ### Tests
 
-Plus de 140 tests, sur des fixtures JSON, HTML et iCal tirées du portail réel et anonymisées.
+Plus de 160 tests, sur des fixtures JSON, HTML et iCal tirées du portail réel et anonymisées.
 
 ```bash
 cd Packages/Mediatheque && xcodebuild test -scheme Mediatheque-Package -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -testLanguage fr -testRegion FR -skipMacroValidation
@@ -194,7 +194,7 @@ xcodebuild test -project Mediatheque.xcodeproj -scheme Mediatheque -destination 
 xcrun xccov view --report --only-targets build/tests.xcresult
 ```
 
-Au 3 novembre 2026 : 57 % de la logique (ViewModels, clients, analyse du portail, modèles) par les tests du package, et 47 % du code en tout avec les tests d'interface. Le point faible : l'assemblage réel des clients (requête, analyse, conversion), à 0-5 % pour `SessionManager`, `AccountClient` et `ProfileClient`.
+Au 3 novembre 2026 : 74 % de la logique (ViewModels, clients, analyse du portail, modèles) par les tests du package. Les clients y tournent pour de vrai contre un faux portail (`Tests/TestSupport/PortalStub.swift`) qui sert les captures : connexion, reconnexion après expiration, prolongation, réservation. Restent peu couverts les écrans que les tests d'interface n'ouvrent pas encore (profil, avis, sélections, notifications).
 
 ### Style
 

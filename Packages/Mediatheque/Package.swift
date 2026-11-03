@@ -77,16 +77,23 @@ let package = Package(
             dependencies: ["MediathequeCore", "DesignSystem", dependencies],
             resources: [.process("Localization/Localizable.xcstrings")]
         ),
+        // Portal captures and a fake portal, shared by the test targets.
+        .target(
+            name: "TestSupport",
+            dependencies: ["BokehAPI"],
+            path: "Tests/TestSupport",
+            resources: [.copy("Fixtures")]
+        ),
         .testTarget(
             name: "BokehAPITests",
-            dependencies: ["BokehAPI"],
-            resources: [.copy("Fixtures")]
+            dependencies: ["BokehAPI", "TestSupport"]
         ),
         .testTarget(
             name: "MediathequeCoreTests",
             dependencies: [
                 "BokehAPI",
                 "MediathequeCore",
+                "TestSupport",
                 .product(name: "DependenciesTestSupport", package: "swift-dependencies")
             ]
         ),

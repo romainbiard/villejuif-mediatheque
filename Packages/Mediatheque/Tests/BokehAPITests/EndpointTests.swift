@@ -4,6 +4,7 @@
 
 import Foundation
 import Testing
+import TestSupport
 @testable import BokehAPI
 
 struct EndpointTests {
