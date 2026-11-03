@@ -146,6 +146,8 @@ schemes:
         Mediatheque: all
     test:
       config: Debug
+      # Code coverage in Xcode's report navigator after each test run.
+      gatherCoverageData: true
       # The tests check French texts: same as -testLanguage fr -testRegion FR.
       language: fr
       region: FR

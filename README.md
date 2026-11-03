@@ -187,6 +187,15 @@ Les **tests d'interface** (`UITests/`, XCUITest) pilotent l'app comme un lecteur
 xcodebuild test -project Mediatheque.xcodeproj -scheme Mediatheque -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -skipMacroValidation -only-testing:MediathequeUITests
 ```
 
+**Couverture.** Le schéma la mesure à chaque lancement des tests (Xcode › Report navigator › Coverage). En ligne de commande :
+
+```bash
+xcodebuild test -project Mediatheque.xcodeproj -scheme Mediatheque -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -skipMacroValidation -resultBundlePath build/tests.xcresult
+xcrun xccov view --report --only-targets build/tests.xcresult
+```
+
+Au 3 novembre 2026 : 57 % de la logique (ViewModels, clients, analyse du portail, modèles) par les tests du package, et 47 % du code en tout avec les tests d'interface. Le point faible : l'assemblage réel des clients (requête, analyse, conversion), à 0-5 % pour `SessionManager`, `AccountClient` et `ProfileClient`.
+
 ### Style
 
 Le format est fixé par [SwiftFormat](https://github.com/nicklockwood/SwiftFormat) (`.swiftformat`) et vérifié par [SwiftLint](https://github.com/realm/SwiftLint) (`.swiftlint.yml`).
