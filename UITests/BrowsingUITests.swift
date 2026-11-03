@@ -74,7 +74,11 @@ final class BrowsingUITests: XCTestCase {
         app.openTab("Infos")
         app.staticTexts["Médiathèque Elsa-Triolet"].waitToAppear()
         app.openTab("Recherche")
-        app.searchFields.firstMatch.waitToAppear()
+        // With the sidebar, the search field sits in the results column instead of the navigation bar.
+        XCTAssertTrue(
+            app.searchFields.firstMatch.waitForExistence(timeout: 3) || app.textFields.firstMatch.waitForExistence(timeout: 3),
+            "Champ de recherche introuvable"
+        )
     }
 
     /// Largest accessibility text size: the account home still shows its essentials.
