@@ -184,7 +184,7 @@ struct CopyRow: View {
     private var details: String {
         var parts = [copy.statusLabel]
         if case let .onLoan(dueDate?) = copy.status {
-            parts = [String.local("En prêt · retour prévu le \(dueDate.formatted(.dateTime.day().month(.wide)))")]
+            parts = [String.local("En prêt · retour prévu le \(dueDate.parisFormatted(.dateTime.day().month(.wide)))")]
         }
         parts += [copy.section, copy.shelfMark].compactMap(\.self)
         if copy.holdCount > 0 { parts.append(String.local("\(copy.holdCount) réservations", comment: "Number of holds on a copy")) }

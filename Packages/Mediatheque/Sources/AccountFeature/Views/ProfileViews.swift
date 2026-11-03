@@ -22,7 +22,7 @@ struct InformationView: View {
                     VStack(spacing: 0) {
                         InfoRow(label: .local("Numéro de carte"), value: patron.cardNumber, monospaced: true)
                         Divider().padding(.leading, 14)
-                        InfoRow(label: .local("Valable jusqu'au"), value: patron.cardExpiry?.formatted(.dateTime.day().month(.wide).year()) ?? "—")
+                        InfoRow(label: .local("Valable jusqu'au"), value: patron.cardExpiry?.parisFormatted(.dateTime.day().month(.wide).year()) ?? "—")
                         Divider().padding(.leading, 14)
                         InfoRow(label: .local("Médiathèque d'inscription"), value: patron.homeLibrary?.name ?? "—")
                     }

@@ -122,7 +122,7 @@ struct SelectionTile: View {
     private var subtitle: String {
         let count = selection.count == 0 ? String.local("Vide") : String.local("\(selection.count) documents")
         guard let updatedAt = selection.updatedAt, selection.count > 0 else { return count }
-        return "\(count) · \(updatedAt.formatted(.dateTime.day().month(.abbreviated)))"
+        return "\(count) · \(updatedAt.parisFormatted(.dateTime.day().month(.abbreviated)))"
     }
 
     private var icon: String {

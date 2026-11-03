@@ -85,7 +85,7 @@ final class NotificationsViewModel {
             case let .renewed(_, newDueDate):
                 renewed.insert(loanID)
                 markRead(item)
-                message = String.local("Prolongé jusqu'au \(newDueDate.formatted(.dateTime.day().month(.wide)))")
+                message = String.local("Prolongé jusqu'au \(newDueDate.parisFormatted(.dateTime.day().month(.wide)))")
                 feedback = .success
                 // New due date: reminders and history brought up to date.
                 _ = try? await withDependencies(from: self) { try await AccountSync.run(settings: .current()) }

@@ -152,13 +152,13 @@ struct NextReturnsSnippet: View {
                             Text(loan.library?.shortName ?? loan.libraryName).font(.caption).foregroundStyle(.secondary)
                         }
                         Spacer()
-                        Text(loan.dueDate.formatted(.dateTime.day().month(.abbreviated)))
+                        Text(loan.dueDate.parisFormatted(.dateTime.day().month(.abbreviated)))
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(isLate(loan) ? Color.red : Color.primary)
                     }
                 }
                 if let updatedAt = snapshot?.updatedAt {
-                    Text("Synchronisé le \(updatedAt.formatted(.dateTime.day().month().hour().minute()))")
+                    Text("Synchronisé le \(updatedAt.parisFormatted(.dateTime.day().month().hour().minute()))")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                 }

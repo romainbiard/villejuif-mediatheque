@@ -95,7 +95,7 @@ struct LoanRow: View {
 
     @ViewBuilder
     private var dueBadge: some View {
-        let date = loan.dueDate.formatted(.dateTime.day().month(.abbreviated))
+        let date = loan.dueDate.parisFormatted(.dateTime.day().month(.abbreviated))
         switch viewModel.dueState(of: loan) {
         case let .late(days):
             StatusPill(.local("En retard de \(days) jours"), style: .danger)
@@ -204,7 +204,7 @@ struct HoldRow: View {
     /// "Pas avant le 14 nov." rather than the site's raw text when a date is given.
     private var statusText: String {
         guard !hold.isReadyForPickup, let date = hold.expectedDate else { return hold.statusText }
-        return .local("Pas avant le \(date.formatted(.dateTime.day().month(.abbreviated)))")
+        return .local("Pas avant le \(date.parisFormatted(.dateTime.day().month(.abbreviated)))")
     }
 
     var body: some View {

@@ -37,7 +37,7 @@ public enum ReturnsSummary {
     /// "aujourd'hui", "demain", "dans 3 jours, le jeudi 5 novembre"…
     static func when(_ date: Date, now: Date, calendar: Calendar) -> String {
         let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: now), to: calendar.startOfDay(for: date)).day ?? 0
-        let full = date.formatted(.dateTime.weekday(.wide).day().month(.wide))
+        let full = date.parisFormatted(.dateTime.weekday(.wide).day().month(.wide))
         switch days {
         case 0: return .local("aujourd'hui")
         case 1: return .local("demain, le \(full)")

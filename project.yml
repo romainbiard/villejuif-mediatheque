@@ -152,6 +152,9 @@ schemes:
       # The tests check French texts: same as -testLanguage fr -testRegion FR.
       language: fr
       region: FR
+      # Not Paris on purpose: Xcode Cloud's simulators aren't either, and every date must still read in Paris time.
+      environmentVariables:
+        TZ: America/Los_Angeles
       targets:
         - package: Mediatheque/BokehAPITests
         - package: Mediatheque/MediathequeCoreTests

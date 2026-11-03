@@ -21,7 +21,7 @@ struct LibraryCardView: View {
                     VillejuifLogo.white.resizable().scaledToFit().frame(height: 26).accessibilityLabel(Text(.local("Ville de Villejuif")))
                     Text(patron.displayName).font(.title2.weight(.bold))
                     if let expiry = patron.cardExpiry {
-                        Text(.local("Carte valable jusqu'au \(expiry.formatted(.dateTime.day().month(.wide).year()))"))
+                        Text(.local("Carte valable jusqu'au \(expiry.parisFormatted(.dateTime.day().month(.wide).year()))"))
                             .font(.footnote)
                             .opacity(0.85)
                     }
@@ -168,7 +168,7 @@ struct FullScreenCardView: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
             if let expiry = patron.cardExpiry {
-                Text(.local("Valable jusqu'au \(expiry.formatted(.dateTime.day().month(.wide).year()))"))
+                Text(.local("Valable jusqu'au \(expiry.parisFormatted(.dateTime.day().month(.wide).year()))"))
                     .font(.footnote)
                     .foregroundStyle(Color(hex: 0x5E5B66))
             }

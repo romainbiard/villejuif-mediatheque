@@ -90,7 +90,7 @@ public struct AgendaView: View {
                         StaleBanner(error: error)
                     }
                     if viewModel.filters.period == .all {
-                        Text(viewModel.selectedDay.formatted(EventFormatting.dayTitle))
+                        Text(viewModel.selectedDay.parisFormatted(EventFormatting.dayTitle))
                             .font(.title2.weight(.heavy))
                             .accessibilityAddTraits(.isHeader)
                         regularDayContent
@@ -134,7 +134,7 @@ public struct AgendaView: View {
                 periodContent
             }
             ForEach(viewModel.periodDays) { periodDay in
-                SectionHeader(periodDay.day.formatted(EventFormatting.dayTitle))
+                SectionHeader(periodDay.day.parisFormatted(EventFormatting.dayTitle))
                 EventGrid(events: periodDay.events)
             }
             if !viewModel.periodOngoingEvents.isEmpty {
@@ -190,7 +190,7 @@ public struct AgendaView: View {
                 )
             }
             ForEach(days) { periodDay in
-                SectionHeader(periodDay.day.formatted(EventFormatting.dayTitle))
+                SectionHeader(periodDay.day.parisFormatted(EventFormatting.dayTitle))
                 EventList(events: periodDay.events)
             }
             if !viewModel.periodOngoingEvents.isEmpty {
@@ -212,7 +212,7 @@ public struct AgendaView: View {
                 (
                     String
                         .local(
-                            "Voir le \(day.formatted(.dateTime.weekday(.wide).day().month(.wide)))",
+                            "Voir le \(day.parisFormatted(.dateTime.weekday(.wide).day().month(.wide)))",
                             comment: "Button; %@ is a day, e.g. Saturday, November 7"
                         ),
                     { viewModel.select(day: day) }
@@ -275,9 +275,9 @@ struct DayStrip: View {
                     let isSelected = Calendar.paris.isDate(day, inSameDayAs: viewModel.selectedDay)
                     Button { viewModel.select(day: day) } label: {
                         VStack(spacing: 2) {
-                            Text(day.formatted(.dateTime.weekday(.abbreviated))).font(.caption.weight(.semibold))
+                            Text(day.parisFormatted(.dateTime.weekday(.abbreviated))).font(.caption.weight(.semibold))
                             // Closed days are struck through, not only greyed: the grey alone is a colour.
-                            Text(day.formatted(.dateTime.day())).font(.title3.weight(.heavy))
+                            Text(day.parisFormatted(.dateTime.day())).font(.title3.weight(.heavy))
                                 .strikethrough(viewModel.isLibraryClosingDay(day))
                             Circle()
                                 .fill(viewModel.hasEvents(on: day) ? Color.brandMagenta : .clear)
@@ -290,7 +290,7 @@ struct DayStrip: View {
                         }
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel(day.formatted(date: .complete, time: .omitted))
+                    .accessibilityLabel(day.parisFormatted(Date.FormatStyle(date: .complete, time: .omitted)))
                     .accessibilityValue(viewModel.accessibilityValue(for: day))
                     .accessibilityAddTraits(isSelected ? .isSelected : [])
                 }
@@ -317,7 +317,7 @@ struct MonthCalendar: View {
     var body: some View {
         VStack(spacing: 10) {
             HStack {
-                Text(viewModel.displayedMonth.formatted(EventFormatting.monthTitle))
+                Text(viewModel.displayedMonth.parisFormatted(EventFormatting.monthTitle))
                     .font(.headline)
                 Spacer()
                 Button(.local("Mois précédent"), systemImage: "chevron.left") { viewModel.showPreviousMonth() }
@@ -348,7 +348,7 @@ struct MonthCalendar: View {
         let isSelectable = viewModel.isSelectable(day)
         return Button { viewModel.select(day: day) } label: {
             VStack(spacing: 2) {
-                Text(day.formatted(.dateTime.day()))
+                Text(day.parisFormatted(.dateTime.day()))
                     .font(.subheadline.weight(isSelected ? .heavy : .medium))
                     .strikethrough(isSelectable && viewModel.isLibraryClosingDay(day))
                 Circle()
@@ -364,7 +364,7 @@ struct MonthCalendar: View {
         .disabled(!isSelectable)
         .opacity(isSelectable ? 1 : 0.4)
         .hoverEffect(.highlight)
-        .accessibilityLabel(day.formatted(date: .complete, time: .omitted))
+        .accessibilityLabel(day.parisFormatted(Date.FormatStyle(date: .complete, time: .omitted)))
         .accessibilityValue(viewModel.accessibilityValue(for: day))
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
@@ -513,10 +513,10 @@ enum EventFormatting {
         guard let start = event.start else { return event.place ?? "" }
         var parts: [String]
         if event.isAllDay {
-            parts = event.end.map { [String.local("Jusqu'au \($0.formatted(.dateTime.day().month(.wide)))", comment: "Last day of an exhibition")] } ?? []
+            parts = event.end.map { [String.local("Jusqu'au \($0.parisFormatted(.dateTime.day().month(.wide)))", comment: "Last day of an exhibition")] } ?? []
         } else {
-            let time = start.formatted(Self.time)
-            parts = [event.end.map { "\(time) – \($0.formatted(Self.time))" } ?? time]
+            let time = start.parisFormatted(Self.time)
+            parts = [event.end.map { "\(time) – \($0.parisFormatted(Self.time))" } ?? time]
         }
         if let place = event.library?.shortName ?? event.place { parts.append(place) }
         return parts.joined(separator: " · ")

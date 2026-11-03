@@ -48,7 +48,7 @@ public enum ReminderPlanner {
         return byDay.flatMap { day, loans -> [Reminder] in
             let titles = loans.map(\.title)
             let what: String = titles.count == 1 ? .local("« \(titles[0]) »") : .local("\(titles.count) documents")
-            let dayText = day.formatted(.dateTime.weekday(.wide).day().month(.wide))
+            let dayText = day.parisFormatted(.dateTime.weekday(.wide).day().month(.wide))
             var reminders: [Reminder] = []
             if let before = calendar.date(byAdding: .day, value: -daysBefore, to: day),
                let fire = calendar.date(bySettingHour: hour, minute: 0, second: 0, of: before)

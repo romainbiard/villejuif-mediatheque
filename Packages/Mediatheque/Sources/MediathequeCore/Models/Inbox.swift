@@ -77,7 +77,7 @@ public enum InboxPlanner {
         for loan in snapshot.loans {
             let due = calendar.startOfDay(for: loan.dueDate)
             let dueKey = Int(due.timeIntervalSince1970)
-            let dueText = due.formatted(.dateTime.weekday(.wide).day().month(.wide))
+            let dueText = due.parisFormatted(.dateTime.weekday(.wide).day().month(.wide))
             switch loan.dueState(now: now, calendar: calendar) {
             case .late:
                 items.append(InboxItem(

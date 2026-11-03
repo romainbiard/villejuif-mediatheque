@@ -45,3 +45,17 @@ extension Calendar {
     /// Gregorian calendar in Paris time and in French, the one used for opening hours and the agenda.
     public static var paris: Calendar { BokehDates.parisCalendar }
 }
+
+public extension TimeZone {
+    static var paris: TimeZone { BokehDates.parisTimeZone }
+}
+
+public extension Date {
+    /// Formats in Paris time, whatever the device's time zone: every date in the app is a Villejuif one
+    /// (opening hours, due dates, events). The patron's language still applies.
+    func parisFormatted(_ style: Date.FormatStyle) -> String {
+        var style = style
+        style.timeZone = .paris
+        return formatted(style)
+    }
+}

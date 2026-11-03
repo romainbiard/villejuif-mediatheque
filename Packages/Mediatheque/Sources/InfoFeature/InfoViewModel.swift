@@ -45,15 +45,15 @@ final class InfoViewModel {
     func statusText(of library: LibraryInfo) -> String {
         switch status(of: library) {
         case let .open(closesAt):
-            return String.local("Ouvert · ferme à \(closesAt.formatted(Self.time))", comment: "Library status; %@ is a time")
+            return String.local("Ouvert · ferme à \(closesAt.parisFormatted(Self.time))", comment: "Library status; %@ is a time")
         case let .closed(reopensAt?):
             let sameDay = calendar.isDate(reopensAt, inSameDayAs: now)
             // Relative to `now` (injected), not to the system clock.
             let tomorrow = calendar.date(byAdding: .day, value: 1, to: now).map { calendar.isDate(reopensAt, inSameDayAs: $0) } ?? false
-            let time = reopensAt.formatted(Self.time)
+            let time = reopensAt.parisFormatted(Self.time)
             if sameDay { return String.local("Fermé · ouvre à \(time)", comment: "Library status; %@ is a time today") }
             if tomorrow { return String.local("Fermé · ouvre demain à \(time)", comment: "Library status; %@ is a time") }
-            return String.local("Fermé · ouvre \(reopensAt.formatted(.dateTime.weekday(.wide))) à \(time)", comment: "Library status; weekday, time")
+            return String.local("Fermé · ouvre \(reopensAt.parisFormatted(.dateTime.weekday(.wide))) à \(time)", comment: "Library status; weekday, time")
         case .closed(nil):
             return String.local("Fermé", comment: "Library status")
         }
@@ -66,7 +66,7 @@ final class InfoViewModel {
 
     /// Today's opening-hours row, highlighted in the list.
     func isToday(_ line: String) -> Bool {
-        let weekday = now.formatted(.dateTime.weekday(.wide).locale(Locale(identifier: "fr_FR")))
+        let weekday = now.parisFormatted(.dateTime.weekday(.wide).locale(Locale(identifier: "fr_FR")))
         return line.lowercased().hasPrefix(weekday.lowercased())
     }
 

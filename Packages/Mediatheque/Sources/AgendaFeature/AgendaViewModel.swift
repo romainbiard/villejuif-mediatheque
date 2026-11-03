@@ -241,7 +241,7 @@ final class AgendaViewModel {
         case .all:
             return nil
         case .weekend:
-            let names = days.map { $0.formatted(.dateTime.weekday(.wide).day().month(.wide)) }
+            let names = days.map { $0.parisFormatted(.dateTime.weekday(.wide).day().month(.wide)) }
             return names.count == 2 ? String.local("\(names[0]) et \(names[1])", comment: "Two days of a weekend") : names.first
         case .wednesdays:
             return String.local("Les \(AgendaPeriod.wednesdayWeeks) prochains mercredis")
@@ -249,8 +249,8 @@ final class AgendaViewModel {
             guard let holiday = SchoolHolidays.currentOrNext(after: calendar.startOfDay(for: now)),
                   let last = calendar.date(byAdding: .day, value: -1, to: holiday.end)
             else { return nil }
-            let start = holiday.start.formatted(.dateTime.day().month(.wide))
-            let end = last.formatted(.dateTime.day().month(.wide))
+            let start = holiday.start.parisFormatted(.dateTime.day().month(.wide))
+            let end = last.parisFormatted(.dateTime.day().month(.wide))
             return String.local("\(holiday.name), du \(start) au \(end)", comment: "School holidays name, first day, last day")
         }
     }
