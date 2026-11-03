@@ -123,6 +123,21 @@ targets:
       - package: Mediatheque
         product: MediathequeCore
 
+  # Drives the app like a patron, on the preview data (see App/UITesting.swift): no network, no account.
+  MediathequeUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    supportedDestinations: [iOS]
+    sources:
+      - path: UITests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).mediatheques-villejuif.uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TARGETED_DEVICE_FAMILY: "1,2"
+    dependencies:
+      - target: Mediatheque
+
 # Shared scheme: Xcode Cloud only sees schemes stored in xcshareddata.
 schemes:
   Mediatheque:
@@ -138,5 +153,6 @@ schemes:
         - package: Mediatheque/BokehAPITests
         - package: Mediatheque/MediathequeCoreTests
         - package: Mediatheque/FeatureTests
+        - MediathequeUITests
     archive:
       config: Release

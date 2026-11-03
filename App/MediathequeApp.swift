@@ -16,6 +16,9 @@ struct MediathequeApp: App {
     nonisolated static let refreshTaskID = (Bundle.main.bundleIdentifier ?? "mediatheques-villejuif") + ".refresh"
 
     init() {
+        #if DEBUG
+        UITesting.configureIfNeeded()
+        #endif
         // Covers and posters (AsyncImage goes through URLSession.shared): the default cache,
         // a few MB, empties as soon as you scroll through a search. This way images persist from one launch to the next.
         URLCache.shared = URLCache(memoryCapacity: 50 * 1024 * 1024, diskCapacity: 300 * 1024 * 1024)

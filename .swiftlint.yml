@@ -4,6 +4,7 @@ included:
   - Widget
   - Packages/Mediatheque/Sources
   - Packages/Mediatheque/Tests
+  - UITests
   - Packages/Mediatheque/Package.swift
 
 disabled_rules:

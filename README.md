@@ -130,6 +130,7 @@ flowchart LR
 │   │   ├── CoreUI/          # lien entre les deux : écrans d'erreur construits depuis LoadError
 │   │   └── …Feature/        # un module par onglet : vues et ViewModels
 │   └── Tests/               # Swift Testing, sur des fixtures réelles anonymisées
+├── UITests/                 # tests d'interface (XCUITest), sur les données de démonstration
 ├── Widget/                  # widget « Prochains retours »
 ├── ci_scripts/              # Xcode Cloud : rapport de style, génération du projet, identifiants
 ├── project.yml              # projet Xcode généré par XcodeGen
@@ -179,6 +180,12 @@ cd Packages/Mediatheque && xcodebuild test -scheme Mediatheque-Package -destinat
 ```
 
 Remplacez le simulateur par l'un de ceux installés sur votre Mac (`xcrun simctl list devices`). Les tests vérifient des textes en français : `-testLanguage fr` les rend indépendants de la langue du simulateur.
+
+Les **tests d'interface** (`UITests/`, XCUITest) pilotent l'app comme un lecteur : onglets, carte d'abonné en plein écran, prolongation d'un prêt, recherche puis réservation, filtres de l'agenda, écran de connexion, très grande taille de texte. Ils lancent l'app avec `-uiTesting`, un mode réservé aux builds Debug qui remplace le portail par les données fictives de démonstration : ni réseau, ni compte, et toujours les mêmes écrans.
+
+```bash
+xcodebuild test -project Mediatheque.xcodeproj -scheme Mediatheque -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -skipMacroValidation -only-testing:MediathequeUITests
+```
 
 ### Style
 
