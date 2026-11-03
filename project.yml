@@ -48,7 +48,8 @@ targets:
           UIImageRespectsSafeAreaInsets: false
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: true
-        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        # Every orientation (EN 301 549 / WCAG 1.3.4): a patron with the iPhone on a stand isn't stuck in portrait.
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         UISupportedInterfaceOrientations~ipad:
           [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         # HTTPS only (exempt): no export compliance question on every TestFlight build.

@@ -141,7 +141,7 @@ struct RecordToRateRow: View {
     }
 }
 
-/// Five tappable stars. Each star is a button for VoiceOver.
+/// Five tappable stars. For VoiceOver, a single adjustable control: swipe up or down to change the rating.
 struct StarRatingInput: View {
     var rating: Int
     var size: Font = .title2
@@ -155,11 +155,19 @@ struct StarRatingInput: View {
                 } label: {
                     Image(systemName: value <= rating ? "star.fill" : "star")
                         .font(size)
-                        .foregroundStyle(value <= rating ? Color.brandYellow : Color.inkSecondary.opacity(0.5))
+                        .foregroundStyle(value <= rating ? Color.brandYellow : Color.inkSecondary.opacity(0.75))
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel(Text(.local("\(value) étoiles sur 5")))
-                .accessibilityAddTraits(value == rating ? .isSelected : [])
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(.local("Note", comment: "VoiceOver: name of the star rating control")))
+        .accessibilityValue(rating == 0 ? Text(.local("Aucune note")) : Text(.local("\(rating) étoiles sur 5")))
+        .accessibilityAdjustableAction { direction in
+            switch direction {
+            case .increment: onChange(min(rating + 1, 5))
+            case .decrement: onChange(max(rating - 1, 1))
+            @unknown default: break
             }
         }
     }
@@ -173,7 +181,7 @@ struct StarsView: View {
             ForEach(1...5, id: \.self) { value in
                 Image(systemName: value <= rating ? "star.fill" : "star")
                     .font(.caption)
-                    .foregroundStyle(value <= rating ? Color.brandYellow : Color.inkSecondary.opacity(0.4))
+                    .foregroundStyle(value <= rating ? Color.brandYellow : Color.inkSecondary.opacity(0.75))
             }
         }
         .accessibilityElement()

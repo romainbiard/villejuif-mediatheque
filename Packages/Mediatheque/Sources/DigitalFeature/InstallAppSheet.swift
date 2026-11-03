@@ -37,6 +37,7 @@ struct InstallAppSheet: View {
             Text(title)
                 .font(.title2.weight(.heavy))
                 .padding(.top, 22)
+                .accessibilityAddTraits(.isHeader)
             Text(.local("\(offer.provider) a sa propre app. Installez-la une fois : Médiathèque vous y connecte ensuite à chaque fois."))
                 .font(.subheadline)
                 .foregroundStyle(Color.inkSecondary)

@@ -205,6 +205,14 @@ private struct SearchColumnChrome: ViewModifier {
                 }
             }
             .onChange(of: viewModel.text) { viewModel.textDidChange() }
+            // The count only shows on screen: VoiceOver hears it once a new search has loaded.
+            .onChange(of: viewModel.state.isLoading) { wasLoading, isLoading in
+                guard wasLoading, !isLoading, let documents = viewModel.state.value else { return }
+                let announcement = documents.isEmpty
+                    ? String.local("Aucun résultat")
+                    : String.local("\(viewModel.total) résultats")
+                AccessibilityNotification.Announcement(announcement).post()
+            }
     }
 }
 

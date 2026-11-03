@@ -23,6 +23,14 @@ struct AgendaViewModelTests {
         return viewModel
     }
 
+    @Test func voiceOverSaysWhatTheDayDotAndGreyMean() async {
+        let viewModel = await makeViewModel(now: paris(2026, 11, 2, 0))
+        // Monday 2: libraries closed. Wednesday 4: a sample event at 16:00. Friday 6: nothing.
+        #expect(viewModel.accessibilityValue(for: paris(2026, 11, 2, 0)) == "Médiathèques fermées")
+        #expect(viewModel.accessibilityValue(for: paris(2026, 11, 4, 0)) == "Des animations")
+        #expect(viewModel.accessibilityValue(for: paris(2026, 11, 6, 0)).isEmpty)
+    }
+
     @Test func eventsOfTheDayAndOngoing() async {
         // Saturday 31 October 2026.
         let viewModel = await makeViewModel(now: paris(2026, 10, 31, 9))

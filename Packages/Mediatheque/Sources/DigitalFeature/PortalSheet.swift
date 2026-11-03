@@ -22,7 +22,7 @@ struct PortalSheet: View {
                     if handedOffToApp {
                         VStack(spacing: 14) {
                             Image(systemName: "arrow.up.forward.app").font(.largeTitle).foregroundStyle(Color.brandViolet)
-                            Text(.local("Ouvert dans \(appName)")).font(.title3.weight(.bold))
+                            Text(.local("Ouvert dans \(appName)")).font(.title3.weight(.bold)).accessibilityAddTraits(.isHeader)
                             Button(.local("Fermer")) { dismiss() }.buttonStyle(.prominent(size: .large))
                         }
                         .padding(28)

@@ -72,7 +72,7 @@ Le portail des médiathèques de Villejuif est complet, mais pensé pour un ordi
 | 🖥️ **iPad** | barre latérale permanente, recherche et fiche côte à côte, raccourcis clavier (⌘F, ⌘1…5) |
 | 📳 **Retours haptiques** | discrets, seulement quand ils ont un sens (prolongation réussie, carte scannée…) |
 | 📶 **Cache** | l'agenda, les horaires et les recherches récentes restent affichés quand le réseau flanche |
-| ♿ **Accessibilité** | Dynamic Type, VoiceOver, mode sombre |
+| ♿ **Accessibilité** | Dynamic Type, VoiceOver (titres, états et annonces), contrastes AA et contraste renforcé, mode sombre, portrait et paysage |
 
 ## Comment ça marche
 

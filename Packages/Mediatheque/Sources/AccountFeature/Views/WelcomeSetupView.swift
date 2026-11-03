@@ -337,7 +337,7 @@ struct LockedView: View {
                 .foregroundStyle(.white)
                 .frame(width: 110, height: 110)
                 .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 34, style: .continuous))
-            Text(.local("Compte verrouillé")).font(.title.weight(.heavy)).foregroundStyle(.white)
+            Text(.local("Compte verrouillé")).font(.title.weight(.heavy)).foregroundStyle(.white).accessibilityAddTraits(.isHeader)
             Button(.local("Déverrouiller")) { Task { await session.unlock() } }
                 .buttonStyle(.prominent(tint: .white, foreground: .brandVioletSurface))
             Button(.local("Se déconnecter")) { Task { await session.logout() } }

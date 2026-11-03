@@ -58,6 +58,7 @@ struct LoansView: View {
                     .foregroundStyle(section.kind == .late ? Color.statusDanger : Color.inkSecondary)
                     .textCase(.uppercase)
                     .padding(.top, 6)
+                    .accessibilityAddTraits(.isHeader)
                 VStack(spacing: 0) {
                     ForEach(section.loans) { loan in
                         LoanRow(loan: loan, viewModel: viewModel)
@@ -191,7 +192,7 @@ struct HoldsView: View {
     }
 
     private func sectionTitle(_ title: String, color: Color) -> some View {
-        Text(title).font(.footnote.weight(.bold)).foregroundStyle(color).textCase(.uppercase).padding(.top, 6)
+        Text(title).font(.footnote.weight(.bold)).foregroundStyle(color).textCase(.uppercase).padding(.top, 6).accessibilityAddTraits(.isHeader)
     }
 }
 

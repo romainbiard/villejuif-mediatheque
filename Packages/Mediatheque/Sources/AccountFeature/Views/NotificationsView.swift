@@ -30,6 +30,7 @@ struct NotificationsView: View {
                                 .foregroundStyle(Color.inkSecondary)
                                 .textCase(.uppercase)
                                 .padding(.top, 6)
+                                .accessibilityAddTraits(.isHeader)
                             VStack(spacing: 0) {
                                 ForEach(section.items) { item in
                                     NotificationRow(item: item, viewModel: viewModel)

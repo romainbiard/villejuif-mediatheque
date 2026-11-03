@@ -464,6 +464,17 @@
       },
       "comment": "Placeholder of the card number field"
     },
+    "Aucune note": {
+      "comment": "VoiceOver: star rating not set yet",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No rating"
+          }
+        }
+      }
+    },
     "Aucune réservation": {
       "localizations": {
         "en": {
@@ -1583,6 +1594,17 @@
         }
       },
       "comment": "Accessibility label; %@ is the notification title"
+    },
+    "Note": {
+      "comment": "VoiceOver: name of the star rating control",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rating"
+          }
+        }
+      }
     },
     "Noter mes derniers prêts": {
       "localizations": {

@@ -58,7 +58,7 @@ struct NextReturnsView: View {
 
     // Same light/dark pairs as the app's palette: the light-mode colors alone fell to 2.2–2.7:1
     // on the dark widget background.
-    private let violet = Color.adaptive(light: 0x773DBD, dark: 0xA27BE0)
+    private let violet = Color.adaptive(light: 0x773DBD, dark: 0xAE8BE6)
     private let danger = Color.adaptive(light: 0xA60A3D, dark: 0xFF6B8E)
     private let success = Color.adaptive(light: 0x006E43, dark: 0x4CC38A)
     private let warning = Color.adaptive(light: 0x7A4F00, dark: 0xF5C451)

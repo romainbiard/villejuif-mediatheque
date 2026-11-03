@@ -100,7 +100,7 @@ public struct DocumentDetailView: View {
                     style: .accent
                 ) }
             }
-            Text(document.title).font(.title.weight(.heavy)).foregroundStyle(Color.ink)
+            Text(document.title).font(.title.weight(.heavy)).foregroundStyle(Color.ink).accessibilityAddTraits(.isHeader)
             Text([document.authors.joined(separator: ", "), document.publisher].compactMap(\.self).filter { !$0.isEmpty }.joined(separator: " · "))
                 .font(.body)
                 .foregroundStyle(Color.inkSecondary)

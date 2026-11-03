@@ -60,6 +60,23 @@ final class BrowsingUITests: XCTestCase {
         app.navigationBars["Agenda"].waitToAppear()
     }
 
+    /// Every orientation is allowed (WCAG 1.3.4): in landscape, every tab still opens its screen.
+    func testEveryTabOpensInLandscape() {
+        let app = launchApp()
+        XCUIDevice.shared.orientation = .landscapeLeft
+        defer { XCUIDevice.shared.orientation = .portrait }
+        app.element("Mon compte").waitToAppear()
+
+        app.openTab("Agenda")
+        app.element("Agenda").waitToAppear()
+        app.openTab("Numérique")
+        app.element("Arte VOD et Univers Ciné").waitToAppear()
+        app.openTab("Infos")
+        app.staticTexts["Médiathèque Elsa-Triolet"].waitToAppear()
+        app.openTab("Recherche")
+        app.searchFields.firstMatch.waitToAppear()
+    }
+
     /// Largest accessibility text size: the account home still shows its essentials.
     func testAccountAtTheLargestTextSize() {
         let app = launchApp(textSize: "UICTContentSizeCategoryAccessibilityXXXL")

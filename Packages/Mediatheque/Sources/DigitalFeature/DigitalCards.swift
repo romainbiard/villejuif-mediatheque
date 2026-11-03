@@ -94,7 +94,7 @@ struct FeaturedOfferCard: View {
         VStack(alignment: .leading, spacing: 6) {
             VStack(alignment: .leading, spacing: 6) {
                 Text(offer.category).font(.caption.weight(.bold)).textCase(.uppercase).opacity(0.8)
-                Text(offer.provider).font(.title.weight(.heavy))
+                Text(offer.provider).font(.title.weight(.heavy)).accessibilityAddTraits(.isHeader)
                 Text(fitsLabel ? "\(offer.summary) · \(offer.quota)" : offer.quota)
                     .font(.subheadline)
                     .opacity(0.85)

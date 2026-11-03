@@ -84,6 +84,7 @@ struct AgendaFiltersView: View {
     private var periodGroup: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(.local("Quand", comment: "Agenda period filters")).font(.footnote.weight(.bold)).foregroundStyle(Color.inkSecondary).textCase(.uppercase)
+                .accessibilityAddTraits(.isHeader)
             FlowLayout(spacing: 8) {
                 ForEach(AgendaPeriod.allCases) { period in
                     let isOn = draft.period == period
@@ -99,7 +100,7 @@ struct AgendaFiltersView: View {
 
     private func group(_ title: LocalizedStringResource, values: [String], selection: Binding<Set<String>>) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(title).font(.footnote.weight(.bold)).foregroundStyle(Color.inkSecondary).textCase(.uppercase)
+            Text(title).font(.footnote.weight(.bold)).foregroundStyle(Color.inkSecondary).textCase(.uppercase).accessibilityAddTraits(.isHeader)
             FlowLayout(spacing: 8) {
                 ForEach(values, id: \.self) { value in
                     let isOn = selection.wrappedValue.contains(value)

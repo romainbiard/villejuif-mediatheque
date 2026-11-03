@@ -168,7 +168,7 @@ public struct EmptyStateView: View {
             .frame(height: 120)
             .accessibilityHidden(true)
 
-            Text(title).font(.title2.weight(.heavy)).multilineTextAlignment(.center)
+            Text(title).font(.title2.weight(.heavy)).multilineTextAlignment(.center).accessibilityAddTraits(.isHeader)
             Text(message).font(.subheadline).foregroundStyle(Color.inkSecondary).multilineTextAlignment(.center)
 
             if let primary {
@@ -206,6 +206,8 @@ public struct StaleBanner: View {
             .padding(.vertical, 10)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color.brandYellow.opacity(0.3), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            // A status that appears over data already read: VoiceOver says it without moving focus.
+            .onAppear { AccessibilityNotification.Announcement(text).post() }
     }
 }
 

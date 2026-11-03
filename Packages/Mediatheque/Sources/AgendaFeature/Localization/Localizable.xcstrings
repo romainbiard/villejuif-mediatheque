@@ -138,6 +138,17 @@
       },
       "comment" : "Agenda period filter"
     },
+    "Des animations" : {
+      "comment" : "VoiceOver: the day has events",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Events"
+          }
+        }
+      }
+    },
     "En ce moment" : {
       "localizations" : {
         "en" : {
@@ -300,6 +311,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Next Month"
+          }
+        }
+      }
+    },
+    "Médiathèques fermées" : {
+      "comment" : "VoiceOver: the libraries are closed that day",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Libraries closed"
           }
         }
       }

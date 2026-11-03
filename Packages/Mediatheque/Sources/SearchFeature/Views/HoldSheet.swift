@@ -96,7 +96,7 @@ struct HoldSheet: View {
                     .foregroundStyle(.white)
                     .frame(width: 72, height: 72)
                     .background(Color.statusSuccess, in: Circle())
-                Text(.local("Réservation enregistrée")).font(.title2.weight(.heavy))
+                Text(.local("Réservation enregistrée")).font(.title2.weight(.heavy)).accessibilityAddTraits(.isHeader)
                 Text(.local(
                     "Retrait à \(pickup.shortName). \(message.components(separatedBy: "\n").dropFirst().joined(separator: " "))",
                     comment: "Pickup library, then the website's confirmation message (in French)"
@@ -108,6 +108,7 @@ struct HoldSheet: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.top, 8)
+            .onAppear { AccessibilityNotification.Announcement(String.local("Réservation enregistrée")).post() }
         case let .failed(message):
             EmptyStateView(
                 systemImage: "exclamationmark.triangle",

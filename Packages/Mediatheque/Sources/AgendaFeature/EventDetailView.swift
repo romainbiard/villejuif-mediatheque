@@ -29,7 +29,7 @@ struct EventDetailView: View {
                         if let type = event.type { StatusPill(type, style: .accent) }
                         if let audience = event.audience { StatusPill(audience, style: .accent) }
                     }
-                    Text(event.title).font(.title.weight(.heavy))
+                    Text(event.title).font(.title.weight(.heavy)).accessibilityAddTraits(.isHeader)
                     if let sentence = event.dateDescription {
                         Label(sentence, systemImage: "calendar").font(.subheadline.weight(.medium))
                     }

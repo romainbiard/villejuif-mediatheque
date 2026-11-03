@@ -77,7 +77,7 @@ struct LibraryCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
-                Text(library.name).font(.title3.weight(.heavy))
+                Text(library.name).font(.title3.weight(.heavy)).accessibilityAddTraits(.isHeader)
                 Text(library.addressLines.joined(separator: ", ")).font(.subheadline).foregroundStyle(Color.inkSecondary)
             }
             StatusPill(viewModel.statusText(of: library), style: viewModel.isOpen(library) ? .success : .danger)

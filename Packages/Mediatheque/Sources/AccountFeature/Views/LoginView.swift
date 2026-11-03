@@ -77,7 +77,7 @@ struct LoginView: View {
 
     private var form: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text(.local("Connexion")).font(.title2.weight(.heavy))
+            Text(.local("Connexion")).font(.title2.weight(.heavy)).accessibilityAddTraits(.isHeader)
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(.local("Numéro de carte")).font(.footnote.weight(.semibold)).foregroundStyle(Color.inkSecondary)

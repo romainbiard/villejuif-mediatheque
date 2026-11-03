@@ -268,6 +268,16 @@ final class AgendaViewModel {
         [1, 2].contains(calendar.component(.weekday, from: day))
     }
 
+    /// What the day's dot and grey say, read out by VoiceOver: "Des animations", "Médiathèques fermées".
+    func accessibilityValue(for day: Date) -> String {
+        [
+            hasEvents(on: day) ? String.local("Des animations", comment: "VoiceOver: the day has events") : nil,
+            isLibraryClosingDay(day) ? String.local("Médiathèques fermées", comment: "VoiceOver: the libraries are closed that day") : nil
+        ]
+        .compactMap(\.self)
+        .joined(separator: ", ")
+    }
+
     private func distinct(_ keyPath: KeyPath<Event, String?>, prioritizing first: [String] = []) -> [String] {
         let values = Set((state.value ?? []).compactMap { $0[keyPath: keyPath] })
         let priority = { (value: String) in

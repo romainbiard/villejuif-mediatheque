@@ -92,6 +92,7 @@ public struct AgendaView: View {
                     if viewModel.filters.period == .all {
                         Text(viewModel.selectedDay.formatted(EventFormatting.dayTitle))
                             .font(.title2.weight(.heavy))
+                            .accessibilityAddTraits(.isHeader)
                         regularDayContent
                     } else {
                         PeriodHeader(viewModel: viewModel)
@@ -275,7 +276,9 @@ struct DayStrip: View {
                     Button { viewModel.select(day: day) } label: {
                         VStack(spacing: 2) {
                             Text(day.formatted(.dateTime.weekday(.abbreviated))).font(.caption.weight(.semibold))
+                            // Closed days are struck through, not only greyed: the grey alone is a colour.
                             Text(day.formatted(.dateTime.day())).font(.title3.weight(.heavy))
+                                .strikethrough(viewModel.isLibraryClosingDay(day))
                             Circle()
                                 .fill(viewModel.hasEvents(on: day) ? Color.brandMagenta : .clear)
                                 .frame(width: 5, height: 5)
@@ -288,6 +291,7 @@ struct DayStrip: View {
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel(day.formatted(date: .complete, time: .omitted))
+                    .accessibilityValue(viewModel.accessibilityValue(for: day))
                     .accessibilityAddTraits(isSelected ? .isSelected : [])
                 }
             }
@@ -346,6 +350,7 @@ struct MonthCalendar: View {
             VStack(spacing: 2) {
                 Text(day.formatted(.dateTime.day()))
                     .font(.subheadline.weight(isSelected ? .heavy : .medium))
+                    .strikethrough(isSelectable && viewModel.isLibraryClosingDay(day))
                 Circle()
                     .fill(viewModel.hasEvents(on: day) ? (isSelected ? Color.white : Color.brandMagenta) : .clear)
                     .frame(width: 4, height: 4)
@@ -360,6 +365,7 @@ struct MonthCalendar: View {
         .opacity(isSelectable ? 1 : 0.4)
         .hoverEffect(.highlight)
         .accessibilityLabel(day.formatted(date: .complete, time: .omitted))
+        .accessibilityValue(viewModel.accessibilityValue(for: day))
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
