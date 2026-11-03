@@ -187,4 +187,40 @@ struct ProfileClientLiveTests {
         let details = try await harness.live { ProfileClient.liveValue }.contactDetails()
         #expect(!details.email.isEmpty)
     }
+
+    @Test func defaultSelectionsAreReadFromTheRecordPage() async throws {
+        let harness = PortalHarness { _ in try .html("notice-selections.html") }
+        let selections = try await harness.live { ProfileClient.liveValue }.defaultSelections(720_102)
+        #expect(selections == [.favorites])
+        #expect(harness.portal.requests.map(\.path) == ["/recherche/viewnotice/id/720102"])
+    }
+
+    @Test func aPublicRecordPageMeansTheSessionExpired() async throws {
+        // Signed out, the page shows every selection as "add": the client signs in again instead of emptying the heart.
+        let harness = PortalHarness { request in
+            if let page = try SignIn.respond(to: request) { return page }
+            if request.path == SignIn.account { return try .json("account.json") }
+            return try request
+                .afterSignIn ? .html("notice-selections.html") : .html(literal: "<html><body><a href=\"/auth/login\">Mon compte</a></body></html>")
+        }
+        let selections = try await harness.live { ProfileClient.liveValue }.defaultSelections(720_102)
+        #expect(selections == [.favorites])
+        #expect(harness.portal.signIns == 1)
+    }
+
+    @Test func addingToASelectionChecksTheSitesAnswer() async throws {
+        let harness = PortalHarness { _ in try .json("selection-added.json") }
+        try await harness.live { ProfileClient.liveValue }.setInDefaultSelection(.favorites, 720_102, true)
+        let request = try #require(harness.portal.requests.first)
+        #expect(request.path.hasPrefix("/abonne/ajouter-le-document-a-la-selection/selection_label/"))
+        #expect(request.path.hasSuffix("/record_id/720102"))
+    }
+
+    @Test func aToggleTheSiteDidNotApplyIsAnError() async throws {
+        // Asked to add, but the site still offers "add": nothing changed.
+        let harness = PortalHarness { _ in try .json("selection-removed.json") }
+        await #expect(throws: ProfileError.selectionNotChanged) {
+            try await harness.live { ProfileClient.liveValue }.setInDefaultSelection(.favorites, 720_102, true)
+        }
+    }
 }

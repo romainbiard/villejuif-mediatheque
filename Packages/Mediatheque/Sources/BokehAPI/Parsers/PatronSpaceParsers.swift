@@ -143,6 +143,21 @@ extension HTMLParsers {
         try SwiftSoup.parse(html).select("input[name=\(name)][checked]").first()?.attr("value")
     }
 
+    /// Whether the page was shown to a signed-in patron: it then links to sign-out. A public page
+    /// (expired session) shows the same selection links, all in their "add" state.
+    public static func isSignedIn(_ html: String) throws -> Bool {
+        try !SwiftSoup.parse(html).select("a[href*=/auth/logout]").isEmpty()
+    }
+
+    /// Default selections holding the record, read from its page: their link is "supprimer-de-la-selection".
+    public static func defaultSelectionsHolding(in html: String) throws -> Set<String> {
+        let hrefs = try SwiftSoup.parse(html).select("a[href*=/supprimer-de-la-selection/selection_label/]").map { try $0.attr("href") }
+        return Set(hrefs.compactMap { href in
+            guard let label = href.components(separatedBy: "selection_label/").last?.split(separator: "/").first else { return nil }
+            return String(label).replacingOccurrences(of: "+", with: " ").removingPercentEncoding
+        })
+    }
+
     /// Error messages of a form returned by the site (invalid fields, password rejected…).
     public static func formErrors(in html: String) throws -> [String] {
         let document = try SwiftSoup.parse(html)

@@ -49,6 +49,23 @@ final class BrowsingUITests: XCTestCase {
         app.element("Réservation enregistrée").waitToAppear()
     }
 
+    func testTheHeartPutsARecordInFavorites() {
+        let app = launchApp()
+        app.openTab("Recherche")
+        let field = app.searchFields.firstMatch
+        field.waitToAppear()
+        field.tap()
+        field.typeText("harry potter\n")
+        app.staticTexts["Harry Potter à l'école des sorciers"].waitToAppear()
+        app.staticTexts["Harry Potter à l'école des sorciers"].tap()
+
+        let heart = app.buttons["Ajouter à Mes préférés"]
+        heart.waitToAppear()
+        heart.tap()
+        app.element("Ajouté à « Mes préférés »").waitToAppear()
+        app.buttons["Retirer de Mes préférés"].waitToAppear()
+    }
+
     func testAgendaFiltersOpenAndClose() {
         let app = launchApp()
         app.openTab("Agenda")

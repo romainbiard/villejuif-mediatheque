@@ -153,4 +153,36 @@ public enum ProfileError: Error, Equatable, Sendable {
     /// The site rejected the form, with its message.
     case rejected(String)
     case missingPatronID
+    /// The site answered, but the record isn't in (or out of) the selection as asked.
+    case selectionNotChanged
+}
+
+/// The three selections the site creates for every patron. Records go in and out with one tap
+/// (the site's own toggle links); the patron's other selections are "paniers", not handled yet.
+public enum DefaultSelection: String, CaseIterable, Identifiable, Hashable, Sendable {
+    case favorites = "Mes préférés"
+    case read = "Déjà lu"
+    case toRead = "À lire"
+
+    public var id: String { rawValue }
+
+    /// The site's name for it, also what the patron sees in "Mes sélections".
+    public var name: String { rawValue }
+
+    public var systemImage: String {
+        switch self {
+        case .favorites: "heart"
+        case .read: "checkmark.circle"
+        case .toRead: "bookmark"
+        }
+    }
+
+    /// The site's icons for the toggle, part of its links.
+    var siteIcons: (image: String, revertImage: String) {
+        switch self {
+        case .favorites: ("like", "dislike")
+        case .read: ("readed", "unread")
+        case .toRead: ("to_read", "to_not_read")
+        }
+    }
 }

@@ -9,7 +9,7 @@ import SwiftUI
 public struct DocumentDetailView: View {
     @State private var viewModel: DocumentDetailViewModel
     @State private var showsHold = false
-    @State private var showsLoginHint = false
+    @State private var loginHint: LoginHint?
     @Environment(SessionStore.self) private var session
 
     public init(document: Notice) {
@@ -43,6 +43,7 @@ public struct DocumentDetailView: View {
         .background(Color.surfaceGrouped)
         .ignoresSafeArea(edges: .top)
         .toolbar {
+            ToolbarItem(placement: .topBarTrailing) { selectionsButton }
             ToolbarItem(placement: .topBarTrailing) {
                 if let permalink = document.permalink {
                     ShareLink(item: permalink, subject: Text(document.title))
@@ -52,13 +53,23 @@ public struct DocumentDetailView: View {
         .sheet(isPresented: $showsHold) {
             HoldSheet(notice: document, defaultPickup: session.patron?.homeLibrary)
         }
-        .alert(Text(.local("Connectez-vous pour réserver")), isPresented: $showsLoginHint) {
-            Button(role: .cancel) {} label: { Text(.local("OK")) }
-        } message: {
-            Text(.local("Ouvrez l'onglet Compte et connectez-vous avec votre carte d'abonné."))
+        .alert(item: $loginHint) { hint in
+            Alert(
+                title: Text(hint.title),
+                message: Text(.local("Ouvrez l'onglet Compte et connectez-vous avec votre carte d'abonné.")),
+                dismissButton: .cancel(Text(.local("OK")))
+            )
         }
+        .overlay(alignment: .bottom) { MessageToast(message: viewModel.message) { viewModel.dismissMessage() } }
+        .sensoryFeedback(trigger: viewModel.feedback) { _, event in event.map(\.sensoryFeedback) }
         .task { await viewModel.load() }
-        .refreshable { await viewModel.load() }
+        .task(id: session.patron?.cardNumber) {
+            if session.patron != nil { await viewModel.loadSelections() }
+        }
+        .refreshable {
+            await viewModel.load()
+            if session.patron != nil { await viewModel.loadSelections() }
+        }
     }
 
     private var header: some View {
@@ -75,6 +86,45 @@ public struct DocumentDetailView: View {
         .clipped()
     }
 
+    /// Heart: a tap puts the record in "Mes préférés" or takes it out; a long press offers the site's three selections.
+    @ViewBuilder
+    private var selectionsButton: some View {
+        let isFavorite = viewModel.isIn(.favorites)
+        let heart = Image(systemName: isFavorite ? "heart.fill" : "heart")
+        if session.patron == nil {
+            Button { loginHint = .selections } label: { heart }
+                .accessibilityLabel(Text(.local("Ajouter à Mes préférés")))
+        } else {
+            Menu {
+                ForEach(DefaultSelection.allCases) { selection in
+                    Toggle(isOn: Binding(
+                        get: { viewModel.isIn(selection) },
+                        set: { _ in Task { await viewModel.toggle(selection) } }
+                    )) {
+                        Label(selection.name, systemImage: selection.systemImage)
+                    }
+                }
+            } label: {
+                heart
+            } primaryAction: {
+                Task { await viewModel.toggle(.favorites) }
+            }
+            .disabled(viewModel.selections == nil)
+            .accessibilityLabel(isFavorite ? Text(.local("Retirer de Mes préférés")) : Text(.local("Ajouter à Mes préférés")))
+            .accessibilityAddTraits(isFavorite ? .isSelected : [])
+            .accessibilityActions {
+                ForEach(DefaultSelection.allCases.filter { $0 != .favorites }) { selection in
+                    Button(viewModel.isIn(selection)
+                        ? String.local("Retirer de « \(selection.name) »", comment: "VoiceOver action; %@ is a selection name")
+                        : String.local("Ajouter à « \(selection.name) »", comment: "VoiceOver action; %@ is a selection name"))
+                    {
+                        Task { await viewModel.toggle(selection) }
+                    }
+                }
+            }
+        }
+    }
+
     @ViewBuilder
     private var reserveButton: some View {
         if session.patron?.permissions.holdForbidden == true {
@@ -83,7 +133,7 @@ public struct DocumentDetailView: View {
                 .foregroundStyle(Color.inkSecondary)
         } else {
             Button {
-                if session.patron == nil { showsLoginHint = true } else { showsHold = true }
+                if session.patron == nil { loginHint = .hold } else { showsHold = true }
             } label: {
                 Label(.local("Réserver", comment: "Button: place a hold on the item"), systemImage: "bookmark").frame(maxWidth: .infinity)
             }
@@ -210,4 +260,18 @@ struct InfoLine: View {
 #Preview {
     NavigationStack { DocumentDetailView(document: SampleData.documents[0]) }
         .environment(SessionStore())
+}
+
+/// Why the sign-in hint shows: both need the patron's account.
+private enum LoginHint: Identifiable {
+    case hold, selections
+
+    var id: Self { self }
+
+    var title: LocalizedStringResource {
+        switch self {
+        case .hold: .local("Connectez-vous pour réserver")
+        case .selections: .local("Connectez-vous pour garder vos préférés")
+        }
+    }
 }

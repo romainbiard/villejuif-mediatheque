@@ -2,53 +2,94 @@
   "sourceLanguage" : "fr",
   "strings" : {
     "Agenda ${applicationName}" : {
+      "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringSet" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "values" : [
               "${applicationName} events",
               "What's on at ${applicationName}?"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "new",
+            "values" : [
+              "Agenda ${applicationName}",
+              "Quelles animations dans ${applicationName} ?"
             ]
           }
         }
       }
     },
     "Chercher un livre dans ${applicationName}" : {
+      "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringSet" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "values" : [
               "Find a book in ${applicationName}",
               "Search ${applicationName}"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "new",
+            "values" : [
+              "Chercher un livre dans ${applicationName}",
+              "Recherche dans ${applicationName}"
             ]
           }
         }
       }
     },
     "Montre ma carte ${applicationName}" : {
+      "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringSet" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "values" : [
               "Show my ${applicationName} card",
               "My ${applicationName} library card"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "new",
+            "values" : [
+              "Montre ma carte ${applicationName}",
+              "Ma carte d'abonné ${applicationName}"
             ]
           }
         }
       }
     },
     "Quand dois-je rendre mes livres dans ${applicationName} ?" : {
+      "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringSet" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "values" : [
               "When are my books due in ${applicationName}?",
               "My upcoming returns in ${applicationName}",
               "Which loans are due in ${applicationName}?"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "new",
+            "values" : [
+              "Quand dois-je rendre mes livres dans ${applicationName} ?",
+              "Mes prochains retours ${applicationName}",
+              "Quels prêts rendre avec ${applicationName} ?"
             ]
           }
         }

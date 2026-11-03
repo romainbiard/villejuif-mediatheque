@@ -78,4 +78,30 @@ struct PatronSpaceTests {
         #expect(account.identity.nickname?.isEmpty == true)
         #expect(account.preferences?.newsletters.isEmpty == true)
     }
+
+    @Test func recordPageSaysWhichDefaultSelectionsHoldIt() throws {
+        let html = try Fixture.string("notice-selections.html")
+        #expect(try HTMLParsers.isSignedIn(html))
+        #expect(try HTMLParsers.defaultSelectionsHolding(in: html) == ["Mes préférés"])
+        // Public page (expired session): same links, all "add", and no sign-out link.
+        #expect(try !HTMLParsers.isSignedIn("<html><body><a href=\"/auth/login\">Mon compte</a></body></html>"))
+    }
+
+    @Test func selectionToggleAnswerTellsTheNewState() throws {
+        let added = try JSONDecoder().decode(SelectionToggleDTO.self, from: Fixture.data("selection-added.json"))
+        let removed = try JSONDecoder().decode(SelectionToggleDTO.self, from: Fixture.data("selection-removed.json"))
+        #expect(added.holdsRecord)
+        #expect(!removed.holdsRecord)
+    }
+
+    @Test func toggleLinksWriteTheLabelAsTheSiteDoes() {
+        let base = HTTPClient.villejuifBaseURL
+        let add = Endpoint.toggleDefaultSelection(label: "Mes préférés", image: "like", revertImage: "dislike", recordID: 720_102, adding: true)
+        let remove = Endpoint.toggleDefaultSelection(label: "Mes préférés", image: "like", revertImage: "dislike", recordID: 720_102, adding: false)
+        #expect(add.url(relativeTo: base).path(percentEncoded: true)
+            == "/abonne/ajouter-le-document-a-la-selection/selection_label/Mes+pr%C3%A9f%C3%A9r%C3%A9s/image/like/revert-image/dislike/record_id/720102")
+        #expect(remove.url(relativeTo: base).path(percentEncoded: true)
+            == "/abonne/supprimer-de-la-selection/selection_label/Mes+pr%C3%A9f%C3%A9r%C3%A9s/image/like/revert-image/dislike/record_id/720102/ajax/true")
+        #expect(add.isAjax)
+    }
 }

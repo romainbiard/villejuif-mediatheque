@@ -196,7 +196,7 @@
       }
     },
     "Recherche" : {
-      "comment" : "Tab title: catalog search; also the search parameter of the Siri shortcut",
+      "comment" : "Tab title: catalog search",
       "localizations" : {
         "en" : {
           "stringUnit" : {

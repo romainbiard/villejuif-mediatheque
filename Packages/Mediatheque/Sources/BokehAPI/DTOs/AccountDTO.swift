@@ -150,6 +150,13 @@ public struct HoldDTO: Decodable, Sendable {
     public let record: RecordRefDTO?
 }
 
+/// Answer to a default-selection toggle: the site's new link, "supprimer…" once added, "ajouter…" once removed.
+public struct SelectionToggleDTO: Decodable, Sendable {
+    public let anchor: String
+
+    public var holdsRecord: Bool { anchor.contains("supprimer-de-la-selection") }
+}
+
 /// JSON response from AJAX popups (holds…).
 public struct PopupDTO: Decodable, Sendable {
     public let title: String?

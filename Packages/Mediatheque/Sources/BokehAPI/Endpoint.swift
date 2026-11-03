@@ -231,6 +231,21 @@ extension Endpoint {
         return Endpoint(pathSegments: segments)
     }
 
+    /// Record page by its identifier alone. Signed in, it shows which default selections hold the record.
+    public static func noticePage(recordID: Int) -> Endpoint {
+        Endpoint(pathSegments: ["recherche", "viewnotice", "id", String(recordID)])
+    }
+
+    /// Adds a record to one of the site's default selections ("Mes préférés", "Déjà lu", "À lire") or removes it.
+    /// `image` and `revertImage` are the site's own icons for the toggle; it answers with the new link (JSON).
+    /// The label goes as the site writes it, spaces as `+` (`Mes+préférés`).
+    public static func toggleDefaultSelection(label: String, image: String, revertImage: String, recordID: Int, adding: Bool) -> Endpoint {
+        let selection = ["selection_label", label.replacingOccurrences(of: " ", with: "+"), "image", image, "revert-image", revertImage]
+        return adding
+            ? Endpoint(pathSegments: ["abonne", "ajouter-le-document-a-la-selection"] + selection + ["record_id", String(recordID)], isAjax: true)
+            : Endpoint(pathSegments: ["abonne", "supprimer-de-la-selection"] + selection + ["record_id", String(recordID), "ajax", "true"], isAjax: true)
+    }
+
     public static func removeFromSelection(patronID: String, selectionID: Int, recordID: Int) -> Endpoint {
         Endpoint(pathSegments: [
             "abonne", "supprimer-de-la-selection", "id_profil", "1", "id", patronID,

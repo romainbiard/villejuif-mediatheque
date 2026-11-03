@@ -82,6 +82,39 @@
         }
       }
     },
+    "Ajouter à Mes préférés" : {
+      "comment" : "Heart button on a record, signed in or not",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add to Favorites"
+          }
+        }
+      }
+    },
+    "Ajouter à « %@ »" : {
+      "comment" : "VoiceOver action on the heart; %@ is a selection name",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add to “%@”"
+          }
+        }
+      }
+    },
+    "Ajouté à « %@ »" : {
+      "comment" : "Toast after adding a record to a selection; %@ is its name",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Added to “%@”"
+          }
+        }
+      }
+    },
     "Année" : {
       "localizations" : {
         "en" : {
@@ -169,6 +202,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sign in from the Account tab to place a hold."
+          }
+        }
+      }
+    },
+    "Connectez-vous pour garder vos préférés" : {
+      "comment" : "Alert title when tapping the heart signed out",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign In to Keep Your Favorites"
           }
         }
       }
@@ -319,6 +363,17 @@
         }
       }
     },
+    "La sélection n'a pas pu être modifiée" : {
+      "comment" : "Toast when the site refused or failed to change a selection",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The selection couldn't be changed"
+          }
+        }
+      }
+    },
     "Les réservations sont suspendues sur votre compte. Renseignez-vous à l'accueil." : {
       "localizations" : {
         "en" : {
@@ -452,12 +507,45 @@
         }
       }
     },
+    "Retirer de Mes préférés" : {
+      "comment" : "Heart button on a record already in favorites",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove from Favorites"
+          }
+        }
+      }
+    },
+    "Retirer de « %@ »" : {
+      "comment" : "VoiceOver action on the heart; %@ is a selection name",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove from “%@”"
+          }
+        }
+      }
+    },
     "Retirer les filtres" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Remove Filters"
+          }
+        }
+      }
+    },
+    "Retiré de « %@ »" : {
+      "comment" : "Toast after removing a record from a selection; %@ is its name",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Removed from “%@”"
           }
         }
       }

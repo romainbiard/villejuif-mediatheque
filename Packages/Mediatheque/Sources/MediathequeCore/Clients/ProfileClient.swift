@@ -15,6 +15,10 @@ public struct ProfileClient: Sendable {
     public var selectionNotices: @Sendable (_ selection: Selection, _ page: Int) async throws -> SearchPage
     public var createSelection: @Sendable (_ name: String) async throws -> Void
     public var removeFromSelection: @Sendable (_ selection: Selection, _ recordID: Int) async throws -> Void
+    /// Default selections holding the record (one page read).
+    public var defaultSelections: @Sendable (_ recordID: Int) async throws -> Set<DefaultSelection>
+    /// Puts the record in a default selection, or takes it out.
+    public var setInDefaultSelection: @Sendable (_ selection: DefaultSelection, _ recordID: Int, _ isIn: Bool) async throws -> Void
 
     public var recordsToRate: @Sendable () async throws -> [RecordToRate]
     public var reviews: @Sendable () async throws -> [Review]
@@ -77,6 +81,23 @@ extension ProfileClient: DependencyKey {
                 _ = try await session.perform {
                     try await http.data(for: .removeFromSelection(patronID: patronID(), selectionID: selection.id, recordID: recordID))
                 }
+            },
+            defaultSelections: { recordID in
+                try await session.perform {
+                    let html = try await http.string(for: .noticePage(recordID: recordID))
+                    // A public page shows every selection link as "add": signed out, that would empty the heart.
+                    guard try HTMLParsers.isSignedIn(html) else { throw BokehError.unauthorized }
+                    return try Set(HTMLParsers.defaultSelectionsHolding(in: html).compactMap(DefaultSelection.init(rawValue:)))
+                }
+            },
+            setInDefaultSelection: { selection, recordID, isIn in
+                let icons = selection.siteIcons
+                let toggle = try await session.perform {
+                    try await http.decode(SelectionToggleDTO.self, from: .toggleDefaultSelection(
+                        label: selection.name, image: icons.image, revertImage: icons.revertImage, recordID: recordID, adding: isIn
+                    ))
+                }
+                guard toggle.holdsRecord == isIn else { throw ProfileError.selectionNotChanged }
             },
             recordsToRate: {
                 try await HTMLParsers.recordsToRate(in: page("donner-des-avis")).map(RecordToRate.init(dto:))
@@ -154,6 +175,9 @@ extension ProfileClient: DependencyKey {
         )
     }
 
+    /// Preview and UI tests: the default selections remember their records while the app runs.
+    private static let previewSelections = LockIsolated<[Int: Set<DefaultSelection>]>([:])
+
     public static let previewValue = ProfileClient(
         selections: { SampleData.selections },
         selectionNotices: { _, _ in
@@ -161,6 +185,12 @@ extension ProfileClient: DependencyKey {
         },
         createSelection: { _ in },
         removeFromSelection: { _, _ in },
+        defaultSelections: { recordID in previewSelections.value[recordID] ?? [] },
+        setInDefaultSelection: { selection, recordID, isIn in
+            previewSelections.withValue { all in
+                if isIn { all[recordID, default: []].insert(selection) } else { all[recordID]?.remove(selection) }
+            }
+        },
         recordsToRate: { SampleData.recordsToRate },
         reviews: { [] },
         submitReview: { _, _, _, _ in },

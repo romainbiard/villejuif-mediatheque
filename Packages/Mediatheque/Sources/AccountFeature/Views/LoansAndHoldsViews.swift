@@ -237,30 +237,3 @@ struct HoldRow: View {
         .padding(12)
     }
 }
-
-/// Temporary glass message at the bottom of the screen.
-struct MessageToast: View {
-    let message: String?
-    let dismiss: () -> Void
-    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
-
-    var body: some View {
-        if let message {
-            Text(message)
-                .font(.subheadline.weight(.semibold))
-                .padding(.horizontal, 18)
-                .padding(.vertical, 12)
-                .glassEffect(.regular, in: Capsule())
-                .padding(.bottom, 16)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-                .task(id: message) {
-                    // Read out by VoiceOver: otherwise the result of an action is silent.
-                    AccessibilityNotification.Announcement(message).post()
-                    // Longer with VoiceOver, so the toast can still be found after the announcement.
-                    try? await Task.sleep(for: .seconds(voiceOverEnabled ? 8 : 3))
-                    dismiss()
-                }
-                .accessibilityAddTraits(.isStaticText)
-        }
-    }
-}
