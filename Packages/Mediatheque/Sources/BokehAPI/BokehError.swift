@@ -15,6 +15,8 @@ public enum BokehError: Error, Equatable, Sendable {
     case http(status: Int)
     /// The content received no longer matches the expected format.
     case unexpectedFormat(String)
+    /// The BunkerWeb anti-bot challenge in front of the portal couldn't be solved.
+    case challengeFailed
 }
 
 /// Bokeh JSON error body.

@@ -12,15 +12,31 @@ public actor HTTPClient {
     public nonisolated let baseURL: URL
     private let session: URLSession
     private let cookieStorage: HTTPCookieStorage
+    private let userAgent: String
+    private let solveChallenge: ChallengeSolver
+    /// Shared by the requests that hit the challenge at the same time, so it's solved only once.
+    private var pendingChallenge: Task<Void, Error>?
+    /// Bumped by each solved challenge: a request sent before the last solve only needs a replay.
+    private var challengeGeneration = 0
+
+    /// Solves the BunkerWeb challenge at the given URL and returns the cookies to keep.
+    public typealias ChallengeSolver = @Sendable (
+        _ url: URL, _ userAgent: String, _ cookies: [HTTPCookie]
+    ) async throws -> [HTTPCookie]
 
     /// `configuration` is ephemeral by default (session cookie in memory only); tests pass one
     /// whose `protocolClasses` answer with captured pages instead of the network.
     public init(
         baseURL: URL = HTTPClient.villejuifBaseURL,
         userAgent: String = HTTPClient.defaultUserAgent,
-        configuration: URLSessionConfiguration = .ephemeral
+        configuration: URLSessionConfiguration = .ephemeral,
+        solveChallenge: @escaping ChallengeSolver = { url, userAgent, cookies in
+            try await BunkerWebChallenge.solve(url: url, userAgent: userAgent, cookies: cookies)
+        }
     ) {
         self.baseURL = baseURL
+        self.userAgent = userAgent
+        self.solveChallenge = solveChallenge
         // We keep the in-memory storage of the ephemeral configuration:
         // a hand-made `HTTPCookieStorage()` instance doesn't retain any cookie.
         let cookieStorage = configuration.httpCookieStorage ?? HTTPCookieStorage()
@@ -39,9 +55,16 @@ public actor HTTPClient {
     // MARK: Requests
 
     public func data(for endpoint: Endpoint) async throws -> Data {
-        let (data, response) = try await session.data(for: request(for: endpoint))
-        guard let http = response as? HTTPURLResponse else {
-            throw BokehError.unexpectedFormat("réponse non HTTP")
+        let generation = challengeGeneration
+        var (data, http) = try await response(for: endpoint)
+        if let challengeURL = Self.challengeURL(of: http) {
+            // BunkerWeb wants to check we're a browser: solve it (unless another request
+            // already did while this one was in flight), then replay the request once.
+            if generation == challengeGeneration {
+                try await passChallenge(at: challengeURL)
+            }
+            (data, http) = try await response(for: endpoint)
+            if Self.challengeURL(of: http) != nil { throw BokehError.challengeFailed }
         }
         if http.url?.path.hasPrefix("/auth/login") == true, endpoint.pathSegments.first != "auth" {
             // A protected page redirected us to sign-in.
@@ -68,6 +91,36 @@ public actor HTTPClient {
     public func string(for endpoint: Endpoint) async throws -> String {
         let data = try await data(for: endpoint)
         return String(decoding: data, as: UTF8.self)
+    }
+
+    private func response(for endpoint: Endpoint) async throws -> (Data, HTTPURLResponse) {
+        let (data, response) = try await session.data(for: request(for: endpoint))
+        guard let http = response as? HTTPURLResponse else {
+            throw BokehError.unexpectedFormat("réponse non HTTP")
+        }
+        return (data, http)
+    }
+
+    // MARK: BunkerWeb challenge
+
+    /// The challenge page the request was redirected to, if any.
+    private static func challengeURL(of response: HTTPURLResponse) -> URL? {
+        guard let url = response.url, url.path() == BunkerWebChallenge.path else { return nil }
+        return url
+    }
+
+    private func passChallenge(at url: URL) async throws {
+        if let pendingChallenge {
+            return try await pendingChallenge.value
+        }
+        let task = Task { [cookieStorage, userAgent, solveChallenge, baseURL] in
+            let cookies = try await solveChallenge(url, userAgent, cookieStorage.cookies(for: baseURL) ?? [])
+            cookieStorage.setCookies(cookies, for: baseURL, mainDocumentURL: nil)
+        }
+        pendingChallenge = task
+        defer { pendingChallenge = nil }
+        try await task.value
+        challengeGeneration += 1
     }
 
     // MARK: Session
