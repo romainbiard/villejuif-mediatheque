@@ -3,11 +3,23 @@
 // See LICENSE in the project root for the full license text and copyright notice.
 
 import BackgroundTasks
+import DesignSystem
 import MediathequeCore
 import SwiftUI
 
+/// Only there for the orientations: SwiftUI has no API to stop a screen from rotating.
+final class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(
+        _ application: UIApplication,
+        supportedInterfaceOrientationsFor window: UIWindow?
+    ) -> UIInterfaceOrientationMask {
+        OrientationLock.supportedOrientations
+    }
+}
+
 @main
 struct MediathequeApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var session = SessionStore()
     @State private var showsSplash = true
     @Environment(\.scenePhase) private var scenePhase

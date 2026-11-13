@@ -70,9 +70,11 @@ struct LibraryCardView: View {
 
 /// Full-screen card for the front desk, brightness at maximum while it is displayed.
 ///
-/// The barcode is vertical, against the right edge and the same size as the one on the plastic card:
-/// any larger and it overflows the handheld scanner's window; at the edge, the phone can get close to the reader.
+/// The barcode is vertical, near the right edge and the same size as the one on the plastic card:
+/// any larger and it overflows the handheld scanner's window; near the edge, the phone can get close to the reader,
+/// with enough margin that it doesn't look stuck to the screen's border.
 /// When the right edge holds the camera and status bar (iPhone Duo), the barcode moves to the left edge.
+/// Locked in portrait: turning the phone towards the reader mustn't move the barcode away.
 struct FullScreenCardView: View {
     let patron: Patron
     @Environment(\.dismiss) private var dismiss
@@ -86,7 +88,7 @@ struct FullScreenCardView: View {
     /// About 43 × 11 mm on iPhone, like the barcode printed on the card.
     static let barcodeLength: CGFloat = 260
     static let barcodeThickness: CGFloat = 64
-    static let edgeInset: CGFloat = 14
+    static let edgeInset: CGFloat = 54
 
     var body: some View {
         ZStack {
@@ -146,6 +148,9 @@ struct FullScreenCardView: View {
         .foregroundStyle(Color(hex: 0x1C1B22))
         .onAppear(perform: brighten)
         .onDisappear(perform: restore)
+        #if canImport(UIKit)
+        .interfaceOrientationLocked(to: .portrait)
+        #endif
     }
 
     private var identity: some View {
