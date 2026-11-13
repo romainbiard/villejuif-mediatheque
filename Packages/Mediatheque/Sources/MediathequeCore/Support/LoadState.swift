@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 // See LICENSE in the project root for the full license text and copyright notice.
 
+import BokehAPI
 import Foundation
 
 /// Loading state, exposed by the ViewModels.
@@ -33,6 +34,8 @@ extension LoadState: Equatable where Value: Equatable {}
 public enum LoadError: Error, Equatable, Sendable {
     case offline
     case siteUnavailable
+    /// The site answered, but not in the expected format (a field changed, `null` where a value was expected).
+    case unreadableAnswer
     case notLoggedIn
     case other(String)
 
@@ -47,6 +50,8 @@ public enum LoadError: Error, Equatable, Sendable {
         case AuthError.sessionNotOpened:
             // Temporary: never shown as signed out (that would sign the patron out and wipe the keychain).
             self = .siteUnavailable
+        case is DecodingError, BokehError.unexpectedFormat:
+            self = .unreadableAnswer
         default:
             self = .other(String(describing: error))
         }

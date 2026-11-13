@@ -216,7 +216,9 @@ struct HoldRow: View {
                     .font(.subheadline)
                     .foregroundStyle(Color.inkSecondary)
                 HStack(spacing: 6) {
-                    StatusPill(statusText, style: hold.isReadyForPickup ? .success : .accent)
+                    if !statusText.isEmpty {
+                        StatusPill(statusText, style: hold.isReadyForPickup ? .success : .accent)
+                    }
                     if let rank = hold.rank, !hold.isReadyForPickup {
                         StatusPill(.local("Rang \(rank)"), style: .neutral)
                     }

@@ -193,6 +193,17 @@
         }
       }
     },
+    "Le site a répondu, mais l'app ne sait pas encore lire sa réponse. Réessayez plus tard.": {
+      "comment": "Error screen message when the website's answer can't be read",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The website answered, but the app can't read its answer yet. Try again later."
+          }
+        }
+      }
+    },
     "Le site de la médiathèque ne répond pas": {
       "comment": "Error screen title: the library's website failed or timed out",
       "localizations": {
@@ -406,6 +417,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Try again in a moment."
+          }
+        }
+      }
+    },
+    "Réponse inattendue du site": {
+      "comment": "Error screen title: the website answered in a format the app can't read",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unexpected Answer from the Website"
           }
         }
       }

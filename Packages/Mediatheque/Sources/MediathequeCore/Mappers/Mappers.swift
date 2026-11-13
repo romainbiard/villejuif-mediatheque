@@ -138,7 +138,7 @@ extension Hold {
         self.init(
             id: dto.id,
             title: Hold.cleanTitle(dto.title),
-            statusText: dto.status,
+            statusText: dto.status ?? "",
             pickupLibrary: Library(label: dto.library),
             pickupLibraryName: dto.library,
             recordID: dto.record?.id,

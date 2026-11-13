@@ -58,3 +58,82 @@ struct DecodingTests {
         #expect(popup.content.hasPrefix("Votre réservation est enregistrée."))
     }
 }
+
+/// Bokeh sends `null` for fields it usually fills: a `null` must not fail the whole response,
+/// and one malformed item must not hide the others. Fictional data.
+struct LenientAccountDecodingTests {
+    @Test func holdsWithNullFieldsAndAMalformedOne() throws {
+        let json = Data(#"""
+        {"holds":[
+          {"id":"100001_1","title":null,"status":null,"library":null,"record":null},
+          {"title":"Sans identifiant","status":"Pas disponible avant le 14/11/2026","library":"PULP Nord"},
+          {"id":"100001_2","title":"Un titre","status":"Disponible","library":"Elsa-Triolet","record":{"id":"oops"}}
+        ]}
+        """#.utf8)
+        let holds = try JSONDecoder().decode(HoldsResponseDTO.self, from: json).holds
+
+        // The hold without an identifier can't be cancelled: it is the only one skipped.
+        #expect(holds.map(\.id) == ["100001_1", "100001_2"])
+        #expect(holds[0].status == nil)
+        #expect(holds[0].title.isEmpty)
+        #expect(holds[0].library.isEmpty)
+        // A malformed record only loses the cover, not the hold.
+        #expect(holds[1].record == nil)
+    }
+
+    @Test func loansWithNullFieldsAndAMalformedOne() throws {
+        let json = Data(#"""
+        {"loans":[
+          {"id":"100001_1","title":"Un DVD","author":null,"date_due":"2026-11-20","library":null,"record":null},
+          {"id":null,"title":"Sans identifiant","author":"Quelqu'un","date_due":"2026-11-20","library":"PULP Sud"},
+          {"id":"100001_2","title":"Une revue","author":"","date_due":"2026-11-27","library":"PULP Sud"}
+        ]}
+        """#.utf8)
+        let loans = try JSONDecoder().decode(LoansResponseDTO.self, from: json).loans
+
+        #expect(loans.map(\.id) == ["100001_1", "100001_2"])
+        #expect(loans[0].author.isEmpty)
+        #expect(loans[0].library.isEmpty)
+        #expect(loans[0].dateDue == "2026-11-20")
+    }
+
+    @Test func accountWithNullsAndNumbersAsStrings() throws {
+        let json = Data(#"""
+        {"account":{
+          "login":"0012345",
+          "identity":{"first_name":"Camille","last_name":null,"nickname":null},
+          "contact":{"email":null,"phone":"","mobile":null,"address":null,"zip_code":94800,"city":null},
+          "card":null,
+          "library_details":{"id":"3","label":"PULP Nord"},
+          "permissions":{"hold_forbidden":0,"digital_resources_forbidden":null},
+          "counters":{"loans":"2","late_loans":null,"waiting_to_be_pulled":1},
+          "message":null,
+          "preferences":null,
+          "cards":[{"id":100001},{"id":null}]
+        }}
+        """#.utf8)
+        let account = try JSONDecoder().decode(AccountResponseDTO.self, from: json).account
+
+        #expect(account.login == "0012345")
+        #expect(account.identity.firstName == "Camille")
+        #expect(account.identity.lastName.isEmpty)
+        #expect(account.contact.email.isEmpty)
+        #expect(account.contact.zipCode == "94800")
+        #expect(account.card.expireAt.isEmpty)
+        #expect(account.card.expired == false)
+        #expect(account.libraryDetails.id == 3)
+        #expect(account.permissions.holdForbidden == false)
+        #expect(account.counters.loans == 2)
+        #expect(account.counters.lateLoans == 0)
+        #expect(account.counters.waitingToBePulled == 1)
+        #expect(account.message.content.isEmpty)
+        #expect(account.preferences == nil)
+        #expect(account.cards?.map(\.id) == [100001])
+    }
+
+    /// Without the card number, nothing in the account can work: that one stays strict.
+    @Test func accountWithoutCardNumberFails() {
+        let json = Data(#"{"account":{"login":null,"identity":{"first_name":"Camille","last_name":"Martin"}}}"#.utf8)
+        #expect(throws: DecodingError.self) { try JSONDecoder().decode(AccountResponseDTO.self, from: json) }
+    }
+}

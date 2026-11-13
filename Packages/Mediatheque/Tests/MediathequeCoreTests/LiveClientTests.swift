@@ -38,6 +38,20 @@ struct AccountClientLiveTests {
         #expect(holds.first?.rank == nil)
     }
 
+    /// Seen in November 2026: the portal sends `"status": null` for a hold. The list still shows.
+    @Test func holdWithoutStatusStillShows() async throws {
+        let holds = try Fixture.string("holds.json").replacingOccurrences(of: #""Pas disponible avant le 14\/11\/2026""#, with: "null")
+        #expect(holds.contains(#""status":null"#))
+        let harness = PortalHarness { request in
+            request.path.hasPrefix("/abonne/reservations/") ? .html(literal: "<html><body><p>Rang 1</p></body></html>") : .json(literal: holds)
+        }
+        let hold = try #require(try await harness.live { AccountClient.liveValue }.holds().first)
+        #expect(hold.statusText.isEmpty)
+        #expect(hold.isReadyForPickup == false)
+        #expect(hold.expectedDate == nil)
+        #expect(hold.rank == 1)
+    }
+
     @Test func renewalComparesTheDueDatesBeforeAndAfter() async throws {
         // After the renewal, only the first loan has a later due date.
         let renewed = try Fixture.string("loans.json").replacingOccurrences(of: "2026-11-20", with: "2026-12-11")

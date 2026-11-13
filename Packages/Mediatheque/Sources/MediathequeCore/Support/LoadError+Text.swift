@@ -10,7 +10,7 @@ extension LoadError {
         switch self {
         case .offline: "wifi.slash"
         case .notLoggedIn: "lock"
-        case .siteUnavailable, .other: "exclamationmark.triangle"
+        case .siteUnavailable, .unreadableAnswer, .other: "exclamationmark.triangle"
         }
     }
 
@@ -20,6 +20,7 @@ extension LoadError {
         case .offline: .local("Pas de connexion")
         case .notLoggedIn: .local("Session fermée")
         case .siteUnavailable, .other: .local("Le site de la médiathèque ne répond pas")
+        case .unreadableAnswer: .local("Réponse inattendue du site")
         }
     }
 
@@ -28,6 +29,7 @@ extension LoadError {
         case .offline: .local("Vérifiez votre connexion, puis réessayez.")
         case .notLoggedIn: .local("Reconnectez-vous pour continuer.")
         case .siteUnavailable, .other: .local("Réessayez dans un instant.")
+        case .unreadableAnswer: .local("Le site a répondu, mais l'app ne sait pas encore lire sa réponse. Réessayez plus tard.")
         }
     }
 

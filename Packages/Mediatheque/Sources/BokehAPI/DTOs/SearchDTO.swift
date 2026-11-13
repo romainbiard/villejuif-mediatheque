@@ -92,13 +92,3 @@ public struct ItemDTO: Decodable, Sendable {
         zone995.first { $0.code == code }?.valeur
     }
 }
-
-// MARK: - Lenient decoding (Bokeh mixes numbers and strings)
-
-extension KeyedDecodingContainer {
-    func decodeLenientString(forKey key: Key) throws -> String? {
-        if let value = try? decodeIfPresent(String.self, forKey: key) { return value }
-        if let int = try? decodeIfPresent(Int.self, forKey: key) { return String(int) }
-        return nil
-    }
-}
